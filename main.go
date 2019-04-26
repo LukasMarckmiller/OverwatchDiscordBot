@@ -15,9 +15,7 @@ import (
 	"errors"
 )
 
-
 const(
-	TOKEN = "NTY1MjI5NjQwNjQ2MzkzODk1.XMNDPg.jL-v1B4oikhDVwt5XpEVr_Jeg0k"
 	TOKEN_TYPE = "Bot"
 	EVENT_READY          = "READY"
 	EVENT_MESSAGE_CREATE = "MESSAGE_CREATE"
