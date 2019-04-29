@@ -9,14 +9,14 @@ import (
 //TODO Overwatch API integration
 const(
 	//Do not change
-	TOKEN_TYPE           = "Bot"
-	EVENT_READY          = "READY"
-	EVENT_MESSAGE_CREATE = "MESSAGE_CREATE"
-	DISCORD_BASE_URL     = "https://discordapp.com/api/"
-	DEVICE_NAME  = "Odroid XU4Q"
-	BROWSER_NAME = "Chromium"
+	TokenType          = "Bot"
+	EventReady         = "READY"
+	EventMessageCreate = "MESSAGE_CREATE"
+	DiscordBaseUrl     = "https://discordapp.com/api/"
+	DeviceName         = "Odroid XU4Q"
+	BrowserName        = "Chromium"
 	//Changeable
-	RETRY_TIMES  = 5
+	RetryTimes = 5
 )
 
 type getCommandContent func(param string) string
@@ -28,7 +28,7 @@ func main() {
 		con, err := s.openCon()
 		var errorCnt int
 		for err != nil {
-			if errorCnt >= RETRY_TIMES {
+			if errorCnt >= RetryTimes {
 				fmt.Printf("Cant connect to discord websocket. Restarting ...\n")
 			}
 			errorCnt++
@@ -42,7 +42,7 @@ func main() {
 		err = s.startListener(con)
 		errorCnt = 0
 		for err != nil {
-			if errorCnt >= RETRY_TIMES {
+			if errorCnt >= RetryTimes {
 				fmt.Printf("Cant restart Listener. Restarting ...\n")
 			}
 			errorCnt++

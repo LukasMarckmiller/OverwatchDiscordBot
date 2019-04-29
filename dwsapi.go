@@ -29,7 +29,7 @@ func (s *Session) openCon() (*websocket.Conn, error) {
 	// WEBHOOK HANDSHAKE
 
 	//1 GET Webhook URL
-	resp, err := s.sendHTTPDiscordRequest(http.MethodGet, DISCORD_BASE_URL+"gateway/bot", nil)
+	resp, err := s.sendHTTPDiscordRequest(http.MethodGet, DiscordBaseUrl+"gateway/bot", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +69,7 @@ func (s *Session) openCon() (*websocket.Conn, error) {
 	}
 
 	//Identity
-	identity := discordIdentityPayload{Op: 2, D: discordIdentity{Token: TOKEN_TYPE + " " + TOKEN, Properties: dicsordIdentityProperties{Device: DEVICE_NAME, Os: runtime.GOOS, Browser: BROWSER_NAME}}}
+	identity := discordIdentityPayload{Op: 2, D: discordIdentity{Token: TokenType + " " + TOKEN, Properties: dicsordIdentityProperties{Device: DeviceName, Os: runtime.GOOS, Browser: BrowserName}}}
 
 	data, err = json.Marshal(&identity)
 	if err != nil {
@@ -88,7 +88,7 @@ func (s *Session) openCon() (*websocket.Conn, error) {
 	if err = json.Unmarshal(data, &event); err != nil {
 		return nil, err
 	}
-	if event.T != EVENT_READY {
+	if event.T != EventReady {
 		return nil, errors.New(fmt.Sprintf("Failed to idenitfy at discord websocket server. Expected READY but got %v\n", event.T))
 	}
 	var eventPayload discordReadyEventObject
@@ -101,7 +101,7 @@ func (s *Session) openCon() (*websocket.Conn, error) {
 	var presenceUpdate = discordWebsocketPayloadPresentation{Op: 3,
 		D: []byte(fmt.Sprintf("{ \"since\": %v, \"game\": { \"name\": \"Golang on %v\", \"type\": 0 }, \"status\": \"online\", \"afk\": false }",
 			time.Now().UnixNano()/int64(time.Millisecond),
-			DEVICE_NAME))}
+			DeviceName))}
 
 	data, err = json.Marshal(&presenceUpdate)
 	if err != nil {
@@ -148,17 +148,22 @@ func (s *Session) startListener(con *websocket.Conn) error {
 		if err = json.Unmarshal(data, &event); err != nil {
 			return err
 		}
-		fmt.Printf("%+v\n", event.T)
+		fmt.Printf("%+v Opcode: %v\n", event.T, event.Op)
 		s.SequenzNumber = event.S
 
 		//Handle event
 		switch event.T {
-		case EVENT_MESSAGE_CREATE:
+		case EventMessageCreate:
 			var messagePayload discordMessageObject
 
 			if err = json.Unmarshal(event.D, &messagePayload); err != nil {
 				return err
 			}
+			//Filter non command
+			if !strings.HasPrefix("!", messagePayload.Content) {
+				break
+			}
+			//Filter if requesting event triggered by this bot
 			if messagePayload.Author.Id == s.BotUserId {
 				break
 			}
@@ -194,7 +199,7 @@ func (s *Session) sendMessageToChannel(content string, channelId string) (*http.
 	if err != nil {
 		return nil, err
 	}
-	resp, err := s.sendHTTPDiscordRequest(http.MethodPost, fmt.Sprintf("%v/channels/%v/messages", DISCORD_BASE_URL, channelId), bytes.NewReader(data))
+	resp, err := s.sendHTTPDiscordRequest(http.MethodPost, fmt.Sprintf("%v/channels/%v/messages", DiscordBaseUrl, channelId), bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
@@ -203,7 +208,7 @@ func (s *Session) sendMessageToChannel(content string, channelId string) (*http.
 }
 
 func (s *Session) triggerTypingInChannel(channelId string) (*http.Response, error) {
-	resp, err := s.sendHTTPDiscordRequest(http.MethodPost, fmt.Sprintf("%v/channels/%v/typing", DISCORD_BASE_URL, channelId), nil)
+	resp, err := s.sendHTTPDiscordRequest(http.MethodPost, fmt.Sprintf("%v/channels/%v/typing", DiscordBaseUrl, channelId), nil)
 	if (err != nil) {
 		return nil, err
 	}
@@ -215,7 +220,7 @@ func (s *Session) sendHTTPDiscordRequest(method string, URL string, body io.Read
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Add("Authorization", TOKEN_TYPE+" "+TOKEN)
+	req.Header.Add("Authorization", TokenType+" "+TOKEN)
 	req.Header.Add("Content-type", "application/json")
 	resp, err := Client.Do(req)
 	if err != nil {

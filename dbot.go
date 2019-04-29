@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	COMMAND_HELP     = "Currently supported commands:\r\n!Training : Zeigt aktuelle Trainigszeiten"
-	COMMAND_TRAINING = "Trainings:\r\nMontag: ab 19:30 (Scrim, Review)\r\nDienstag: ab 19:30 (Scrim, Review)\r\nDonnerstag ab 19:30 (Ranked)"
+	CommandHelp     = "Currently supported commands:\r\n!Training : Zeigt aktuelle Trainigszeiten"
+	CommandTraining = "Trainings:\r\nMontag: ab 19:30 (Scrim, Review)\r\nDienstag: ab 19:30 (Scrim, Review)\r\nDonnerstag ab 19:30 (Ranked)"
 )
 
 var (
@@ -20,14 +20,16 @@ var (
 	}
 )
 
+//noinspection GoUnusedParameter
 func getTrainingTimes(param string) string {
 	//param unused
-	return COMMAND_TRAINING
+	return CommandTraining
 }
 
+//noinspection GoUnusedParameter
 func getCurrentlySupportedCommands(param string) string {
 	//param unused
-	return COMMAND_HELP
+	return CommandHelp
 }
 
 func getOverwatchPlayerStats(param string) string {
