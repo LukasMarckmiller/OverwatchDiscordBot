@@ -12,7 +12,6 @@ import (
 	"bytes"
 	"errors"
 	"strings"
-	"io/ioutil"
 )
 
 //TODO Add Training Message Content as Image URL and make URL editable by !Edit !Training Command
@@ -33,12 +32,6 @@ const(
 type getCommandContent func(param string) string
 
 var (
-	commandMap = map[string]getCommandContent{
-		"!Training": getTrainingTimes,
-		"!Help":     getCurrentlySupportedCommands,
-		"!Stats":    getOverwatchPlayerStats,
-	}
-
 	Client http.Client
 )
 
@@ -46,37 +39,6 @@ type Session struct {
 	 SequenzNumber     int
 	 HeartbeatInterval int
 	BotUserId          string
-}
-
-func getTrainingTimes(param string) string {
-	return COMMAND_TRAINING
-}
-
-func getCurrentlySupportedCommands(param string) string {
-	return COMMAND_HELP
-}
-
-func getOverwatchPlayerStats(param string) string {
-	//TODO Check if username seperated by - instead of #
-	requ, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://ow-api.com/v1/stats/pc/eu/%v/profile", param), nil)
-	if err != nil {
-		return "An error while retrieving data from the Overwatch stats api occured.\n" + err.Error()
-	}
-	resp, err := Client.Do(requ)
-	if err != nil {
-		return "An error while retrieving data from the Overwatch stats api occured.\n" + err.Error()
-	}
-	bytes, err := ioutil.ReadAll(resp.Body)
-	if (err != nil) {
-		return "An error while reading the response from the Overwatch API, player request.\n" + err.Error()
-	}
-	var owPlayerStats OWPlayer
-	err = json.Unmarshal(bytes, &owPlayerStats)
-	return fmt.Sprintf("Statistik für Spieler: %v\nRating: %v\nCompetitive Games played: %v Games won: %v\n",
-		owPlayerStats.Name,
-		owPlayerStats.Rating,
-		owPlayerStats.CompetitiveStats.Games.Played,
-		owPlayerStats.CompetitiveStats.Games.Won)
 }
 
 func main() {
@@ -250,6 +212,10 @@ func (s *Session) startListener(con *websocket.Conn) error {
 			if messagePayload.Author.Id == s.BotUserId {
 				break;
 			}
+			_, err := s.triggerTypingInChannel(messagePayload.ChannelId)
+			if err != nil {
+				return err
+			}
 
 			command := strings.Split(messagePayload.Content, " ")[0]
 			var message string
@@ -264,7 +230,7 @@ func (s *Session) startListener(con *websocket.Conn) error {
 			if message == "" {
 				message = "Command not supported: " + command
 			}
-			_, err := s.sendMessageToChannel(message, messagePayload.ChannelId)
+			_, err = s.sendMessageToChannel(message, messagePayload.ChannelId)
 			if err != nil {
 				return err
 			}
@@ -286,6 +252,14 @@ func (s *Session)sendMessageToChannel(content string, channelId string) (*http.R
 	return resp, err
 }
 
+func (s *Session) triggerTypingInChannel(channelId string) (*http.Response, error) {
+	resp, err := s.sendHTTPDiscordRequest(http.MethodPost, fmt.Sprintf("%v/channels/%v/typing", DISCORD_BASE_URL, channelId), nil)
+	if (err != nil) {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (s *Session) sendHTTPDiscordRequest(method string, URL string, body io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(method, URL, body)
 	if err != nil {
@@ -297,7 +271,7 @@ func (s *Session) sendHTTPDiscordRequest(method string, URL string, body io.Read
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != 204 {
 		return nil, errors.New(fmt.Sprint("HTTP Ok (200) expected, but got %v",resp.StatusCode))
 	}
 
