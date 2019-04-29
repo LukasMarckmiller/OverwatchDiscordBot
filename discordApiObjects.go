@@ -69,6 +69,11 @@ premium_type?	integer	the type of Nitro subscription on a user's account	identif
 	discriminator string `json:"discriminator"`
 }
 
+type discordReadyEventObject struct {
+	V    int               `json:"v"`   //gateway protocol version
+	User discordUserObject `json:"user` //object	information about the user including email
+}
+
 type discordMessageObject struct {
 	/*id	snowflake	id of the message
 channel_id	snowflake	id of the channel the message was sent in

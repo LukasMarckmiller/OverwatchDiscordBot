@@ -15,28 +15,74 @@ import (
 	"io/ioutil"
 )
 
+//TODO Add Training Message Content as Image URL and make URL editable by !Edit !Training Command
+//TODO Overwatch API integration
 const(
 	TOKEN_TYPE           = "Bot"
 	EVENT_READY          = "READY"
 	EVENT_MESSAGE_CREATE = "MESSAGE_CREATE"
-	MESSAGE_TRAINING     = "Trainings:\r\nMontag: ab 19:30 (Scrim, Review)\r\nDienstag: ab 19:30 (Scrim, Review)\r\nDonnerstag ab 19:30 (Ranked)"
-	MESSAGE_HELP         = "Currently supported commands:\r\n!Training : Zeigt aktuelle Trainigszeiten"
 	DISCORD_BASE_URL     = "https://discordapp.com/api/"
-
 	DEVICE_NAME  = "Odroid XU4Q"
 	BROWSER_NAME = "Chromium"
 	RETRY_TIMES  = 5
+
+	COMMAND_HELP     = "Currently supported commands:\r\n!Training : Zeigt aktuelle Trainigszeiten"
+	COMMAND_TRAINING = "Trainings:\r\nMontag: ab 19:30 (Scrim, Review)\r\nDienstag: ab 19:30 (Scrim, Review)\r\nDonnerstag ab 19:30 (Ranked)"
+)
+
+type getCommandContent func(param string) string
+
+var (
+	commandMap = map[string]getCommandContent{
+		"!Training": getTrainingTimes,
+		"!Help":     getCurrentlySupportedCommands,
+		"!Stats":    getOverwatchPlayerStats,
+	}
+
+	Client http.Client
 )
 
 type Session struct {
-	 SequenzNumber int
+	 SequenzNumber     int
 	 HeartbeatInterval int
-	 Client http.Client
+	BotUserId          string
+}
+
+func getTrainingTimes(param string) string {
+	return COMMAND_TRAINING
+}
+
+func getCurrentlySupportedCommands(param string) string {
+	return COMMAND_HELP
+}
+
+func getOverwatchPlayerStats(param string) string {
+	//TODO Check if username seperated by - instead of #
+	requ, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://ow-api.com/v1/stats/pc/eu/%v/profile", param), nil)
+	if err != nil {
+		return "An error while retrieving data from the Overwatch stats api occured.\n" + err.Error()
+	}
+	resp, err := Client.Do(requ)
+	if err != nil {
+		return "An error while retrieving data from the Overwatch stats api occured.\n" + err.Error()
+	}
+	bytes, err := ioutil.ReadAll(resp.Body)
+	if (err != nil) {
+		return "An error while reading the response from the Overwatch API, player request.\n" + err.Error()
+	}
+	var owPlayerStats OWPlayer
+	err = json.Unmarshal(bytes, &owPlayerStats)
+	return fmt.Sprintf("Statistik für Spieler: %v\nRating: %v\nCompetitive Games played: %v Games won: %v\n",
+		owPlayerStats.Name,
+		owPlayerStats.Rating,
+		owPlayerStats.CompetitiveStats.Games.Played,
+		owPlayerStats.CompetitiveStats.Games.Won)
 }
 
 func main() {
+
 	for {
-		s := Session{SequenzNumber: 0, Client: http.Client{}}
+		s := Session{SequenzNumber: 0}
 		con, err := s.openCon()
 		var errorCnt int
 		for err != nil {
@@ -71,7 +117,7 @@ func (s *Session) openCon() (*websocket.Conn, error) {
 	// WEBHOOK HANDSHAKE
 
 	//1 GET Webhook URL
-	resp, err := s.sendHTTPRequest(http.MethodGet,DISCORD_BASE_URL + "gateway/bot", nil)
+	resp, err := s.sendHTTPDiscordRequest(http.MethodGet, DISCORD_BASE_URL+"gateway/bot", nil)
 	if err != nil{
 		return nil, err
 	}
@@ -130,9 +176,14 @@ func (s *Session) openCon() (*websocket.Conn, error) {
 	if err = json.Unmarshal(data, &event); err != nil {
 		return nil, err
 	}
-	if (event.T != EVENT_READY) {
+	if event.T != EVENT_READY {
 		return nil, errors.New(fmt.Sprintf("Failed to idenitfy at discord websocket server. Expected READY but got %v\n", event.T))
 	}
+	var eventPayload discordReadyEventObject
+	if err = json.Unmarshal(event.D, &eventPayload); err != nil {
+		return nil, err
+	}
+	s.BotUserId = eventPayload.User.Id
 
 	//Set bot activity
 	var presenceUpdate = discordWebsocketPayloadPresentation{Op: 3,
@@ -180,6 +231,7 @@ func (s *Session) startListener(con *websocket.Conn) error {
 		if err != nil {
 			return err
 		}
+
 		var event discordWebsocketPayloadPresentation
 		if err = json.Unmarshal(data, &event); err != nil {
 			return err
@@ -191,31 +243,30 @@ func (s *Session) startListener(con *websocket.Conn) error {
 		switch event.T {
 		case EVENT_MESSAGE_CREATE:
 			var messagePayload discordMessageObject
+
 			if err = json.Unmarshal(event.D, &messagePayload); err != nil {
 				return err
 			}
+			if messagePayload.Author.Id == s.BotUserId {
+				break;
+			}
 
-			switch strings.Split(messagePayload.Content, " ")[0] {
-			case "!Training":
-				resp, err := s.sendMessageToChannel(MESSAGE_TRAINING, messagePayload.ChannelId)
-				if err != nil {
-					return err
-				}
-				_, err = ioutil.ReadAll(resp.Body)
-				if err != nil {
-					return err
-				}
-			case "!Help":
-				resp, err := s.sendMessageToChannel(MESSAGE_HELP, messagePayload.ChannelId)
-				if err != nil {
-					return err
-				}
-				_, err = ioutil.ReadAll(resp.Body)
-				if err != nil {
-					return err
-				}
-			default:
-				break
+			command := strings.Split(messagePayload.Content, " ")[0]
+			var message string
+			if len(strings.Split(messagePayload.Content, " ")) > 1 {
+				param := strings.Split(messagePayload.Content, " ")[1]
+				param = strings.Replace(param, "#", "-", 1)
+				message = commandMap[command](param)
+			} else {
+				message = commandMap[command]("")
+			}
+
+			if message == "" {
+				message = "Command not supported: " + command
+			}
+			_, err := s.sendMessageToChannel(message, messagePayload.ChannelId)
+			if err != nil {
+				return err
 			}
 		}
 	}
@@ -227,7 +278,7 @@ func (s *Session)sendMessageToChannel(content string, channelId string) (*http.R
 	if err != nil {
 		return nil, err
 	}
-	resp, err := s.sendHTTPRequest(http.MethodPost, fmt.Sprintf("%v/channels/%v/messages", DISCORD_BASE_URL, channelId), bytes.NewReader(data))
+	resp, err := s.sendHTTPDiscordRequest(http.MethodPost, fmt.Sprintf("%v/channels/%v/messages", DISCORD_BASE_URL, channelId), bytes.NewReader(data))
 	if err != nil {
 		return nil, err
 	}
@@ -235,14 +286,14 @@ func (s *Session)sendMessageToChannel(content string, channelId string) (*http.R
 	return resp, err
 }
 
-func (s *Session)sendHTTPRequest(method string,URL string,body io.Reader) (*http.Response, error) {
+func (s *Session) sendHTTPDiscordRequest(method string, URL string, body io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(method, URL, body)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Add("Authorization", TOKEN_TYPE+ " " + TOKEN)
 	req.Header.Add("Content-type", "application/json")
-	resp, err := s.Client.Do(req)
+	resp, err := Client.Do(req)
 	if err != nil {
 		return nil, err
 	}
