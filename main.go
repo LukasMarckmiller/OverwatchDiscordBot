@@ -8,16 +8,15 @@ import (
 //TODO Add Training Message Content as Image URL and make URL editable by !Edit !Training Command
 //TODO Overwatch API integration
 const(
+	//Do not change
 	TOKEN_TYPE           = "Bot"
 	EVENT_READY          = "READY"
 	EVENT_MESSAGE_CREATE = "MESSAGE_CREATE"
 	DISCORD_BASE_URL     = "https://discordapp.com/api/"
 	DEVICE_NAME  = "Odroid XU4Q"
 	BROWSER_NAME = "Chromium"
+	//Changeable
 	RETRY_TIMES  = 5
-
-	COMMAND_HELP     = "Currently supported commands:\r\n!Training : Zeigt aktuelle Trainigszeiten"
-	COMMAND_TRAINING = "Trainings:\r\nMontag: ab 19:30 (Scrim, Review)\r\nDienstag: ab 19:30 (Scrim, Review)\r\nDonnerstag ab 19:30 (Ranked)"
 )
 
 type getCommandContent func(param string) string

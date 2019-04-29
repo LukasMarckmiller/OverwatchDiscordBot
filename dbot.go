@@ -7,6 +7,11 @@ import (
 	"encoding/json"
 )
 
+const (
+	COMMAND_HELP     = "Currently supported commands:\r\n!Training : Zeigt aktuelle Trainigszeiten"
+	COMMAND_TRAINING = "Trainings:\r\nMontag: ab 19:30 (Scrim, Review)\r\nDienstag: ab 19:30 (Scrim, Review)\r\nDonnerstag ab 19:30 (Ranked)"
+)
+
 var (
 	commandMap = map[string]getCommandContent{
 		"!Training": getTrainingTimes,
