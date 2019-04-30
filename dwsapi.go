@@ -117,6 +117,7 @@ func (s *Session) startListener(con *websocket.Conn) error {
 	//3.1 Start Heartbeat
 	ticker := time.NewTicker(time.Duration(s.HeartbeatInterval) * time.Millisecond)
 	defer ticker.Stop()
+	defer con.Close()
 
 	go func() {
 		//TODO Add chanel to communicate with the heartbeat routine and send value to channel if error
