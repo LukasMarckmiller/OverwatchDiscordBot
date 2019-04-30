@@ -160,7 +160,7 @@ func (s *Session) startListener(con *websocket.Conn) error {
 				return err
 			}
 			//Filter non command
-			if !strings.HasPrefix("!", messagePayload.Content) {
+			if !strings.HasPrefix(messagePayload.Content, "!") {
 				break
 			}
 			//Filter if requesting event triggered by this bot
