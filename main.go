@@ -16,40 +16,70 @@ const(
 	DeviceName         = "Odroid XU4Q"
 	BrowserName        = "Chromium"
 	//Changeable
-	RetryTimes = 5
+	DBPATH = "/home/lab01/db" //"C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot\\db"
 )
 
 type getCommandContent func(param string) string
 
-func main() {
+var db *dbSession
 
+func main() {
 	for {
 		s := Session{SequenzNumber: 0}
+
 		con, err := s.openCon()
-		var errorCnt int
-		for err != nil {
-			if errorCnt >= RetryTimes {
-				fmt.Printf("Cant connect to discord websocket. Restarting ...\n")
-			}
-			errorCnt++
+		if err != nil {
 			fmt.Printf("Failed to open connection to discord websocket. Fallback mechanism is trying to connect again in 5 seconds\n")
 			fmt.Printf("Error:\n%v", err)
-
 			time.Sleep(5 * time.Second)
-			con, err = s.openCon()
+			continue
 		}
 		fmt.Printf("Connection to discord established. Received Hello.\n")
+
+		dbs, err := createDB(DBPATH)
+		if err != nil {
+			fmt.Println(err)
+			break
+		}
+		db = dbs
+
+		go startAlarmClock(6, 0, 0, pollingCustomPlayers) //Set alarm clock for polling stats to 6:00:00am (pm would be setAlarmClock(18,0,0), timezone is based on current timezone
+
+		//func blocks
 		err = s.startListener(con)
-		errorCnt = 0
-		for err != nil {
-			if errorCnt >= RetryTimes {
-				fmt.Printf("Cant restart Listener. Restarting ...\n")
-			}
-			errorCnt++
+
+		if err != nil {
 			fmt.Printf("Failed to listen to discord websocket connection. Fallback mechanism is trying to connect again in 5 seconds\n")
-			fmt.Printf("Error:\n%v", err)
+			fmt.Printf("Error:\n%v\n", err)
+			con.Close()
 			time.Sleep(5 * time.Second)
-			err = s.startListener(con)
+			continue
 		}
 	}
 }
+
+var players = [] string{
+	"Exploit-21751",
+	"Alex-2476",
+	"trable-21221",
+	"Valyria-21126",
+	"Zayana-2698",
+	"Ronin-23639",
+	"FakeKevin-2756",
+}
+
+func pollingCustomPlayers() error {
+	for _, player := range players {
+		owPlayerStats, err := getPlayerStats(player)
+		if err != nil {
+			return err
+		}
+		var owPersLayerObj = owStatsPersistenceLayer{OWPlayer: *owPlayerStats, Battletag: player}
+		if err = db.write(owPersLayerObj); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+

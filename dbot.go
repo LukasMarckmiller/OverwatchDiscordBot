@@ -1,10 +1,8 @@
 package main
 
 import (
-	"net/http"
 	"fmt"
-	"io/ioutil"
-	"encoding/json"
+	"strings"
 )
 
 const (
@@ -33,24 +31,25 @@ func getCurrentlySupportedCommands(param string) string {
 }
 
 func getOverwatchPlayerStats(param string) string {
-	//TODO Check if username seperated by - instead of #
-	requ, err := http.NewRequest(http.MethodGet, fmt.Sprintf("https://ow-api.com/v1/stats/pc/eu/%v/profile", param), nil)
+	param = strings.Replace(param, "#", "-", 1)
+	owPlayerLiveStats, err := getPlayerStats(param)
 	if err != nil {
-		return "An error while retrieving data from the Overwatch stats api occured.\n" + err.Error()
+		return string(err.Error())
 	}
-	resp, err := Client.Do(requ)
-	if err != nil {
-		return "An error while retrieving data from the Overwatch stats api occured.\n" + err.Error()
+	var owPlayerPersistenceStats OWPlayer
+	if err = db.read(param, &owPlayerPersistenceStats); err != nil {
+		return string(err.Error())
 	}
-	bytes, err := ioutil.ReadAll(resp.Body)
-	if (err != nil) {
-		return "An error while reading the response from the Overwatch API, player request.\n" + err.Error()
-	}
-	var owPlayerStats OWPlayer
-	err = json.Unmarshal(bytes, &owPlayerStats)
-	return fmt.Sprintf("Statistik für Spieler: %v\nRating: %v\nCompetitive Games played: %v Games won: %v\n",
-		owPlayerStats.Name,
-		owPlayerStats.Rating,
-		owPlayerStats.CompetitiveStats.Games.Played,
-		owPlayerStats.CompetitiveStats.Games.Won)
+
+	return fmt.Sprintf("Statistik für Spieler: %v\nRating: %v\nCompetitive Games played (all): %v Games won (all): %v\nTrend: %dsr (started today at %v)\nGames played today: %v\nGames won today: %v\n",
+		owPlayerLiveStats.Name,
+		owPlayerLiveStats.Rating,
+		owPlayerLiveStats.CompetitiveStats.Games.Played,
+		owPlayerLiveStats.CompetitiveStats.Games.Won,
+		owPlayerLiveStats.Rating-owPlayerPersistenceStats.Rating,
+		owPlayerPersistenceStats.Rating,
+		owPlayerLiveStats.CompetitiveStats.Games.Played-owPlayerPersistenceStats.CompetitiveStats.Games.Played,
+		owPlayerLiveStats.CompetitiveStats.Games.Won-owPlayerPersistenceStats.CompetitiveStats.Games.Won,
+	)
 }
+

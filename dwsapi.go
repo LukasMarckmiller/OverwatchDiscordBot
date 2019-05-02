@@ -177,7 +177,6 @@ func (s *Session) startListener(con *websocket.Conn) error {
 			var message string
 			if len(strings.Split(messagePayload.Content, " ")) > 1 {
 				param := strings.Split(messagePayload.Content, " ")[1]
-				param = strings.Replace(param, "#", "-", 1)
 				message = commandMap[command](param)
 			} else {
 				message = commandMap[command]("")
