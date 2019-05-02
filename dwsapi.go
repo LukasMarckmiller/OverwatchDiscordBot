@@ -177,13 +177,14 @@ func (s *Session) startListener(con *websocket.Conn) error {
 			var message string
 			if len(strings.Split(messagePayload.Content, " ")) > 1 {
 				param := strings.Split(messagePayload.Content, " ")[1]
-				message = commandMap[command](param)
+				if val, ok := commandMap[command]; ok {
+					message = val(param)
+				} else {
+					message = "Command not supported: " + command
+					break
+				}
 			} else {
 				message = commandMap[command]("")
-			}
-
-			if message == "" {
-				message = "Command not supported: " + command
 			}
 			_, err = s.sendMessageToChannel(message, messagePayload.ChannelId)
 			if err != nil {

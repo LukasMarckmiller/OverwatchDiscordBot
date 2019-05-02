@@ -34,7 +34,7 @@ func getOverwatchPlayerStats(param string) string {
 	param = strings.Replace(param, "#", "-", 1)
 	owPlayerLiveStats, err := getPlayerStats(param)
 	if err != nil {
-		return string(err.Error())
+		return fmt.Sprintf("Error retrieving Overwatch stats for player: %v\n%v\n", param, string(err.Error()))
 	}
 	var owPlayerPersistenceStats OWPlayer
 	if err = db.read(param, &owPlayerPersistenceStats); err != nil {

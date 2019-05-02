@@ -24,6 +24,7 @@ type getCommandContent func(param string) string
 var db *dbSession
 
 func main() {
+
 	for {
 		s := Session{SequenzNumber: 0}
 
@@ -66,6 +67,8 @@ var players = [] string{
 	"Zayana-2698",
 	"Ronin-23639",
 	"FakeKevin-2756",
+	"litchblade-2244",
+	"HealMePlease-21234",
 }
 
 func pollingCustomPlayers() error {
