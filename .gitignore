@@ -19,3 +19,6 @@
 
 #Exclude token file
 Token.go
+#Database stuff
+db/
+arm_*
