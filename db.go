@@ -20,14 +20,14 @@ func createDB(path string) (*dbSession, error) {
 	return &dbSession{driver: db}, nil
 }
 
-func (d *dbSession) write(playerStats owStatsPersistenceLayer) error {
+func (d *dbSession) writePlayer(playerStats owStatsPersistenceLayer) error {
 	if err := d.driver.Write(Collection, playerStats.Battletag, playerStats.OWPlayer); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (d *dbSession) read(battletag string, playerStats *OWPlayer) error {
+func (d *dbSession) readPlayer(battletag string, playerStats *OWPlayer) error {
 
 	if err := d.driver.Read(Collection, battletag, playerStats); err != nil {
 		return err

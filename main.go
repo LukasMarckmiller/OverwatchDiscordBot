@@ -16,19 +16,24 @@ const(
 	DeviceName         = "Odroid XU4Q"
 	BrowserName        = "Chromium"
 	//Changeable
-	DBPATH = "/home/lab01/db" //"C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot\\db"
+	DBPATH = "/home/lab01/db" //"C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot\\db" //
 )
 
-type getCommandContent func(param string) string
+type session struct {
+	db *dbSession
+	ws *websocketSession
+}
 
-var db *dbSession
+var s session
+
 
 func main() {
+	s = session{}
 
 	for {
-		s := Session{SequenzNumber: 0}
+		s.ws = &websocketSession{SequenzNumber: 0}
 
-		con, err := s.openCon()
+		con, err := s.ws.openCon()
 		if err != nil {
 			fmt.Printf("Failed to open connection to discord websocket. Fallback mechanism is trying to connect again in 5 seconds\n")
 			fmt.Printf("Error:\n%v", err)
@@ -42,12 +47,12 @@ func main() {
 			fmt.Println(err)
 			break
 		}
-		db = dbs
+		s.db = dbs
 
 		go startAlarmClock(6, 0, 0, pollingCustomPlayers) //Set alarm clock for polling stats to 6:00:00am (pm would be setAlarmClock(18,0,0), timezone is based on current timezone
 
 		//func blocks
-		err = s.startListener(con)
+		err = s.ws.startListener(con)
 
 		if err != nil {
 			fmt.Printf("Failed to listen to discord websocket connection. Fallback mechanism is trying to connect again in 5 seconds\n")
@@ -78,7 +83,7 @@ func pollingCustomPlayers() error {
 			return err
 		}
 		var owPersLayerObj = owStatsPersistenceLayer{OWPlayer: *owPlayerStats, Battletag: player}
-		if err = db.write(owPersLayerObj); err != nil {
+		if err = s.db.writePlayer(owPersLayerObj); err != nil {
 			return err
 		}
 	}

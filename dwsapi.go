@@ -18,13 +18,13 @@ var (
 	Client http.Client
 )
 
-type Session struct {
+type websocketSession struct {
 	SequenzNumber     int
 	HeartbeatInterval int
 	BotUserId         string
 }
 
-func (s *Session) openCon() (*websocket.Conn, error) {
+func (s *websocketSession) openCon() (*websocket.Conn, error) {
 
 	// WEBHOOK HANDSHAKE
 
@@ -112,7 +112,7 @@ func (s *Session) openCon() (*websocket.Conn, error) {
 	return con, nil
 }
 
-func (s *Session) startListener(con *websocket.Conn) error {
+func (s *websocketSession) startListener(con *websocket.Conn) error {
 
 	//3.1 Start Heartbeat
 	ticker := time.NewTicker(time.Duration(s.HeartbeatInterval) * time.Millisecond)
@@ -194,7 +194,7 @@ func (s *Session) startListener(con *websocket.Conn) error {
 	}
 }
 
-func (s *Session) sendMessageToChannel(content string, channelId string) (*http.Response, error) {
+func (s *websocketSession) sendMessageToChannel(content string, channelId string) (*http.Response, error) {
 	responseMessage := discordMessageRequest{Content: content, Tts: false}
 	data, err := json.Marshal(responseMessage)
 	if err != nil {
@@ -208,7 +208,7 @@ func (s *Session) sendMessageToChannel(content string, channelId string) (*http.
 	return resp, err
 }
 
-func (s *Session) triggerTypingInChannel(channelId string) (*http.Response, error) {
+func (s *websocketSession) triggerTypingInChannel(channelId string) (*http.Response, error) {
 	resp, err := s.sendHTTPDiscordRequest(http.MethodPost, fmt.Sprintf("%v/channels/%v/typing", DiscordBaseUrl, channelId), nil)
 	if (err != nil) {
 		return nil, err
@@ -216,7 +216,7 @@ func (s *Session) triggerTypingInChannel(channelId string) (*http.Response, erro
 	return resp, nil
 }
 
-func (s *Session) sendHTTPDiscordRequest(method string, URL string, body io.Reader) (*http.Response, error) {
+func (s *websocketSession) sendHTTPDiscordRequest(method string, URL string, body io.Reader) (*http.Response, error) {
 	req, err := http.NewRequest(method, URL, body)
 	if err != nil {
 		return nil, err
@@ -234,7 +234,7 @@ func (s *Session) sendHTTPDiscordRequest(method string, URL string, body io.Read
 	return resp, err
 }
 
-func (s *Session) websocketConnect(websocketURL string, ) (*websocket.Conn, discordWebsocketPayloadPresentation, error) {
+func (s *websocketSession) websocketConnect(websocketURL string, ) (*websocket.Conn, discordWebsocketPayloadPresentation, error) {
 	payload := discordWebsocketPayloadPresentation{}
 	helloPayload := discordWebsocketHelloPresentation{}
 	con, _, err := websocket.DefaultDialer.Dial(websocketURL, nil)
