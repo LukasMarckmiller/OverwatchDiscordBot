@@ -1,17 +1,17 @@
 package main
 
 import (
-	"github.com/gorilla/websocket"
-	"net/http"
 	"bufio"
-	"encoding/json"
-	"fmt"
-	"errors"
-	"runtime"
-	"time"
-	"strings"
 	"bytes"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/gorilla/websocket"
 	"io"
+	"net/http"
+	"runtime"
+	"strings"
+	"time"
 )
 
 var (
@@ -175,14 +175,16 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 
 			command := strings.Split(messagePayload.Content, " ")[0]
 			var message string
+			cmd, ok := commandMap[command]
+			if !ok {
+				message = "Command not supported: " + command
+				break
+			}
+
 			if len(strings.Split(messagePayload.Content, " ")) > 1 {
 				param := strings.Split(messagePayload.Content, " ")[1]
-				if val, ok := commandMap[command]; ok {
-					message = val(param)
-				} else {
-					message = "Command not supported: " + command
-					break
-				}
+				message = cmd(param)
+
 			} else {
 				message = commandMap[command]("")
 			}

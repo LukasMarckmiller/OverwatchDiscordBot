@@ -8,7 +8,6 @@ type dbSession struct {
 
 const (
 	Collection = "guilds"
-	Resource   = "global"
 )
 
 func createDB(path string) (*dbSession, error) {

@@ -1,8 +1,8 @@
 package main
 
 import (
-	"time"
 	"fmt"
+	"time"
 )
 
 func startAlarmClock(hour int, minute int, second int, pollingFunc func() (error)) error {
