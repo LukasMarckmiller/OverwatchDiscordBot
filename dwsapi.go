@@ -192,9 +192,6 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 			// i.e !Command "here is a mulit param" ,  !Command ThisIsASingleParam
 			multiParam := regex.FindString(s.cachedMessagePayload.Content)
 			multiParam, _ = strconv.Unquote(multiParam)
-			teststr := "test\r\ntest"
-			fmt.Println(multiParam)
-			fmt.Println(teststr)
 			if len(strings.Split(s.cachedMessagePayload.Content, " ")) > 1 {
 				var params []string
 				if multiParam != "" {

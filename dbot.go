@@ -61,7 +61,7 @@ func getOverwatchPlayerStats(params []string) string {
 		return fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error()))
 	}
 
-	return fmt.Sprintf("Statistik für Spieler: **%v**\nRating: **%v**\nCompetitive Games played (all): *%v* Games won (all): *%v*\nTrend: *%d*sr (started today at *%v*)\nGames played today: *%v*\nGames won today: *%v*\n",
+	return fmt.Sprintf(":chart_with_upwards_trend:Statistik für Spieler: **%v**\nRating: **%v**\nCompetitive Games played (all): *%v* Games won (all): *%v*\nTrend: *%d*sr (started today at *%v*)\nGames played today: *%v*\nGames won today: *%v*\n",
 		owPlayerLiveStats.Name,
 		owPlayerLiveStats.Rating,
 		owPlayerLiveStats.CompetitiveStats.Games.Played,
