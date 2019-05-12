@@ -9,7 +9,9 @@ import (
 	"github.com/gorilla/websocket"
 	"io"
 	"net/http"
+	"regexp"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -19,9 +21,10 @@ var (
 )
 
 type websocketSession struct {
-	SequenzNumber     int
-	HeartbeatInterval int
-	BotUserId         string
+	SequenzNumber        int
+	HeartbeatInterval    int
+	BotUserId            string
+	cachedMessagePayload discordMessageObject
 }
 
 func (s *websocketSession) openCon() (*websocket.Conn, error) {
@@ -51,7 +54,9 @@ func (s *websocketSession) openCon() (*websocket.Conn, error) {
 	}
 
 	//Sent first heartbeat
-	con.WriteMessage(websocket.TextMessage, []byte("{\"op\": 1,\"d\": null}"))
+	if err = con.WriteMessage(websocket.TextMessage, []byte("{\"op\": 1,\"d\": null}")); err != nil {
+		return nil, err
+	}
 
 	//3.2 Receive First Heartbeat
 	_, data, err := con.ReadMessage()
@@ -107,7 +112,10 @@ func (s *websocketSession) openCon() (*websocket.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	con.WriteMessage(websocket.TextMessage, data)
+
+	if err = con.WriteMessage(websocket.TextMessage, data); err != nil {
+		return nil, err
+	}
 
 	return con, nil
 }
@@ -155,25 +163,24 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 		//Handle event
 		switch event.T {
 		case EventMessageCreate:
-			var messagePayload discordMessageObject
 
-			if err = json.Unmarshal(event.D, &messagePayload); err != nil {
+			if err = json.Unmarshal(event.D, &s.cachedMessagePayload); err != nil {
 				return err
 			}
 			//Filter non command
-			if !strings.HasPrefix(messagePayload.Content, "!") {
+			if !strings.HasPrefix(s.cachedMessagePayload.Content, "!") {
 				break
 			}
 			//Filter if requesting event triggered by this bot
-			if messagePayload.Author.Id == s.BotUserId {
+			if s.cachedMessagePayload.Author.Id == s.BotUserId {
 				break
 			}
-			_, err := s.triggerTypingInChannel(messagePayload.ChannelId)
+			_, err := s.triggerTypingInChannel(s.cachedMessagePayload.ChannelId)
 			if err != nil {
 				return err
 			}
 
-			command := strings.Split(messagePayload.Content, " ")[0]
+			command := strings.Split(s.cachedMessagePayload.Content, " ")[0]
 			var message string
 			cmd, ok := commandMap[command]
 			if !ok {
@@ -181,14 +188,27 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 				break
 			}
 
-			if len(strings.Split(messagePayload.Content, " ")) > 1 {
-				param := strings.Split(messagePayload.Content, " ")[1]
-				message = cmd(param)
+			regex, err := regexp.Compile("\".*\"")
+			// i.e !Command "here is a mulit param" ,  !Command ThisIsASingleParam
+			multiParam := regex.FindString(s.cachedMessagePayload.Content)
+			multiParam, _ = strconv.Unquote(multiParam)
+			teststr := "test\r\ntest"
+			fmt.Println(multiParam)
+			fmt.Println(teststr)
+			if len(strings.Split(s.cachedMessagePayload.Content, " ")) > 1 {
+				var params []string
+				if multiParam != "" {
+					params = []string{command, multiParam} //adding params if
+				} else {
+					params = strings.Split(s.cachedMessagePayload.Content, " ")
+				}
+				message = cmd(params)
 
 			} else {
-				message = commandMap[command]("")
+				message = cmd(nil)
+
 			}
-			_, err = s.sendMessageToChannel(message, messagePayload.ChannelId)
+			_, err = s.sendMessageToChannel(message, s.cachedMessagePayload.ChannelId)
 			if err != nil {
 				return err
 			}
@@ -230,7 +250,7 @@ func (s *websocketSession) sendHTTPDiscordRequest(method string, URL string, bod
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != 204 {
-		return nil, errors.New(fmt.Sprint("HTTP Ok (200) expected, but got %v", resp.StatusCode))
+		return nil, errors.New(fmt.Sprintf("HTTP Ok (200) expected, but got %v", resp.StatusCode))
 	}
 
 	return resp, err

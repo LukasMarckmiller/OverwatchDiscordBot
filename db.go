@@ -7,7 +7,8 @@ type dbSession struct {
 }
 
 const (
-	Collection = "guilds"
+	CollectionGuilds   = "guilds"
+	CollectionTraining = "training"
 )
 
 func createDB(path string) (*dbSession, error) {
@@ -20,7 +21,7 @@ func createDB(path string) (*dbSession, error) {
 }
 
 func (d *dbSession) writePlayer(playerStats owStatsPersistenceLayer) error {
-	if err := d.driver.Write(Collection, playerStats.Battletag, playerStats.OWPlayer); err != nil {
+	if err := d.driver.Write(CollectionGuilds, playerStats.Battletag, playerStats.OWPlayer); err != nil {
 		return err
 	}
 	return nil
@@ -28,14 +29,32 @@ func (d *dbSession) writePlayer(playerStats owStatsPersistenceLayer) error {
 
 func (d *dbSession) readPlayer(battletag string, playerStats *OWPlayer) error {
 
-	if err := d.driver.Read(Collection, battletag, playerStats); err != nil {
+	if err := d.driver.Read(CollectionGuilds, battletag, playerStats); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+func (d *dbSession) updateTrainingDates(guild string, content trainingDatesPersistenceLayer) error {
+	if err := d.driver.Write(CollectionTraining, guild, content); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (d *dbSession) getTrainingDates(guild string, content *trainingDatesPersistenceLayer) error {
+	if err := d.driver.Read(CollectionTraining, guild, content); err != nil {
+		return err
+	}
+	return nil
+}
+
 type owStatsPersistenceLayer struct {
 	Battletag string   `json:"battletag"`
 	OWPlayer  OWPlayer `json:"ow_player"`
+}
+
+type trainingDatesPersistenceLayer struct {
+	Value string `json:"value"`
 }
