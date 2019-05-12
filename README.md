@@ -2,5 +2,5 @@
 powered by Google Golang
 
 # OverwatchDiscordBot
-Websocket based discord bot in GO with Overwatch stats API integration
+Websocket based discord bot in GO with Overwatch stats API integration<br/>
 ... More Infos coming soon...
