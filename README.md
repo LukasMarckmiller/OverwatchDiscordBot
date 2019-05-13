@@ -14,7 +14,7 @@ Currently supported commands:</br>
 * !Update <battletag>: Aktualisiert Statistik für angegebenen Spieler/Update stored player stats (e.g. !Update Krusher-9911)<br/>
 
 # OverwatchDiscordBot
-Websocket based discord bot in GO with [Overwatch stats API](https://ow-api.com/) integration<br/>.
+Websocket based discord bot in GO with [Overwatch stats API](https://ow-api.com/) integration.<br/>
 You can also copy an piece of code written for this project, and use it in your own project without any restrictions.<br/>
 Im aware that there is [this](https://github.com/bwmarrin/discordgo) pretty good discord bindings api out, which also supports websocket connections. But i wanted to write my own small layer.<br/>
 ... More Infos coming soon...<br/>
