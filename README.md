@@ -14,6 +14,7 @@ e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim,
 * !Stats <battletag>: Spieler Statistiken/Display player stats (z.B. !Stats Krusher-9911)<br/>
 * !Register <battletag>: Registriert neuen Spieler/ Register new player, the player stats are then stored in the backend and updated on a daily basis (e.g. !Register Krusher-9911)<br/>
 * !Update <battletag>: Aktualisiert Statistik für angegebenen Spieler/Update stored player stats (e.g. !Update Krusher-9911)<br/>
+  ![](https://imgur.com/Ac2Bqsc.png)
 
 # OverwatchDiscordBot
 Websocket based discord bot in GO with [Overwatch stats API](https://ow-api.com/) integration.<br/>
