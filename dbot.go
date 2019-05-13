@@ -31,10 +31,10 @@ type getCommandContent func(params []string) string
 func getTrainingTimes(params []string) string {
 	//Save param as new Training Content in DB
 	if params != nil {
-		if err := thisSession.db.updateTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, trainingDatesPersistenceLayer{params[1]}); err != nil {
-			return fmt.Sprintf("Error updating Training dates: **%v**\n*%v*\n", params[1], string(err.Error()))
+		if err := thisSession.db.updateTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, trainingDatesPersistenceLayer{params[len(params)-1]}); err != nil {
+			return fmt.Sprintf("Error updating Training dates: **%v**\n*%v*\n", params[len(params)-1], string(err.Error()))
 		}
-		return fmt.Sprintf("Training dates set to:\n*%v*", params[1])
+		return fmt.Sprintf("Training dates set to:\n*%v*", params[len(params)-1])
 	}
 	var dates trainingDatesPersistenceLayer
 	if err := thisSession.db.getTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, &dates); err != nil {
@@ -85,4 +85,3 @@ func setNewOverwatchPlayer(params []string) string {
 	}
 	return fmt.Sprintf("Player **%v** added/refreshed.", param)
 }
-

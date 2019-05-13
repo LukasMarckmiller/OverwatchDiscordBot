@@ -188,17 +188,22 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 				break
 			}
 
+			content := s.cachedMessagePayload.Content
 			regex, err := regexp.Compile("\".*\"")
 			// i.e !Command "here is a mulit param" ,  !Command ThisIsASingleParam
-			multiParam := regex.FindString(s.cachedMessagePayload.Content)
-			multiParam, _ = strconv.Unquote(multiParam)
-			if len(strings.Split(s.cachedMessagePayload.Content, " ")) > 1 {
-				var params []string
-				if multiParam != "" {
-					params = []string{command, multiParam} //adding params if
-				} else {
-					params = strings.Split(s.cachedMessagePayload.Content, " ")
-				}
+			//Find multiword comment
+			multiParam := regex.FindString(content)
+			//Remove it
+			content = strings.Replace(content, multiParam, "", 1)
+
+			if multiParam, _ = strconv.Unquote(multiParam); err != nil {
+				//No multi word param was send by the client
+			}
+
+			if len(strings.Split(content, " ")) > 1 {
+				params := strings.Split(content, " ")
+				params = append(params, multiParam)
+
 				message = cmd(params)
 
 			} else {
@@ -229,7 +234,7 @@ func (s *websocketSession) sendMessageToChannel(content string, channelId string
 
 func (s *websocketSession) triggerTypingInChannel(channelId string) (*http.Response, error) {
 	resp, err := s.sendHTTPDiscordRequest(http.MethodPost, fmt.Sprintf("%v/channels/%v/typing", DiscordBaseUrl, channelId), nil)
-	if (err != nil) {
+	if err != nil {
 		return nil, err
 	}
 	return resp, nil
@@ -253,7 +258,7 @@ func (s *websocketSession) sendHTTPDiscordRequest(method string, URL string, bod
 	return resp, err
 }
 
-func (s *websocketSession) websocketConnect(websocketURL string, ) (*websocket.Conn, discordWebsocketPayloadPresentation, error) {
+func (s *websocketSession) websocketConnect(websocketURL string) (*websocket.Conn, discordWebsocketPayloadPresentation, error) {
 	payload := discordWebsocketPayloadPresentation{}
 	helloPayload := discordWebsocketHelloPresentation{}
 	con, _, err := websocket.DefaultDialer.Dial(websocketURL, nil)
