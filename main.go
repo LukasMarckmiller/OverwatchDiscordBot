@@ -1,13 +1,14 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"time"
 )
 
 //TODO Add Training Message Content as Image URL and make URL editable by !Edit !Training Command
 //TODO Overwatch API integration
-const(
+const (
 	//Do not change
 	TokenType          = "Bot"
 	EventReady         = "READY"
@@ -25,7 +26,6 @@ type session struct {
 }
 
 var thisSession session
-
 
 func main() {
 	thisSession = session{}
@@ -48,7 +48,6 @@ func main() {
 			break
 		}
 		thisSession.db = dbs
-
 		go startAlarmClock(6, 0, 0, pollingCustomPlayers) //Set alarm clock for polling stats to 6:00:00am (pm would be setAlarmClock(18,0,0), timezone is based on current timezone
 
 		//func blocks
@@ -57,13 +56,13 @@ func main() {
 		if err != nil {
 			fmt.Printf("Failed to listen to discord websocket connection. Fallback mechanism is trying to connect again in 5 seconds\n")
 			fmt.Printf("Error:\n%v\n", err)
-			con.Close()
+			_ = con.Close()
 			time.Sleep(5 * time.Second)
 			continue
 		}
 	}
 }
-
+/*
 var players = [] string{
 	"Exploit-21751",
 	"Alex-2476",
@@ -75,14 +74,35 @@ var players = [] string{
 	"litchblade-2244",
 	"HealMePlease-21234",
 }
-
+*/
 func pollingCustomPlayers() error {
-	for _, player := range players {
-		owPlayerStats, err := getPlayerStats(player)
+	records, err := thisSession.db.driver.ReadAll(CollectionPlayer)
+	if err != nil {
+		return err
+	}
+
+	var playerStats []owStatsPersistenceLayer
+
+	for _, record := range records {
+		playerStat := owStatsPersistenceLayer{}
+		if err := json.Unmarshal([]byte(record), &playerStat); err != nil {
+			return err
+		}
+		playerStats = append(playerStats, playerStat)
+	}
+
+	for _, player := range playerStats {
+		var guildSettings guildSettingsPersistenceLayer
+		if err = thisSession.db.getGuildConfig(player.Guild, &guildSettings); err != nil {
+			return err
+		}
+
+		owPlayerStats, err := getPlayerStats(player.Battletag, guildSettings.Platform, guildSettings.Region)
 		if err != nil {
 			return err
 		}
-		var owPersLayerObj = owStatsPersistenceLayer{OWPlayer: *owPlayerStats, Battletag: player}
+
+		var owPersLayerObj = owStatsPersistenceLayer{OWPlayer: *owPlayerStats, Battletag: player.Battletag}
 		if err = thisSession.db.writePlayer(owPersLayerObj); err != nil {
 			return err
 		}
@@ -90,4 +110,3 @@ func pollingCustomPlayers() error {
 
 	return nil
 }
-
