@@ -188,7 +188,7 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 				break
 			}
 
-			content := s.cachedMessagePayload.Content
+			content := strings.Trim(strings.Replace(s.cachedMessagePayload.Content, command, "", -1), " ")
 			regex, err := regexp.Compile("\".*\"")
 			// i.e !Command "here is a mulit param" ,  !Command ThisIsASingleParam
 			//Find multiword comment
@@ -200,10 +200,11 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 				//No multi word param was send by the client
 			}
 
-			if len(strings.Split(content, " ")) > 1 {
+			if content != "" {
 				params := strings.Split(content, " ")
-				params = append(params, multiParam)
-
+				if multiParam != "" {
+					params = append(params, multiParam)
+				}
 				message = cmd(params)
 
 			} else {

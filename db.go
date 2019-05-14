@@ -7,8 +7,9 @@ type dbSession struct {
 }
 
 const (
-	CollectionGuilds   = "guilds"
+	CollectionPlayer   = "player"
 	CollectionTraining = "training"
+	CollectionGuilds   = "guilds"
 )
 
 func createDB(path string) (*dbSession, error) {
@@ -20,41 +21,61 @@ func createDB(path string) (*dbSession, error) {
 	return &dbSession{driver: db}, nil
 }
 
-func (d *dbSession) writePlayer(playerStats owStatsPersistenceLayer) error {
-	if err := d.driver.Write(CollectionGuilds, playerStats.Battletag, playerStats.OWPlayer); err != nil {
-		return err
+func (d *dbSession) writePlayer(playerStats owStatsPersistenceLayer) (err error) {
+	if err = d.driver.Write(CollectionPlayer, playerStats.Battletag, playerStats); err != nil {
+		return
 	}
-	return nil
+	return
 }
 
-func (d *dbSession) readPlayer(battletag string, playerStats *OWPlayer) error {
+func (d *dbSession) readPlayer(battletag string, playerStats *owStatsPersistenceLayer) (err error) {
 
-	if err := d.driver.Read(CollectionGuilds, battletag, playerStats); err != nil {
-		return err
+	if err = d.driver.Read(CollectionPlayer, battletag, playerStats); err != nil {
+		return
 	}
 
-	return nil
+	return
 }
 
-func (d *dbSession) updateTrainingDates(guild string, content trainingDatesPersistenceLayer) error {
-	if err := d.driver.Write(CollectionTraining, guild, content); err != nil {
-		return err
+func (d *dbSession) updateTrainingDates(guild string, content trainingDatesPersistenceLayer) (err error) {
+	if err = d.driver.Write(CollectionTraining, guild, content); err != nil {
+		return
 	}
-	return nil
+	return
 }
 
-func (d *dbSession) getTrainingDates(guild string, content *trainingDatesPersistenceLayer) error {
-	if err := d.driver.Read(CollectionTraining, guild, content); err != nil {
-		return err
+func (d *dbSession) getTrainingDates(guild string, content *trainingDatesPersistenceLayer) (err error) {
+	if err = d.driver.Read(CollectionTraining, guild, content); err != nil {
+		return
 	}
-	return nil
+	return
+}
+
+func (d *dbSession) setGuildConfig(guild string, content *guildSettingsPersistenceLayer) (err error) {
+	if err = d.driver.Write(CollectionGuilds, guild, content); err != nil {
+		return
+	}
+	return
+}
+
+func (d *dbSession) getGuildConfig(guild string, content *guildSettingsPersistenceLayer) (err error) {
+	if err = d.driver.Read(CollectionGuilds, guild, content); err != nil {
+		return
+	}
+	return
 }
 
 type owStatsPersistenceLayer struct {
-	Battletag string   `json:"battletag"`
-	OWPlayer  OWPlayer `json:"ow_player"`
+	Battletag string                        `json:"battletag"`
+	OWPlayer  OWPlayer                      `json:"ow_player"`
+	Guild     guildSettingsPersistenceLayer `json:"guild"`
 }
 
 type trainingDatesPersistenceLayer struct {
 	Value string `json:"value"`
+}
+
+type guildSettingsPersistenceLayer struct {
+	Region   string `json:"region"`
+	Platform string `json:"platform"`
 }
