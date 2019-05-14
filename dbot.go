@@ -121,7 +121,7 @@ func getOverwatchPlayerStats(params []string) string {
 
 	var config guildSettingsPersistenceLayer
 	if err := thisSession.db.getGuildConfig(thisSession.ws.cachedMessagePayload.GuildId, &config); err != nil {
-		return fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error()))
+		//Take default if guild config doesnt exist not existing
 	}
 
 	//Set defaults
@@ -159,7 +159,7 @@ func setNewOverwatchPlayer(params []string) string {
 
 	var config guildSettingsPersistenceLayer
 	if err := thisSession.db.getGuildConfig(thisSession.ws.cachedMessagePayload.GuildId, &config); err != nil {
-		return fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error()))
+		//Take default if guild config doesnt exist not existing
 	}
 
 	//Set defaults
@@ -172,7 +172,7 @@ func setNewOverwatchPlayer(params []string) string {
 	if err != nil {
 		return fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error()))
 	}
-	owStatsPersistenceLayer := owStatsPersistenceLayer{Battletag: param, OWPlayer: *owPlayerLiveStats, Guild: config}
+	owStatsPersistenceLayer := owStatsPersistenceLayer{Battletag: param, OWPlayer: *owPlayerLiveStats, Guild: thisSession.ws.cachedMessagePayload.GuildId}
 	if err = thisSession.db.writePlayer(owStatsPersistenceLayer); err != nil {
 		return fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error()))
 	}

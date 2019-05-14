@@ -62,7 +62,6 @@ func main() {
 		}
 	}
 }
-
 /*
 var players = [] string{
 	"Exploit-21751",
@@ -93,7 +92,12 @@ func pollingCustomPlayers() error {
 	}
 
 	for _, player := range playerStats {
-		owPlayerStats, err := getPlayerStats(player.Battletag, player.Guild.Platform, player.Guild.Region)
+		var guildSettings guildSettingsPersistenceLayer
+		if err = thisSession.db.getGuildConfig(player.Guild, &guildSettings); err != nil {
+			return err
+		}
+
+		owPlayerStats, err := getPlayerStats(player.Battletag, guildSettings.Platform, guildSettings.Region)
 		if err != nil {
 			return err
 		}
