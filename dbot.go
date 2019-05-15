@@ -109,7 +109,12 @@ func getTrainingTimes(params []string) (discordMessageRequest discordMessageRequ
 		if err := thisSession.db.updateTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, trainingDatesPersistenceLayer{params[len(params)-1]}); err != nil {
 			return getErrorMessageRequest(fmt.Sprintf("Error updating Training dates: **%v**\n*%v*\n", params[len(params)-1], string(err.Error())))
 		}
-		return getErrorMessageRequest(fmt.Sprintf("Training dates set to:\n*%v*", params[len(params)-1]))
+		discordMessageRequest.Embed.Author.Name = "Updated Training days"
+		discordMessageRequest.Embed.Title = params[len(params)-1]
+		discordMessageRequest.Embed.Color = 0x970097
+		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+		discordMessageRequest.Embed.Footer.Text = "Tip: You can pimp your text with discord Markups like bold,italic text or you can use discord Emojis with :emoji_name:. For a newline insert \\r\\n into your text."
+		return
 	}
 	var dates trainingDatesPersistenceLayer
 	if err := thisSession.db.getTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, &dates); err != nil {

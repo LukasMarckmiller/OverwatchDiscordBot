@@ -203,15 +203,15 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 				//No multi word param was send by the client
 			}
 
-			if content != "" {
+			if content == "" && multiParam == "" {
+				message = cmd(nil)
+
+			} else {
 				params := strings.Split(content, " ")
 				if multiParam != "" {
 					params = append(params, multiParam)
 				}
 				message = cmd(params)
-			} else {
-				message = cmd(nil)
-
 			}
 
 			_, err = s.sendMessageToChannel(message, s.cachedMessagePayload.ChannelId)
