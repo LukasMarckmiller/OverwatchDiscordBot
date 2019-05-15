@@ -120,7 +120,7 @@ func getTrainingTimes(params []string) (discordMessageRequest discordMessageRequ
 	discordMessageRequest.Embed.Title = dates.Value
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-	discordMessageRequest.Embed.Footer.Text = "Tip: If you want to change the Training days just type !Training followed by some text. You can also use discords Markup for bold, italic or some other styles. Use \r\n for a newline."
+	discordMessageRequest.Embed.Footer.Text = "Tip: If you want to change the Training days just type !Training followed by some text (e.g. !Training \"our new dates\"\\r\\n). You can also use discords Markup for bold, italic or some other styles or emotes with :emote:. Use \\r\\n for a newline."
 	return
 }
 

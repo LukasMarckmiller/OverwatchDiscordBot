@@ -17,7 +17,7 @@ const (
 	DeviceName         = "Odroid XU4Q"
 	BrowserName        = "Chromium"
 	//Changeable
-	DBPATH = "C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot\\db" // "/home/lab01/db"
+	DBPATH = "/home/lab01/db"
 )
 
 type session struct {
