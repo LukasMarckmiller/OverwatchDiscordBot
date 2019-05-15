@@ -110,7 +110,7 @@ func getTrainingTimes(params []string) (discordMessageRequest discordMessageRequ
 			return getErrorMessageRequest(fmt.Sprintf("Error updating Training dates: **%v**\n*%v*\n", params[len(params)-1], string(err.Error())))
 		}
 		discordMessageRequest.Embed.Author.Name = "Updated Training days"
-		discordMessageRequest.Embed.Title = params[len(params)-1]
+		discordMessageRequest.Embed.Description = params[len(params)-1]
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = "Tip: You can pimp your text with discord Markups like bold,italic text or you can use discord Emojis with :emoji_name:. For a newline insert \\r\\n into your text."
@@ -122,7 +122,7 @@ func getTrainingTimes(params []string) (discordMessageRequest discordMessageRequ
 	}
 
 	discordMessageRequest.Embed.Author.Name = "Training Days"
-	discordMessageRequest.Embed.Title = dates.Value
+	discordMessageRequest.Embed.Description = dates.Value
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = "Tip: If you want to change the Training days just type !Training followed by some text (e.g. !Training \"our new dates\"\\r\\n). You can also use discords Markup for bold, italic or some other styles or emotes with :emote:. Use \\r\\n for a newline."
@@ -235,13 +235,13 @@ func getOverwatchPlayerStats(params []string) (messageObject discordMessageReque
 	messageObject.Embed.Color = 0x970097
 	messageObject.Embed.Description = "Competitive Game Mode"
 	messageObject.Embed.Fields = []discordEmbedFieldObject{
-		{Name: "Rating", Value: strconv.Itoa(owPlayerLiveStats.Rating) + " SR"},
-		{Name: "Trend", Value: strconv.Itoa(owPlayerLiveStats.Rating-owPlayerPersistenceStats.OWPlayer.Rating) + " SR"},
-		{Name: "Played (all)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played)},
-		{Name: "Won (all)", Value: fmt.Sprintf("%d  Winrate: %d%%", owPlayerLiveStats.CompetitiveStats.Games.Won, winrateAll)},
-		{Name: "Played (today)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played - owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Played)},
+		{Name: "Rating", Value: strconv.Itoa(owPlayerLiveStats.Rating) + " SR", Inline: true},
+		{Name: "Trend", Value: strconv.Itoa(owPlayerLiveStats.Rating-owPlayerPersistenceStats.OWPlayer.Rating) + " SR", Inline: true},
+		{Name: "Played (all)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played, ), Inline: true},
+		{Name: "Won (all)", Value: fmt.Sprintf("%d  Winrate: %d%%", owPlayerLiveStats.CompetitiveStats.Games.Won, winrateAll), Inline: true},
+		{Name: "Played (today)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played - owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Played), Inline: true},
 		{Name: "Won (today)", Value: fmt.Sprintf("%d  Winrate: %d%%",
-			owPlayerLiveStats.CompetitiveStats.Games.Won-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Won, winrateToday)},
+			owPlayerLiveStats.CompetitiveStats.Games.Won-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Won, winrateToday), Inline: true},
 	}
 	return
 	/*fmt.Sprintf(":chart_with_upwards_trend:Statistik für Spieler: **%v**\nRating: **%v**\nCompetitive Games played (all): *%v* Games won (all): *%v*\nTrend: *%d*sr (started today at *%v*)\nGames played today: *%v*\nGames won today: *%v*\n**%v**",
