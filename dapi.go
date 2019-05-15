@@ -104,6 +104,38 @@ application?	message application object	sent with Rich Presence-related chat emb
 	Author discordUserObject `json:"author"`
 }
 
+type discordEmbedObject struct {
+	Title       string                      `json:"title"`
+	Description string                      `json:"description"`
+	Color       int                         `json:"color"`
+	Footer      discordEmbedFooterObject    `json:"footer"`
+	Thumbnail   discordEmbedThumbnailObject `json:"thumbnail"`
+	Author      discordEmbedAuthorObject    `json:"author"`
+	Fields      []discordEmbedFieldObject   `json:"fields"`
+}
+
+type discordEmbedFooterObject struct {
+	Text    string `json:"text"`
+	IconUrl string `json:"icon_url`
+}
+
+type discordEmbedThumbnailObject struct {
+	Url    string `json:"url"`
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
+}
+
+type discordEmbedAuthorObject struct {
+	Name    string `json:"name"`
+	IconUrl string `json:"icon_url"`
+}
+
+type discordEmbedFieldObject struct {
+	Name   string `json:"name"`
+	Value  string `json:"value"`
+	Inline bool   `json:"inline"`
+}
+
 type discordMessageRequest struct {
 	/*
 	{
@@ -115,8 +147,9 @@ type discordMessageRequest struct {
   }
 }
 	 */
-	 Content string `json:"content"`
-	 Tts bool `json:"tts"`
+	 Content string             `json:"content"`
+	 Tts     bool               `json:"tts"`
+	Embed    discordEmbedObject `json:"embed"`
 }
 
 /*
