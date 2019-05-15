@@ -120,7 +120,14 @@ func (s *websocketSession) openCon() (*websocket.Conn, error) {
 	return con, nil
 }
 
-func (s *websocketSession) startListener(con *websocket.Conn) error {
+func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
+
+	//Recover on panic
+	defer func() {
+		if r := recover(); r != nil {
+			return
+		}
+	}()
 
 	//3.1 Start Heartbeat
 	ticker := time.NewTicker(time.Duration(s.HeartbeatInterval) * time.Millisecond)
@@ -128,9 +135,6 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 	defer con.Close()
 
 	go func() {
-		//TODO Add chanel to communicate with the heartbeat routine and send value to channel if error
-		//Check channel in non blocking select block in Basic listener and abort if value in channel
-
 		for range ticker.C {
 			discordHeartbeat := discordHeartbeat{Op: 1, D: s.SequenzNumber}
 			data, err := json.Marshal(&discordHeartbeat)
@@ -181,10 +185,9 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 			}
 
 			command := strings.Split(s.cachedMessagePayload.Content, " ")[0]
-			var message string
+			var message discordMessageRequest
 			cmd, ok := commandMap[command]
 			if !ok {
-				message = "Command not supported: " + command
 				break
 			}
 
@@ -206,11 +209,11 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 					params = append(params, multiParam)
 				}
 				message = cmd(params)
-
 			} else {
 				message = cmd(nil)
 
 			}
+
 			_, err = s.sendMessageToChannel(message, s.cachedMessagePayload.ChannelId)
 			if err != nil {
 				return err
@@ -219,9 +222,11 @@ func (s *websocketSession) startListener(con *websocket.Conn) error {
 	}
 }
 
-func (s *websocketSession) sendMessageToChannel(content string, channelId string) (*http.Response, error) {
-	responseMessage := discordMessageRequest{Content: content, Tts: false}
-	data, err := json.Marshal(responseMessage)
+func (s *websocketSession) sendMessageToChannel(content discordMessageRequest, channelId string) (*http.Response, error) {
+	//responseMessage := discordMessageRequest{Content: content, Tts: false}
+	//As long as not specifically important, disable global
+	content.Tts = false
+	data, err := json.Marshal(content)
 	if err != nil {
 		return nil, err
 	}
