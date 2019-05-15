@@ -179,10 +179,6 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 			if s.cachedMessagePayload.Author.Id == s.BotUserId {
 				break
 			}
-			_, err := s.triggerTypingInChannel(s.cachedMessagePayload.ChannelId)
-			if err != nil {
-				return err
-			}
 
 			command := strings.Split(s.cachedMessagePayload.Content, " ")[0]
 			var message discordMessageRequest
@@ -201,6 +197,11 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 
 			if multiParam, _ = strconv.Unquote(multiParam); err != nil {
 				//No multi word param was send by the client
+			}
+
+			_, err = s.triggerTypingInChannel(s.cachedMessagePayload.ChannelId)
+			if err != nil {
+				return err
 			}
 
 			if content == "" && multiParam == "" {
