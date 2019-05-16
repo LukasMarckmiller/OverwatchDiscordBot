@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -48,6 +49,7 @@ func main() {
 			break
 		}
 		thisSession.db = dbs
+
 		go startAlarmClock(6, 0, 0, pollingCustomPlayers) //Set alarm clock for polling stats to 6:00:00am (pm would be setAlarmClock(18,0,0), timezone is based on current timezone
 
 		//func blocks
@@ -62,19 +64,7 @@ func main() {
 		}
 	}
 }
-/*
-var players = [] string{
-	"Exploit-21751",
-	"Alex-2476",
-	"trable-21221",
-	"Valyria-21126",
-	"Zayana-2698",
-	"Ronin-23639",
-	"FakeKevin-2756",
-	"litchblade-2244",
-	"HealMePlease-21234",
-}
-*/
+
 func pollingCustomPlayers() error {
 	records, err := thisSession.db.driver.ReadAll(CollectionPlayer)
 	if err != nil {
@@ -93,8 +83,13 @@ func pollingCustomPlayers() error {
 
 	for _, player := range playerStats {
 		var guildSettings guildSettingsPersistenceLayer
-		if err = thisSession.db.getGuildConfig(player.Guild, &guildSettings); err != nil {
+		if err = thisSession.db.getGuildConfig(player.Guild, &guildSettings); err != nil && !strings.HasSuffix(err.Error(), "no such file or directory") {
 			return err
+		}
+		//Set defaults if no guild config exists
+		if guildSettings.Platform == "" {
+			guildSettings.Platform = "pc"
+			guildSettings.Region = "eu"
 		}
 
 		owPlayerStats, err := getPlayerStats(player.Battletag, guildSettings.Platform, guildSettings.Region)
@@ -102,7 +97,7 @@ func pollingCustomPlayers() error {
 			return err
 		}
 
-		var owPersLayerObj = owStatsPersistenceLayer{OWPlayer: *owPlayerStats, Battletag: player.Battletag}
+		var owPersLayerObj = owStatsPersistenceLayer{OWPlayer: *owPlayerStats, Battletag: player.Battletag, Guild: player.Guild}
 		if err = thisSession.db.writePlayer(owPersLayerObj); err != nil {
 			return err
 		}
