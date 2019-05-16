@@ -2,7 +2,7 @@
 powered by Google Golang
 
 # Install 
-Just invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=565229640646393895&permissions=0&scope=bot). The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
+Just invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=565229640646393895&permissions=0&scope=bot). **Your profile visibility by default set to private, ist must be set to PUBLIC in order to retriev data form the Overwatch Web Scrabber API!!**. The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
 Type !Help (**Case sensitive** not !help or !HeLp or any other modification) to see a list of currently supported commands.</br>
 This list changes frequently as many new features coming out. </br>
 
