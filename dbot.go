@@ -25,6 +25,7 @@ const (
 	//Info Messages
 	TipMarkup             = "Tip: You can pimp your text with discord Markups like bold,italic text or you can use discord Emojis with :emoji_name:. For a newline insert \\r\\n into your text."
 	TipChangeTraining     = "Tip: If you want to change the training days just type !Training followed by some text (e.g. !Training \"our new dates\\r\\n\"). You can also use discords Markup for bold, italic or some other styles or emotes with :emote:. Use \\r\\n for a newline."
+	TipUpdateProfile      = "Tip: You probably need to close and start Overwatch in order to get the newest stats. If you want the stats for your training session instead of the whole day you need to call !Update before your training."
 	InfoUnderConstruction = "Note: This bot is still under construction. Stored data can be removed, or Commands renamed any time while this bot is not official released"
 	//Error Messages
 	ErrorGuilNoParams          = "You need at least one of the following setting parameters. region=eu and/or platform=pc. !Help for further information."
@@ -134,7 +135,7 @@ func getTrainingTimes(params []string) (discordMessageRequest discordMessageRequ
 func getCurrentlySupportedCommands(params []string) (discordMessageRequest discordMessageRequest) {
 	//param unused
 	discordMessageRequest.Embed.Author.Name = "OverwatchTeam Discord Bot - Help"
-	discordMessageRequest.Embed.Title = "All currently supported Commands with examples"
+	discordMessageRequest.Embed.Title = "All currently supported Commands with examples. If your using Overwatch related commands make sure your profile is set to public"
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = InfoUnderConstruction
@@ -175,7 +176,7 @@ func getOverwatchPlayerStats(params []string) (messageObject discordMessageReque
 	}
 	var owPlayerPersistenceStats owStatsPersistenceLayer
 
-	messageObject.Embed.Footer.Text = "Tip: You probably need to close and start Overwatch in order to get the newest stats. If you want the stats for your training session instead of the whole day you need to call !Update before your training."
+	messageObject.Embed.Footer.Text = TipUpdateProfile
 	if err = thisSession.db.readPlayer(param, &owPlayerPersistenceStats); err != nil {
 		messageObject.Embed.Footer.Text = fmt.Sprintf("The requested player is not registered therefore the statistics containing the data of the whole current season. If you want your global and daily statistics you need to call `!Register %v` first.", param)
 	}
@@ -246,7 +247,6 @@ func setNewOverwatchPlayer(params []string) (discordMessageRequest discordMessag
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = "Tip: To track your sr for each training, just type !Update " + owPlayerLiveStats.Name + " before each training. After or during the Trainig you can see your progress with !Stats " + owPlayerLiveStats.Name
-	discordMessageRequest.Content = fmt.Sprintf("Player **%v** added/refreshed.", param)
 	return
 }
 
