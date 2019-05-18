@@ -19,6 +19,18 @@ e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim,
 * !Update <battletag>: Aktualisiert Statistik für angegebenen Spieler/Update stored player stats (e.g. !Update Krusher-9911)<br/>
   ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Update.JPG)
 * !Config platform=pc region=eu: Default platform is pc and region is eu. If you are playing on Playstation or Xbox call !Config platform=xbl for Xbox and !Config platform=psn for PlayStation. Note you need region only for platform=pc (!Config platform=pc region=eu/us/asia).  
+* !Poll <n>: Starts a ready check poll for n players in the channel the command got posted in.
+  ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/NewPoll.JPG)
+* !Poll: Gets the status of the current poll. If everybody is ready a message is created and the creator of the poll gets tagged.
+  ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollStatus.JPG)
+* !+: Answeres with ready to a ready poll in this channel.
+    ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Ready.JPG)
+* !- <reason>: Answers with not ready to a ready poll in this channel. A reason an be defined. **Multiple Words in \"\"!**.
+    ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/NotReady.JPG)
+    ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/NotReadyWithReason.JPG)
+* !DeletePoll: Deletes the current poll in the channel if existing.
+    ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollDeleted.JPG)
+    ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollFinished.JPG)
 
 # OverwatchDiscordBot
 Websocket based discord bot in GO with [Overwatch stats API](https://ow-api.com/) integration.<br/>
