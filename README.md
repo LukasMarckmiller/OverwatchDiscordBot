@@ -31,6 +31,7 @@ e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim,
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/NotReadyWithReason.JPG)
 * !DeletePoll: Deletes the current poll in the channel if existing.
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollDeleted.JPG)
+  When all poll slots are ready a message is created and the initiator of the poll is tagged.
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollFinished.JPG)
 
 # OverwatchDiscordBot
