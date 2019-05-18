@@ -6,7 +6,8 @@ Just invite the bot to your server [here](https://discordapp.com/api/oauth2/auth
 Type !Help (**Case sensitive** not !help or !HeLp or any other modification) to see a list of currently supported commands.</br>
 This list changes frequently as many new features coming out. </br>
 
-![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Help.JPG)
+![](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Help1.JPG)
+![](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Help2.JPG)
 Currently supported commands:</br>
 * !Training: Zeigt aktuelle Trainigszeiten/Show current training days<br/>
 * !Training \<value\>: Aktualisiert Trainingszeiten/Update training days Bold or italic style? Check out Discord Markup https://gist.github.com/Almeeida/41a664d8d5f3a8855591c2f1e0e07b19<br/>
