@@ -5,6 +5,7 @@ import (
 	"github.com/revel/cmd/utils"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const (
@@ -18,7 +19,6 @@ const (
 	RegionAsia = "asia"
 
 	ErrorIcon     = "https://freeiconshop.com/wp-content/uploads/edd/error-flat.png"
-	WarningIcon   = "https://www.pinclipart.com/picdir/middle/202-2022729_triangular-clipart-safety-sign-warning-icon-png-transparent.png"
 	ErrorFooter   = "Please try again later. If this error remains, please contact our support by creating an issue on github: https://github.com/LukasMarckmiller/OverwatchDiscordBot/issues"
 	OverwatchIcon = "http://www.stickpng.com/assets/images/586273b931349e0568ad89df.png"
 
@@ -26,30 +26,254 @@ const (
 	TipMarkup             = "Tip: You can pimp your text with discord Markups like bold,italic text or you can use discord Emojis with :emoji_name:. For a newline insert \\r\\n into your text."
 	TipChangeTraining     = "Tip: If you want to change the training days just type !Training followed by some text (e.g. !Training \"our new dates\\r\\n\"). You can also use discords Markup for bold, italic or some other styles or emotes with :emote:. Use \\r\\n for a newline."
 	TipUpdateProfile      = "Tip: You probably need to close and start Overwatch in order to get the newest stats. If you want the stats for your training session instead of the whole day you need to call !Update before your training."
-	InfoUnderConstruction = "Note: This bot is still under construction. Stored data can be removed, or Commands renamed any time while this bot is not official released"
+	TipPollCreated        = "Tip: If you already created a poll, you can check the status with another !Poll call."
+	TipPollUpdate         = "Tip: You can accept a poll with !+ or decline it with !-. Note: You have to be in the same Channel the poll started to accept or decline it!"
+	TipPollAccept         = "Tip: You can specify a reason when you decline a poll with !- \"the reason comes here\"."
+	InfoPollTimeout       = "Note: A poll times out after 5 min. This time cant be changed by the user."
+	InfoUnderConstruction = "Note: This bot is still under construction. Stored data can be removed, or Commands renamed any time while this bot is not official released."
 	//Error Messages
 	ErrorGuilNoParams          = "You need at least one of the following setting parameters. region=eu and/or platform=pc. !Help for further information."
 	ErrorGuildPlatformNotValid = "Your defined platform is not valid. It must be pc,psn (PlayStation) or xbl(Xbox). !Help for further information."
 	ErrorGuildRegionNotValid   = "Your defined region is not valid. It must be eu, us or asia. !Help for further information."
 	ErrorGuildReqionRequired   = "If you define pc as platform you need also define your region (eu,us,asia). !Help for further information."
 	//Help Messages
+
+	Timeout = 5 * time.Minute
 )
 
 var (
 	commandMap = map[string]getCommandContent{
-		"!Training": getTrainingTimes,
-		"!Help":     getCurrentlySupportedCommands,
-		"!Stats":    getOverwatchPlayerStats,
-		"!Register": setNewOverwatchPlayer,
-		"!Update":   setNewOverwatchPlayer,
-		"!Config":   setGuildConfig,
+		"!Training":   getTrainingTimes,
+		"!Help":       getCurrentlySupportedCommands,
+		"!Stats":      getOverwatchPlayerStats,
+		"!Register":   setNewOverwatchPlayer,
+		"!Update":     setNewOverwatchPlayer,
+		"!Config":     setGuildConfig,
+		"!Poll":       startReadyPoll,
+		"!+":          setUserReady,
+		"!-":          setUserNotReady,
+		"!DeletePoll": removePoll,
 	}
 
 	platforms = []string{PlatformPC, PlatformPS, PlatformXbox}
 	regions   = []string{RegionEU, RegionUS, RegionAsia}
+
+	pollCache = map[string]pollCacheObject{}
 )
 
 type getCommandContent func(params []string) discordMessageRequest
+
+func removePoll(params []string) (discordMessageRequest discordMessageRequest) {
+	guildId := thisSession.ws.cachedMessagePayload.GuildId
+	channelId := thisSession.ws.cachedMessagePayload.ChannelId
+	cachedPoll, ok := pollCache[guildId+channelId]
+	if ok {
+		delete(pollCache, cachedPoll.Guild+cachedPoll.Channel)
+		avatarUrl, _ := thisSession.ws.getUserAvatarOrDefaultUrl(cachedPoll.Creator.Id, cachedPoll.Creator.Avatar, cachedPoll.Creator.Discriminator)
+		discordMessageRequest.Embed.Author.Name = cachedPoll.Creator.Username + "#" + cachedPoll.Creator.Discriminator + "´s Poll"
+		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
+		discordMessageRequest.Embed.Title = "Poll successfully deleted."
+		discordMessageRequest.Embed.Color = 0x970097
+		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+		discordMessageRequest.Embed.Footer.Text = TipPollCreated
+		return
+	} else {
+		return getInfoMessageRequest("No Poll was created for this chanel to delete. First create a Poll with !Poll <n>. !Help for more details.")
+	}
+}
+
+func countReadyMembers(cachedObject pollCacheObject) (count int) {
+	for _, member := range cachedObject.Members {
+		if member.Ready {
+			//If someone is not ready wait for everybody to be ready
+			count++
+		}
+	}
+	return
+}
+
+func checkIfPollIsDone(cachedObject pollCacheObject) {
+
+	//Everybody is ready
+	if len(cachedObject.Members) == cachedObject.Size {
+		//Check if everybody responed with ready
+		for _, member := range cachedObject.Members {
+			if !member.Ready {
+				//If someone is not ready wait for everybody to be ready
+				return
+			}
+		}
+
+		delete(pollCache, cachedObject.Guild+cachedObject.Channel)
+
+		avatarUrl, _ := thisSession.ws.getUserAvatarOrDefaultUrl(cachedObject.Creator.Id, cachedObject.Creator.Avatar, cachedObject.Creator.Discriminator)
+
+		discordMessageRequest := discordMessageRequest{}
+		discordMessageRequest.Embed.Author.Name = cachedObject.Creator.Username + "#" + cachedObject.Creator.Discriminator + "´s Poll"
+		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
+		discordMessageRequest.Embed.Title = "Poll is finished everybody has responded and is ready."
+		discordMessageRequest.Embed.Description = fmt.Sprintf("%d out of %d are ready to go!", countReadyMembers(cachedObject), cachedObject.Size)
+		discordMessageRequest.Embed.Color = 0x970097
+		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+		discordMessageRequest.Embed.Footer.Text = InfoPollTimeout
+		discordMessageRequest.Content = "<@" + cachedObject.Creator.Id + ">"
+		var cachedPollMembers []discordEmbedFieldObject
+		for _, val := range cachedObject.Members {
+			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason)})
+		}
+		discordMessageRequest.Embed.Fields = cachedPollMembers
+		_, _ = thisSession.ws.sendMessageToChannel(discordMessageRequest, cachedObject.Channel)
+	}
+}
+
+func existsUserInPollCache(cachedPoll pollCacheObject, user discordUserObject) (int, bool) {
+	for index, member := range cachedPoll.Members {
+		if member.User.Id == user.Id {
+			return index, true
+		}
+	}
+
+	return -1, false
+}
+
+func setUserNotReady(params []string) (discordMessageRequest discordMessageRequest) {
+	guildId := thisSession.ws.cachedMessagePayload.GuildId
+	channelId := thisSession.ws.cachedMessagePayload.ChannelId
+	var response string
+	if params != nil {
+		response = params[0]
+	}
+	cachedPoll, ok := pollCache[guildId+channelId]
+	if ok {
+		cachedAuthor := thisSession.ws.cachedMessagePayload.Author
+		if userIndex, exists := existsUserInPollCache(cachedPoll, cachedAuthor); exists {
+			cachedPoll.Members[userIndex] = readyCheckMember{User: cachedAuthor, Reason: response, Ready: false}
+		} else {
+			if len(cachedPoll.Members) == cachedPoll.Size {
+				return getInfoMessageRequest("Poll already full of members. Make a bigger Poll next time!")
+			}
+			cachedPoll.Members = append(cachedPoll.Members, readyCheckMember{User: cachedAuthor, Ready: false, Reason: response})
+		}
+		//reassign to update value
+		avatarUrl, _ := thisSession.ws.getUserAvatarOrDefaultUrl(cachedPoll.Creator.Id, cachedPoll.Creator.Avatar, cachedPoll.Creator.Discriminator)
+
+		pollCache[guildId+channelId] = cachedPoll
+		discordMessageRequest.Embed.Author.Name = cachedAuthor.Username + " is not ready "
+		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
+		discordMessageRequest.Embed.Description = fmt.Sprintf("Poll times out in %.0fmin", cachedPoll.CreationTime.Add(Timeout).Sub(time.Now()).Minutes())
+		discordMessageRequest.Embed.Title = response + " :expressionless:"
+		discordMessageRequest.Embed.Color = 0x970097
+		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+		discordMessageRequest.Embed.Footer.Text = TipPollAccept
+		checkIfPollIsDone(cachedPoll)
+		return
+	} else {
+		return getInfoMessageRequest("You have to create a poll first in order to accept or decline. Polls can be created with !Poll <num of members>.")
+	}
+}
+
+func setUserReady(params []string) (discordMessageRequest discordMessageRequest) {
+	guildId := thisSession.ws.cachedMessagePayload.GuildId
+	channelId := thisSession.ws.cachedMessagePayload.ChannelId
+
+	cachedPoll, ok := pollCache[guildId+channelId]
+	if ok {
+		cachedAuthor := thisSession.ws.cachedMessagePayload.Author
+		//get poll member if already in list
+		if userIndex, exists := existsUserInPollCache(cachedPoll, cachedAuthor); exists {
+			cachedPoll.Members[userIndex].Ready = true
+		} else {
+			if len(cachedPoll.Members) == cachedPoll.Size {
+				return getInfoMessageRequest("Poll already full of members. Make a bigger Poll next time!")
+			}
+			cachedPoll.Members = append(cachedPoll.Members, readyCheckMember{User: cachedAuthor, Ready: true})
+		}
+		avatarUrl, _ := thisSession.ws.getUserAvatarOrDefaultUrl(cachedPoll.Creator.Id, cachedPoll.Creator.Avatar, cachedPoll.Creator.Discriminator)
+
+		//reassign to update value
+		pollCache[guildId+channelId] = cachedPoll
+		discordMessageRequest.Embed.Author.Name = cachedAuthor.Username + " is ready now!"
+		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
+		discordMessageRequest.Embed.Description = fmt.Sprintf("Poll times out in %.0fmin", cachedPoll.CreationTime.Add(Timeout).Sub(time.Now()).Minutes())
+		discordMessageRequest.Embed.Title = ":ok_hand:"
+		discordMessageRequest.Embed.Color = 0x970097
+		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+		discordMessageRequest.Embed.Footer.Text = TipPollAccept
+		checkIfPollIsDone(cachedPoll)
+		return
+	} else {
+		return getInfoMessageRequest("You have to create a poll first in order to accept or decline. Polls can be created with !Poll <num of members>.")
+	}
+}
+
+func getReadyStatValue(ready bool, reason string) string {
+	if ready {
+		return ":white_check_mark: Ready"
+	} else {
+		return ":x: Not Ready " + reason
+	}
+}
+
+func startReadyPoll(params []string) (discordMessageRequest discordMessageRequest) {
+	guildId := thisSession.ws.cachedMessagePayload.GuildId
+	channelId := thisSession.ws.cachedMessagePayload.ChannelId
+
+	cachedPoll, ok := pollCache[guildId+channelId]
+
+	if ok {
+		//Existing poll
+		//ignore param
+		avatarUrl, _ := thisSession.ws.getUserAvatarOrDefaultUrl(cachedPoll.Creator.Id, cachedPoll.Creator.Avatar, cachedPoll.Creator.Discriminator)
+		discordMessageRequest.Embed.Author.Name = cachedPoll.Creator.Username + "#" + cachedPoll.Creator.Discriminator + "´s Poll"
+		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
+		discordMessageRequest.Embed.Title = fmt.Sprintf("Poll times out in %.0fmin", cachedPoll.CreationTime.Add(Timeout).Sub(time.Now()).Minutes())
+		discordMessageRequest.Embed.Description = fmt.Sprintf("%d out of %d are ready to go!", countReadyMembers(cachedPoll), cachedPoll.Size)
+		discordMessageRequest.Embed.Color = 0x970097
+		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+		discordMessageRequest.Embed.Footer.Text = TipPollUpdate
+
+		var cachedPollMembers []discordEmbedFieldObject
+		for _, val := range cachedPoll.Members {
+			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason)})
+		}
+		discordMessageRequest.Embed.Fields = cachedPollMembers
+		return
+
+	} else if params != nil { //new poll with param
+		n, err := strconv.Atoi(params[0])
+		if err != nil {
+			return getInfoMessageRequest("The size of the poll needs to be a valid number (e.g. !Poll 5)")
+		}
+		if n < 0 {
+			return getErrorMessageRequest("Dont try to break the bot!")
+		} else if n == 0 {
+			return getErrorMessageRequest("Dude you need at least one member for your poll.")
+		}
+
+		var pollCacheObject pollCacheObject
+		pollCacheObject.Creator = thisSession.ws.cachedMessagePayload.Author
+		pollCacheObject.Guild = guildId
+		pollCacheObject.Channel = channelId
+		pollCacheObject.CreationTime = time.Now()
+		pollCacheObject.Size = n
+		pollCacheObject.Members = []readyCheckMember{}
+		pollCache[pollCacheObject.Guild+pollCacheObject.Channel] = pollCacheObject
+
+		avatarUrl, _ := thisSession.ws.getUserAvatarOrDefaultUrl(pollCacheObject.Creator.Id, pollCacheObject.Creator.Avatar, pollCacheObject.Creator.Discriminator)
+		discordMessageRequest.Embed.Author.Name = pollCacheObject.Creator.Username + "#" + pollCacheObject.Creator.Discriminator + " just started a new ready poll!"
+		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
+		discordMessageRequest.Embed.Title = fmt.Sprintf("%d People involved", n)
+		discordMessageRequest.Embed.Description = fmt.Sprintf("Accept with !+ or decline with !-. Poll times out in %v", Timeout)
+		discordMessageRequest.Embed.Color = 0x970097
+		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+		discordMessageRequest.Embed.Footer.Text = TipPollCreated
+		//TODO Start timer and exceed after Timeout
+		return
+
+	} else { //new poll but no param
+		return getInfoMessageRequest("You need to specify the size of the poll (e.g. !Poll 5).")
+	}
+}
 
 func verfiyPlatform(val string) bool {
 
@@ -63,7 +287,7 @@ func verifyRegion(val string) bool {
 
 func setGuildConfig(params []string) (discordMessageRequest discordMessageRequest) {
 	if params == nil {
-		return getErrorMessageRequest(ErrorGuilNoParams)
+		return getInfoMessageRequest(ErrorGuilNoParams)
 	}
 
 	var platform string
@@ -75,13 +299,13 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 			if verfiyPlatform(paramStruct[1]) {
 				platform = paramStruct[1]
 			} else {
-				return getErrorMessageRequest(ErrorGuildPlatformNotValid)
+				return getInfoMessageRequest(ErrorGuildPlatformNotValid)
 			}
 		case "region":
 			if verifyRegion(paramStruct[1]) {
 				region = paramStruct[1]
 			} else {
-				return getErrorMessageRequest(ErrorGuildRegionNotValid)
+				return getInfoMessageRequest(ErrorGuildRegionNotValid)
 			}
 		}
 	}
@@ -90,7 +314,7 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 		region = ""
 	}
 	if platform == PlatformPC && region == "" {
-		return getErrorMessageRequest(ErrorGuildReqionRequired)
+		return getInfoMessageRequest(ErrorGuildReqionRequired)
 	}
 
 	guildSettings := guildSettingsPersistenceLayer{Platform: platform, Region: region}
@@ -139,7 +363,7 @@ func getCurrentlySupportedCommands(params []string) (discordMessageRequest disco
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = InfoUnderConstruction
-	discordMessageRequest.Embed.Footer.IconUrl = WarningIcon
+	discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 	discordMessageRequest.Embed.Fields = []discordEmbedFieldObject{
 		{Name: "!Training", Value: "Displays current Training days"},
 		{Name: "!Training <value>", Value: "Updates Training days (e.g. *!Training \"our **new** trainings are ...\"*). Bold, Italic... Style? Check out Discord Markup:arrow_right:" + DiscordMarkupHelpURL},
@@ -147,7 +371,13 @@ func getCurrentlySupportedCommands(params []string) (discordMessageRequest disco
 		{Name: "!Register <battletag>", Value: "Registers new player. Registered players statistics getting updated automatically every day. (e.g. *!Register Krusher-9911*)"},
 		{Name: "!Update <battletag>", Value: "Updates players statistics and stores it or registers the player if not existing. (e.g. *!Update Krusher-9911*)"},
 		{Name: "!Config <platform=value region=value>", Value: "Creates a server config with region and platform to use the Overwatch stats also for Playstation or XboxPlayers. Supported Platforms are pc, xbl (XBox) or psn (PlayStation)." +
-			"Supported Regions are eu,us and asia. Note if your overwatch team is playing on XBox or Playstation, you only need to specify the platform and not the region. (e.g. *!Config platform=psn* for PlayStation or *!Config platform=pc region=us* for PC/US "},}
+			"Supported Regions are eu,us and asia. Note if your overwatch team is playing on XBox or Playstation, you only need to specify the platform and not the region. (e.g. *!Config platform=psn* for PlayStation or *!Config platform=pc region=us* for PC/US "},
+		{Name: "!Poll <number of participants>", Value: "Starts a ready check poll for n players."},
+		{Name: "!Poll", Value: "Gets the status of the current poll. If everybody is ready a message is created and the creator of the poll gets tagged."},
+		{Name: "!+", Value: "Ready."},
+		{Name: "!- <reason>", Value: "Not ready. A reason can be passed with the command. (e.g. !- \"need water! Back in 5\"). **Note if your reason is longer then one word you need to put it in \"\"!**"},
+		{Name: "!DeletePoll", Value: "Deletes the current Poll."},
+	}
 	return
 }
 
@@ -257,4 +487,28 @@ func getErrorMessageRequest(message string) (request discordMessageRequest) {
 	request.Embed.Thumbnail.Url = ErrorIcon
 	request.Embed.Footer.Text = ErrorFooter
 	return
+}
+
+func getInfoMessageRequest(message string) (request discordMessageRequest) {
+	request.Embed.Color = 0x970097
+	request.Embed.Author.Name = "Info"
+	request.Embed.Description = message
+	request.Embed.Thumbnail.Url = OverwatchIcon
+	request.Embed.Footer.Text = InfoUnderConstruction
+	return
+}
+
+type pollCacheObject struct {
+	Guild        string             `json:"guild"`
+	Channel      string             `json:"channel"`
+	CreationTime time.Time          `json:"creation_time"`
+	Size         int                `json:"size"`
+	Creator      discordUserObject  `json:"creator"`
+	Members      []readyCheckMember `json:"members"`
+}
+
+type readyCheckMember struct {
+	User   discordUserObject `json:"user"`
+	Ready  bool              `json:"ready"`
+	Reason string            `json:"reason"`
 }

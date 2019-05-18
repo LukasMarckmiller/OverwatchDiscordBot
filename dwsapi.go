@@ -16,6 +16,15 @@ import (
 	"time"
 )
 
+const (
+	TokenType           = "Bot"
+	EventReady          = "READY"
+	EventMessageCreate  = "MESSAGE_CREATE"
+	DiscordBaseUrl      = "https://discordapp.com/api"
+	DiscordBaseImageUrl = "https://cdn.discordapp.com"
+	DeviceName          = "Odroid XU4Q"
+	BrowserName         = "Chromium"
+)
 var (
 	Client http.Client
 )
@@ -32,7 +41,7 @@ func (s *websocketSession) openCon() (*websocket.Conn, error) {
 	// WEBHOOK HANDSHAKE
 
 	//1 GET Webhook URL
-	resp, err := s.sendHTTPDiscordRequest(http.MethodGet, DiscordBaseUrl+"gateway/bot", nil)
+	resp, err := s.sendHTTPDiscordRequest(http.MethodGet, DiscordBaseUrl+"/gateway/bot", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -171,6 +180,7 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 			if err = json.Unmarshal(event.D, &s.cachedMessagePayload); err != nil {
 				return err
 			}
+
 			//Filter non command
 			if !strings.HasPrefix(s.cachedMessagePayload.Content, "!") {
 				break
@@ -208,7 +218,11 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 				message = cmd(nil)
 
 			} else {
-				params := strings.Split(content, " ")
+				var params []string
+
+				if content != "" {
+					params = strings.Split(content, " ")
+				}
 				if multiParam != "" {
 					params = append(params, multiParam)
 				}
@@ -245,6 +259,30 @@ func (s *websocketSession) triggerTypingInChannel(channelId string) (*http.Respo
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (s *websocketSession) getUserAvatarOrDefaultUrl(userId string, avatarHash string, userDiscriminator string) (url string, err error) {
+	//Try to get user avatar
+	url = fmt.Sprintf("%s/avatars/%s/%s.webp", DiscordBaseImageUrl, userId, avatarHash)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return
+	}
+	req.Header.Add("Content-Type", "image/webp")
+	resp, err := Client.Do(req)
+	if err != nil {
+		return
+	}
+	if resp.StatusCode == http.StatusOK {
+		return
+
+	} else if resp.StatusCode == http.StatusNotFound {
+		usrDiscInt, _ := strconv.Atoi(userDiscriminator)
+		url = fmt.Sprintf("%s/embed/avatars/%d.png", DiscordBaseImageUrl, usrDiscInt%5)
+		return
+	} else {
+		return "", errors.New("Got Status while trying to get the users avatar." + resp.Status)
+	}
 }
 
 func (s *websocketSession) sendHTTPDiscordRequest(method string, URL string, body io.Reader) (*http.Response, error) {

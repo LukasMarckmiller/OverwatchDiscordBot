@@ -64,9 +64,10 @@ verified?	boolean	whether the email on this account has been verified	email
 	email?	string	the user'thisSession email	email
 	flags?	integer	the flags on a user'thisSession account	identify
 	premium_type?	integer	the type of Nitro subscription on a user'thisSession account	identify*/
-	Id string `json:"id"`
-	Username string `json:"username"`
-	discriminator string `json:"discriminator"`
+	Id            string `json:"id"`
+	Username      string `json:"username"`
+	Discriminator string `json:"discriminator"`
+	Avatar        string `json:"avatar"`
 }
 
 type discordReadyEventObject struct {
