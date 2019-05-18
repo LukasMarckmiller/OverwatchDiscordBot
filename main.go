@@ -10,13 +10,6 @@ import (
 //TODO Add Training Message Content as Image URL and make URL editable by !Edit !Training Command
 //TODO Overwatch API integration
 const (
-	//Do not change
-	TokenType          = "Bot"
-	EventReady         = "READY"
-	EventMessageCreate = "MESSAGE_CREATE"
-	DiscordBaseUrl     = "https://discordapp.com/api/"
-	DeviceName         = "Odroid XU4Q"
-	BrowserName        = "Chromium"
 	//Changeable
 	DBPATH = "/home/lab01/db" //"C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot"//
 )
