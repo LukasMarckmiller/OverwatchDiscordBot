@@ -78,4 +78,5 @@ type trainingDatesPersistenceLayer struct {
 type guildSettingsPersistenceLayer struct {
 	Region   string `json:"region"`
 	Platform string `json:"platform"`
+	Prefix   string `json:"prefix"`
 }

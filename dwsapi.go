@@ -129,7 +129,7 @@ func (s *websocketSession) openCon() (*websocket.Conn, error) {
 	return con, nil
 }
 
-func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
+func (s *websocketSession) startListener(con *websocket.Conn, listenToPrefix string) (error error) {
 
 	//Recover on panic
 	defer func() {
@@ -181,8 +181,9 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 				return err
 			}
 
+			//TODO Get GuildId and Load Prefix from config, if no config exists take default prefix '!'
 			//Filter non command
-			if !strings.HasPrefix(s.cachedMessagePayload.Content, "!") {
+			if !strings.HasPrefix(s.cachedMessagePayload.Content, listenToPrefix) {
 				break
 			}
 			//Filter if requesting event triggered by this bot

@@ -301,6 +301,7 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 
 	var platform string
 	var region string
+	var prefix string
 	for _, param := range params {
 		paramStruct := strings.Split(param, "=")
 		switch paramStruct[0] {
@@ -316,7 +317,11 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 			} else {
 				return getErrorMessageRequest(ErrorGuildRegionNotValid)
 			}
-
+		case "prefix":
+			if paramStruct[1] == "" {
+				return getErrorMessageRequest("Prefix cant be empty. Pls specify a valid prefix.")
+			}
+			prefix = paramStruct[1]
 		default:
 			return getErrorMessageRequest(ErrorGuilNoParams)
 		}
@@ -329,7 +334,7 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 		return getErrorMessageRequest(ErrorGuildReqionRequired)
 	}
 
-	guildSettings := guildSettingsPersistenceLayer{Platform: platform, Region: region}
+	guildSettings := guildSettingsPersistenceLayer{Platform: platform, Region: region, Prefix: prefix}
 	if err := thisSession.db.setGuildConfig(thisSession.ws.cachedMessagePayload.GuildId, &guildSettings); err != nil {
 		return getErrorMessageRequest("Error while writing guild config.")
 	}
