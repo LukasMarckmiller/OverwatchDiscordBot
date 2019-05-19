@@ -510,6 +510,13 @@ func getGuildConfigSave(guildId string) guildSettingsPersistenceLayer {
 		config.Region = "eu"
 		config.Prefix = "!"
 	}
+	if config.Platform == "" {
+		config.Platform = "pc"
+		config.Region = "eu"
+	}
+	if config.Prefix == "" {
+		config.Prefix = "!"
+	}
 
 	return config
 }
