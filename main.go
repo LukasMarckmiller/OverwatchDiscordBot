@@ -45,16 +45,7 @@ func main() {
 
 		go startAlarmClock(6, 0, 0, pollingCustomPlayers) //Set alarm clock for polling stats to 6:00:00am (pm would be setAlarmClock(18,0,0), timezone is based on current timezone
 
-		//Get default prefix
-		var config guildSettingsPersistenceLayer
-		if err := thisSession.db.getGuildConfig(thisSession.ws.cachedMessagePayload.GuildId, &config); err != nil {
-			//Take default if guild config doesnt exist not existing
-		}
-		//Set defaults
-		if config.Prefix == "" {
-			config.Prefix = "!"
-		}
-		err = thisSession.ws.startListener(con, config.Prefix)
+		err = thisSession.ws.startListener(con, loadPrefixOrDefault)
 
 		if err != nil {
 			fmt.Printf("Failed to listen to discord websocket connection. Fallback mechanism is trying to connect again in 5 seconds\n")

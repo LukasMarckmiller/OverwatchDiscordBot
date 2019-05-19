@@ -129,7 +129,7 @@ func (s *websocketSession) openCon() (*websocket.Conn, error) {
 	return con, nil
 }
 
-func (s *websocketSession) startListener(con *websocket.Conn, listenToPrefix string) (error error) {
+func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild func(guildId string) string) (error error) {
 
 	//Recover on panic
 	defer func() {
@@ -181,9 +181,10 @@ func (s *websocketSession) startListener(con *websocket.Conn, listenToPrefix str
 				return err
 			}
 
-			//TODO Get GuildId and Load Prefix from config, if no config exists take default prefix '!'
+			//Get default prefix
+			prefix := getPrefixPerGuild(s.cachedMessagePayload.GuildId)
 			//Filter non command
-			if !strings.HasPrefix(s.cachedMessagePayload.Content, listenToPrefix) {
+			if !strings.HasPrefix(s.cachedMessagePayload.Content, prefix) {
 				break
 			}
 			//Filter if requesting event triggered by this bot
@@ -191,14 +192,14 @@ func (s *websocketSession) startListener(con *websocket.Conn, listenToPrefix str
 				break
 			}
 
-			command := strings.Split(s.cachedMessagePayload.Content, " ")[0]
+			command := strings.TrimPrefix(strings.Split(s.cachedMessagePayload.Content, " ")[0], prefix)
 			var message discordMessageRequest
 			cmd, ok := commandMap[command]
 			if !ok {
 				break
 			}
 
-			content := strings.Trim(strings.Replace(s.cachedMessagePayload.Content, command, "", -1), " ")
+			content := strings.Trim(strings.Replace(s.cachedMessagePayload.Content, prefix+command, "", -1), " ")
 
 			re := regexp.MustCompile(`\".*?\"`)
 
