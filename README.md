@@ -5,31 +5,34 @@ powered by Google Golang
 Just invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=565229640646393895&permissions=0&scope=bot). **The profile visibility by default is set to private, it must be set to PUBLIC in order to retriev data form the Overwatch Web Scraper API!!**. The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
 Type !Help (**Case sensitive** not !help or !HeLp or any other modification) to see a list of currently supported commands.</br>
 This list changes frequently as many new features coming out. </br>
-
-![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Help.JPG)
+Join our discord for support, news, or feature requests! [OverwatchTeamBotDeveloper Discord](https://discord.gg/x6RJhg)
+# Commands
+![](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Help1.JPG)
+![](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Help2.JPG)
 Currently supported commands:</br>
 * !Training: Zeigt aktuelle Trainigszeiten/Show current training days<br/>
 * !Training \<value\>: Aktualisiert Trainingszeiten/Update training days Bold or italic style? Check out Discord Markup https://gist.github.com/Almeeida/41a664d8d5f3a8855591c2f1e0e07b19<br/>
 e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim, Review)\r\n:calendar_spiral:Dienstag: ab 19:30 (Scrim, Review)\r\n:medal:Donnerstag ab 19:30 (Ranked)"  Example uses discord markups and emotes like \: muscle\: for :muscle: and \r\n for a new line.</br>
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/setTeams.JPG)
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/GetTeams.JPG)
-* !Stats <battletag>: Spieler Statistiken/Display player stats (z.B. !Stats Krusher-9911)<br/>
+* !Stats \<battletag\>: Spieler Statistiken/Display player stats (z.B. !Stats Krusher-9911)<br/>
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Stats.JPG)
-* !Register <battletag>: Registriert neuen Spieler/ Register new player, the player stats are then stored in the backend and updated on a daily basis (e.g. !Register Krusher-9911)<br/>
+* !Register \<battletag\>: Registriert neuen Spieler/ Register new player, the player stats are then stored in the backend and updated on a daily basis (e.g. !Register Krusher-9911)<br/>
 * !Update <battletag>: Aktualisiert Statistik für angegebenen Spieler/Update stored player stats (e.g. !Update Krusher-9911)<br/>
   ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Update.JPG)
 * !Config platform=pc region=eu: Default platform is pc and region is eu. If you are playing on Playstation or Xbox call !Config platform=xbl for Xbox and !Config platform=psn for PlayStation. Note you need region only for platform=pc (!Config platform=pc region=eu/us/asia).  
-* !Poll <n>: Starts a ready check poll for n players in the channel the command got posted in.
+* !Poll \<n\>: Starts a ready check poll for n players in the channel the command got posted in.
   ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/NewPoll.JPG)
-* !Poll: Gets the status of the current poll. If everybody is ready a message is created and the creator of the poll gets tagged.
+* !Poll: Gets the status of the current poll. If everybody is ready a message is created and <br/> the creator of the poll gets tagged.
   ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollStatus.JPG)
 * !+: Answeres with ready to a ready poll in this channel.
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Ready.JPG)
-* !- <reason>: Answers with not ready to a ready poll in this channel. A reason an be defined. **Multiple Words in \"\"!**.
+* !- \<reason\>: Answers with not ready to a ready poll in this channel. A reason an be defined. **Multiple Words in \"\"!**.
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/NotReady.JPG)
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/NotReadyWithReason.JPG)
 * !DeletePoll: Deletes the current poll in the channel if existing.
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollDeleted.JPG)
+  </br>**When all poll slots are ready a message is created and the initiator of the poll is tagged.**
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollFinished.JPG)
 
 # OverwatchDiscordBot
