@@ -198,15 +198,21 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 			}
 
 			content := strings.Trim(strings.Replace(s.cachedMessagePayload.Content, command, "", -1), " ")
-			regex, err := regexp.Compile("\".*\"")
-			// i.e !Command "here is a mulit param" ,  !Command ThisIsASingleParam
-			//Find multiword comment
-			multiParam := regex.FindString(content)
-			//Remove it
-			content = strings.Replace(content, multiParam, "", 1)
 
-			if multiParam, _ = strconv.Unquote(multiParam); err != nil {
-				//No multi word param was send by the client
+			re := regexp.MustCompile(`\".*?\"`)
+
+			loc := re.FindAllString(content, -1)
+			for _, val := range loc {
+				newVal := strings.Replace(val, " ", "{{@}}", -1)
+				content = strings.Replace(content, val, newVal, -1)
+			}
+			var params []string
+			if content != "" {
+				params = strings.Split(content, " ")
+			}
+
+			for index, val := range params {
+				params[index] = strings.Replace(val, "{{@}}", " ", -1)
 			}
 
 			_, err = s.triggerTypingInChannel(s.cachedMessagePayload.ChannelId)
@@ -214,20 +220,7 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 				return err
 			}
 
-			if content == "" && multiParam == "" {
-				message = cmd(nil)
-
-			} else {
-				var params []string
-
-				if content != "" {
-					params = strings.Split(content, " ")
-				}
-				if multiParam != "" {
-					params = append(params, multiParam)
-				}
-				message = cmd(params)
-			}
+			message = cmd(params)
 
 			_, err = s.sendMessageToChannel(message, s.cachedMessagePayload.ChannelId)
 			if err != nil {

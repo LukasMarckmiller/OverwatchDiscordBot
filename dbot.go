@@ -63,6 +63,7 @@ var (
 
 type getCommandContent func(params []string) discordMessageRequest
 
+//params currently unused
 func removePoll(params []string) (discordMessageRequest discordMessageRequest) {
 	guildId := thisSession.ws.cachedMessagePayload.GuildId
 	channelId := thisSession.ws.cachedMessagePayload.ChannelId
@@ -250,11 +251,12 @@ func startReadyPoll(params []string) (discordMessageRequest discordMessageReques
 			return getErrorMessageRequest("Dude you need at least one member for your poll.")
 		}
 
+		now := time.Now()
 		var pollCacheObject pollCacheObject
 		pollCacheObject.Creator = thisSession.ws.cachedMessagePayload.Author
 		pollCacheObject.Guild = guildId
 		pollCacheObject.Channel = channelId
-		pollCacheObject.CreationTime = time.Now()
+		pollCacheObject.CreationTime = now
 		pollCacheObject.Size = n
 		pollCacheObject.Members = []readyCheckMember{}
 		pollCache[pollCacheObject.Guild+pollCacheObject.Channel] = pollCacheObject
@@ -267,7 +269,14 @@ func startReadyPoll(params []string) (discordMessageRequest discordMessageReques
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollCreated
-		//TODO Start timer and exceed after Timeout
+		startTimer(Timeout, func() {
+
+			cachedPoll, ok := pollCache[guildId+channelId]
+			//Check if it is this poll and dont delete a poll which is created after the current poll
+			if ok && now.Equal(cachedPoll.CreationTime) {
+				delete(pollCache, cachedPoll.Guild+cachedPoll.Channel)
+			}
+		})
 		return
 
 	} else { //new poll but no param
@@ -299,14 +308,17 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 			if verfiyPlatform(paramStruct[1]) {
 				platform = paramStruct[1]
 			} else {
-				return getInfoMessageRequest(ErrorGuildPlatformNotValid)
+				return getErrorMessageRequest(ErrorGuildPlatformNotValid)
 			}
 		case "region":
 			if verifyRegion(paramStruct[1]) {
 				region = paramStruct[1]
 			} else {
-				return getInfoMessageRequest(ErrorGuildRegionNotValid)
+				return getErrorMessageRequest(ErrorGuildRegionNotValid)
 			}
+
+		default:
+			return getErrorMessageRequest(ErrorGuilNoParams)
 		}
 	}
 
@@ -314,7 +326,7 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 		region = ""
 	}
 	if platform == PlatformPC && region == "" {
-		return getInfoMessageRequest(ErrorGuildReqionRequired)
+		return getErrorMessageRequest(ErrorGuildReqionRequired)
 	}
 
 	guildSettings := guildSettingsPersistenceLayer{Platform: platform, Region: region}
@@ -332,11 +344,11 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 func getTrainingTimes(params []string) (discordMessageRequest discordMessageRequest) {
 	//Save param as new Training Content in DB
 	if params != nil {
-		if err := thisSession.db.updateTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, trainingDatesPersistenceLayer{params[len(params)-1]}); err != nil {
-			return getErrorMessageRequest(fmt.Sprintf("Error updating Training dates: **%v**\n*%v*\n", params[len(params)-1], string(err.Error())))
+		if err := thisSession.db.updateTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, trainingDatesPersistenceLayer{params[0]}); err != nil {
+			return getErrorMessageRequest(fmt.Sprintf("Error updating Training dates: **%v**\n*%v*\n", params[0], string(err.Error())))
 		}
 		discordMessageRequest.Embed.Author.Name = "Updated Training days"
-		discordMessageRequest.Embed.Description = params[len(params)-1]
+		discordMessageRequest.Embed.Description = params[0]
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipMarkup

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func startAlarmClock(hour int, minute int, second int, pollingFunc func() (error)) error {
+func startAlarmClock(hour int, minute int, second int, pollingFunc func() error) error {
 	now := time.Now()
 	year, month, day := time.Now().Date()
 	alarmTime := time.Date(year, month, day, hour, minute, second, 0, now.Location())
@@ -29,4 +29,12 @@ func startAlarmClock(hour int, minute int, second int, pollingFunc func() (error
 	}
 
 	return nil
+}
+
+func startTimer(wait time.Duration, timerFunc func()) {
+	go func() {
+		timer := time.NewTimer(wait)
+		<-timer.C
+		timerFunc()
+	}()
 }
