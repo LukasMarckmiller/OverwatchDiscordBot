@@ -198,6 +198,7 @@ func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild 
 				break
 			}
 
+
 			command := strings.TrimPrefix(strings.Split(s.cachedMessagePayload.Content, " ")[0], prefix)
 			var message discordMessageRequest
 			cmd, ok := commandMap[command]
@@ -220,6 +221,11 @@ func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild 
 			}
 
 			for index, val := range params {
+
+				//Try unquoted
+				if unquotedVal, err := strconv.Unquote(val); err == nil {
+					val = unquotedVal
+				}
 				params[index] = strings.Replace(val, "{{@}}", " ", -1)
 			}
 
