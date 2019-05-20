@@ -10,9 +10,9 @@ import (
 
 const (
 	DiscordMarkupHelpURL = "https://gist.github.com/Almeeida/41a664d8d5f3a8855591c2f1e0e07b19"
-	PlatformPC   = "pc"
-	PlatformPS   = "psn"
-	PlatformXbox = "xbl"
+	PlatformPC           = "pc"
+	PlatformPS           = "psn"
+	PlatformXbox         = "xbl"
 
 	RegionEU   = "eu"
 	RegionUS   = "us"
@@ -93,37 +93,37 @@ func countReadyMembers(cachedObject pollCacheObject) (count int) {
 	return
 }
 
-func checkIfPollIsDone(cachedObject pollCacheObject) {
+func checkIfPollIsDone(cachedPollObject pollCacheObject) {
 
 	//Everybody is ready
-	if len(cachedObject.Members) == cachedObject.Size {
+	if len(cachedPollObject.Members) == cachedPollObject.Size {
 		//Check if everybody responed with ready
-		for _, member := range cachedObject.Members {
+		for _, member := range cachedPollObject.Members {
 			if !member.Ready {
 				//If someone is not ready wait for everybody to be ready
 				return
 			}
 		}
 
-		delete(pollCache, cachedObject.Guild+cachedObject.Channel)
+		delete(pollCache, cachedPollObject.Guild+cachedPollObject.Channel)
 
-		avatarUrl, _ := thisSession.ws.getUserAvatarOrDefaultUrl(cachedObject.Creator.Id, cachedObject.Creator.Avatar, cachedObject.Creator.Discriminator)
+		avatarUrl, _ := thisSession.ws.getUserAvatarOrDefaultUrl(cachedPollObject.Creator.Id, cachedPollObject.Creator.Avatar, cachedPollObject.Creator.Discriminator)
 
 		discordMessageRequest := discordMessageRequest{}
-		discordMessageRequest.Embed.Author.Name = cachedObject.Creator.Username + "#" + cachedObject.Creator.Discriminator + "´s Poll"
+		discordMessageRequest.Embed.Author.Name = cachedPollObject.Creator.Username + "#" + cachedPollObject.Creator.Discriminator + "´s Poll"
 		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
 		discordMessageRequest.Embed.Title = "Poll is finished everybody has responded and is ready."
-		discordMessageRequest.Embed.Description = fmt.Sprintf("%d out of %d are ready to go!", countReadyMembers(cachedObject), cachedObject.Size)
+		discordMessageRequest.Embed.Description = fmt.Sprintf("%d out of %d are ready to go!", countReadyMembers(cachedPollObject), cachedPollObject.Size)
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = InfoPollTimeout
-		discordMessageRequest.Content = "<@" + cachedObject.Creator.Id + ">"
+		discordMessageRequest.Content = "<@" + cachedPollObject.Creator.Id + ">"
 		var cachedPollMembers []discordEmbedFieldObject
-		for _, val := range cachedObject.Members {
+		for _, val := range cachedPollObject.Members {
 			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason)})
 		}
 		discordMessageRequest.Embed.Fields = cachedPollMembers
-		_, _ = thisSession.ws.sendMessageToChannel(discordMessageRequest, cachedObject.Channel)
+		thisSession.ws.pushMessageToChannel(discordMessageRequest, cachedPollObject.Channel)
 	}
 }
 
@@ -366,6 +366,7 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 		return
 	}
 }
+
 //noinspection GoUnusedParameter
 func getTrainingTimes(params []string) (discordMessageRequest discordMessageRequest) {
 	//Save param as new Training Content in DB
@@ -398,7 +399,8 @@ func getCurrentlySupportedCommands(params []string) (discordMessageRequest disco
 	//param unused
 	config := getGuildConfigSave(thisSession.ws.cachedMessagePayload.GuildId)
 	discordMessageRequest.Embed.Author.Name = "OverwatchTeam Discord Bot - Help"
-	discordMessageRequest.Embed.Title = "All currently supported Commands with examples. If your using Overwatch related commands make sure your profile is set to public"
+	discordMessageRequest.Embed.Title = "All currently supported Commands with examples."
+	discordMessageRequest.Embed.Description = "If your using Overwatch related commands make sure your profile is set to public"
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = InfoUnderConstruction
@@ -425,7 +427,6 @@ func getOverwatchPlayerStats(params []string) (messageObject discordMessageReque
 	param := strings.Replace(params[0], "#", "-", 1)
 
 	config := getGuildConfigSave(thisSession.ws.cachedMessagePayload.GuildId)
-		//Take default if guild config doesnt exist not existing
 
 	owPlayerLiveStats, err := getPlayerStats(param, config.Platform, config.Region)
 	if err != nil {
@@ -462,7 +463,7 @@ func getOverwatchPlayerStats(params []string) (messageObject discordMessageReque
 	messageObject.Embed.Fields = []discordEmbedFieldObject{
 		{Name: "Rating", Value: strconv.Itoa(owPlayerLiveStats.Rating) + " SR", Inline: true},
 		{Name: "Trend", Value: strconv.Itoa(owPlayerLiveStats.Rating-owPlayerPersistenceStats.OWPlayer.Rating) + " SR", Inline: true},
-		{Name: "Played (all)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played, ), Inline: true},
+		{Name: "Played (all)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played), Inline: true},
 		{Name: "Won (all)", Value: fmt.Sprintf("%d  Winrate: %d%%", owPlayerLiveStats.CompetitiveStats.Games.Won, winrateAll), Inline: true},
 		{Name: "Played (today)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played - owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Played), Inline: true},
 		{Name: "Won (today)", Value: fmt.Sprintf("%d  Winrate: %d%%",
@@ -510,10 +511,12 @@ func getGuildConfigSave(guildId string) guildSettingsPersistenceLayer {
 		config.Region = "eu"
 		config.Prefix = "!"
 	}
+	//Take default if not set
 	if config.Platform == "" {
 		config.Platform = "pc"
 		config.Region = "eu"
 	}
+	//Take default if not set
 	if config.Prefix == "" {
 		config.Prefix = "!"
 	}

@@ -25,6 +25,7 @@ const (
 	DeviceName          = "Odroid XU4Q"
 	BrowserName         = "Chromium"
 )
+
 var (
 	Client http.Client
 )
@@ -33,7 +34,12 @@ type websocketSession struct {
 	SequenzNumber        int
 	HeartbeatInterval    int
 	BotUserId            string
-	cachedMessagePayload discordMessageObject
+	cachedMessagePayload discordMessageResponse
+}
+
+type discordMessageQueueObject struct {
+	message   discordMessageRequest
+	channelId string
 }
 
 func (s *websocketSession) openCon() (*websocket.Conn, error) {
@@ -222,14 +228,32 @@ func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild 
 				return err
 			}
 
+			//run cmd as own go routine to parallelize processing. Need to include sending message and message queue
 			message = cmd(params)
 
 			_, err = s.sendMessageToChannel(message, s.cachedMessagePayload.ChannelId)
 			if err != nil {
 				return err
 			}
+
+			//Send messages from queue if your bot needs to send messages without a request from a user.
+			for _, val := range messageQueue {
+				_, err = s.sendMessageToChannel(val.message, val.channelId)
+				if err != nil {
+					return err
+				}
+			}
+
+			//free memory
+			messageQueue = nil
 		}
 	}
+}
+
+var messageQueue []discordMessageQueueObject
+
+func (s *websocketSession) pushMessageToChannel(request discordMessageRequest, channelId string) {
+	messageQueue = append(messageQueue, discordMessageQueueObject{message: request, channelId: channelId})
 }
 
 func (s *websocketSession) sendMessageToChannel(content discordMessageRequest, channelId string) (*http.Response, error) {

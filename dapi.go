@@ -2,19 +2,19 @@ package main
 
 import "encoding/json"
 
-type discordGatewayRepresentation struct{
-	URL string `json:"url"`
-	Shards int `json:"shards"`
+type discordGatewayRepresentation struct {
+	URL               string                               `json:"url"`
+	Shards            int                                  `json:"shards"`
 	SessionStartLimit discordSessionStartLimitPresentation `json:"session_start_limit"`
 }
 
-type discordSessionStartLimitPresentation struct{
-	Total int `json:"total"`
-	Remaining int `json:"remaining"`
+type discordSessionStartLimitPresentation struct {
+	Total      int `json:"total"`
+	Remaining  int `json:"remaining"`
 	ResetAfter int `json:"reset_after"`
 }
 
-type discordWebsocketPayloadPresentation struct{
+type discordWebsocketPayloadPresentation struct {
 	Op int             `json:"op"`          //opcode for the payload	Always
 	S  int             `json:"thisSession"` //integer	sequence number, used for resuming sessions and heartbeats	Only for Opcode 0
 	T  string          `json:"t"`           //string	the event name for this payload	Only for Opcode 0
@@ -23,47 +23,47 @@ type discordWebsocketPayloadPresentation struct{
 }
 
 type discordWebsocketHelloPresentation struct {
-	HeartbeatInterval int `json:"heartbeat_interval"`
-	Trace []string `json:"_trace"`
+	HeartbeatInterval int      `json:"heartbeat_interval"`
+	Trace             []string `json:"_trace"`
 }
 
-type discordHeartbeat struct{
+type discordHeartbeat struct {
 	Op int `json:"op"`
-	D int `json:"d"`
+	D  int `json:"d"`
 }
 
-type discordHeartbeatAck struct{
+type discordHeartbeatAck struct {
 	Op int `json:"op"`
 }
 
-type dicsordIdentityProperties struct{
-	Os string `json:"$os"`
+type dicsordIdentityProperties struct {
+	Os      string `json:"$os"`
 	Browser string `json:"$browser"`
-	Device string `json:"$device"`
+	Device  string `json:"$device"`
 }
 
-type discordIdentity struct{
-	Token string `json:"token"`
+type discordIdentity struct {
+	Token      string                    `json:"token"`
 	Properties dicsordIdentityProperties `json:"properties"`
 }
 
-type discordIdentityPayload struct{
-	Op int `json:"op"`
-	D discordIdentity `json:"d"`
+type discordIdentityPayload struct {
+	Op int             `json:"op"`
+	D  discordIdentity `json:"d"`
 }
 
-type discordUserObject struct{
+type discordUserObject struct {
 	/*id	snowflake	the user'thisSession id	identify
-	username	string	the user'thisSession username, not unique across the platform	identify
-	discriminator	string	the user'thisSession 4-digit discord-tag	identify
-	avatar	?string	the user'thisSession avatar hash	identify
-bot?	boolean	whether the user belongs to an OAuth2 application	identify
-mfa_enabled?	boolean	whether the user has two factor enabled on their account	identify
-	locale?	string	the user'thisSession chosen language option	identify
-verified?	boolean	whether the email on this account has been verified	email
-	email?	string	the user'thisSession email	email
-	flags?	integer	the flags on a user'thisSession account	identify
-	premium_type?	integer	the type of Nitro subscription on a user'thisSession account	identify*/
+		username	string	the user'thisSession username, not unique across the platform	identify
+		discriminator	string	the user'thisSession 4-digit discord-tag	identify
+		avatar	?string	the user'thisSession avatar hash	identify
+	bot?	boolean	whether the user belongs to an OAuth2 application	identify
+	mfa_enabled?	boolean	whether the user has two factor enabled on their account	identify
+		locale?	string	the user'thisSession chosen language option	identify
+	verified?	boolean	whether the email on this account has been verified	email
+		email?	string	the user'thisSession email	email
+		flags?	integer	the flags on a user'thisSession account	identify
+		premium_type?	integer	the type of Nitro subscription on a user'thisSession account	identify*/
 	Id            string `json:"id"`
 	Username      string `json:"username"`
 	Discriminator string `json:"discriminator"`
@@ -75,34 +75,34 @@ type discordReadyEventObject struct {
 	User discordUserObject `json:"user` //object	information about the user including email
 }
 
-type discordMessageObject struct {
+type discordMessageResponse struct {
 	/*id	snowflake	id of the message
-channel_id	snowflake	id of the channel the message was sent in
-guild_id?	snowflake	id of the guild the message was sent in
-author*	user object	the author of this message (not guaranteed to be a valid user, see below)
-	member?	partial guild member object	member properties for this message'thisSession author
-content	string	contents of the message
-timestamp	ISO8601 timestamp	when this message was sent
-edited_timestamp	?ISO8601 timestamp	when this message was edited (or null if never)
-tts	boolean	whether this was a TTS message
-mention_everyone	boolean	whether this message mentions everyone
-mentions	array of user objects, with an additional partial member field	users specifically mentioned in the message
-mention_roles	array of role object ids	roles specifically mentioned in this message
-attachments	array of attachment objects	any attached files
-embeds	array of embed objects	any embedded content
-reactions?	array of reaction objects	reactions to the message
-nonce?	?snowflake	used for validating a message was sent
-pinned	boolean	whether this message is pinned
-	webhook_id?	snowflake	if the message is generated by a webhook, this is the webhook'thisSession id
-type	integer	type of message
-activity?	message activity object	sent with Rich Presence-related chat embeds
-application?	message application object	sent with Rich Presence-related chat embeds*/
+	channel_id	snowflake	id of the channel the message was sent in
+	guild_id?	snowflake	id of the guild the message was sent in
+	author*	user object	the author of this message (not guaranteed to be a valid user, see below)
+		member?	partial guild member object	member properties for this message'thisSession author
+	content	string	contents of the message
+	timestamp	ISO8601 timestamp	when this message was sent
+	edited_timestamp	?ISO8601 timestamp	when this message was edited (or null if never)
+	tts	boolean	whether this was a TTS message
+	mention_everyone	boolean	whether this message mentions everyone
+	mentions	array of user objects, with an additional partial member field	users specifically mentioned in the message
+	mention_roles	array of role object ids	roles specifically mentioned in this message
+	attachments	array of attachment objects	any attached files
+	embeds	array of embed objects	any embedded content
+	reactions?	array of reaction objects	reactions to the message
+	nonce?	?snowflake	used for validating a message was sent
+	pinned	boolean	whether this message is pinned
+		webhook_id?	snowflake	if the message is generated by a webhook, this is the webhook'thisSession id
+	type	integer	type of message
+	activity?	message activity object	sent with Rich Presence-related chat embeds
+	application?	message application object	sent with Rich Presence-related chat embeds*/
 
-	Id string `json:"id"`
-	ChannelId string `json:"channel_id"`
-	GuildId string `json:"guild_id"`
-	Content string `json:"content"`
-	Author discordUserObject `json:"author"`
+	Id        string            `json:"id"`
+	ChannelId string            `json:"channel_id"`
+	GuildId   string            `json:"guild_id"`
+	Content   string            `json:"content"`
+	Author    discordUserObject `json:"author"`
 }
 
 type discordEmbedObject struct {
@@ -139,22 +139,21 @@ type discordEmbedFieldObject struct {
 
 type discordMessageRequest struct {
 	/*
-	{
-  "content": "Hello, World!",
-  "tts": false,
-  "embed": {
-    "title": "Hello, Embed!",
-    "description": "This is an embedded message."
-  }
-}
-	 */
-	 Content string             `json:"content"`
-	 Tts     bool               `json:"tts"`
-	Embed    discordEmbedObject `json:"embed"`
+		{
+	  "content": "Hello, World!",
+	  "tts": false,
+	  "embed": {
+	    "title": "Hello, Embed!",
+	    "description": "This is an embedded message."
+	  }
+	}
+	*/
+	Content string             `json:"content"`
+	Tts     bool               `json:"tts"`
+	Embed   discordEmbedObject `json:"embed"`
 }
 
 /*
 {"type":0,"tts":false,"timestamp":"2019-04-26T19:27:32.417000+00:00","pinned":false,"nonce":"571417098211819520","mentions":[],"mention_roles":[],"mention_everyone":false,"member":{"roles":[],"mute":false,"joined_at":"2018-11-13T17:39:05.403000+00:00","deaf":false},"id":"571417097318432789","embeds":[],"edited_timestamp":null,"content":"t","channel_id":"564897123686940672","author":{"username":"FEĄREĐ | Lukas","id":"402158912599621642","discriminator":"9322","avatar":null},"attachments":[],"guild_id":"511671028968062977"}
 }
 */
-
