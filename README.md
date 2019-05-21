@@ -1,6 +1,8 @@
 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Go_gopher_mascot_bw.png" width="250" height="250" title="GoGopher" alt="GoGopher">
 powered by Google Golang </br>
 
+[![Discord Bots](https://discordbots.org/api/widget/status/565229640646393895.svg)](https://discordbots.org/bot/565229640646393895)
+
 # Install 
 Just invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=565229640646393895&permissions=0&scope=bot). **The profile visibility by default is set to private, it must be set to PUBLIC in order to retriev data form the Overwatch Web Scraper API!!**.</br>*You should check out the !Config Command first*.</br> The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
 Type !Help (**Case sensitive** not !help or !HeLp or any other modification) to see a list of currently supported commands.</br>
