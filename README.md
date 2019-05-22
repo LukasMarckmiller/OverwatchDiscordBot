@@ -10,8 +10,7 @@ Type !Help (**Case sensitive** not !help or !HeLp or any other modification) to 
 This list changes frequently as many new features coming out. </br>
 Join our discord for support, news, or feature requests! [OverwatchTeamBotDeveloper Discord](https://discord.gg/x6RJhg)
 # Commands
-![](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Help1.JPG)
-![](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Help2.JPG)
+
 Currently supported commands:</br>
 * !Training: Zeigt aktuelle Trainigszeiten/Show current training days<br/>
 * !Training \<value\>: Aktualisiert Trainingszeiten/Update training days Bold or italic style? Check out Discord Markup https://gist.github.com/Almeeida/41a664d8d5f3a8855591c2f1e0e07b19<br/>
