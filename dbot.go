@@ -80,17 +80,17 @@ const (
 
 var (
 	commandMap = map[string]getCommandContent{
-		"Training":   getTrainingTimes,
-		"Help":       getCurrentlySupportedCommands,
-		"Stats":      getOverwatchPlayerStats,
-		"Register":   setNewOverwatchPlayer,
-		"Update":     setNewOverwatchPlayer,
-		"Config":     setGuildConfig,
-		"Poll":       startReadyPoll,
+		"training":   getTrainingTimes,
+		"help":       getCurrentlySupportedCommands,
+		"stats":      getOverwatchPlayerStats,
+		"register":   setNewOverwatchPlayer,
+		"update":     setNewOverwatchPlayer,
+		"config":     setGuildConfig,
+		"poll":       startReadyPoll,
 		"+":          setUserReady,
 		"-":          setUserNotReady,
-		"DeletePoll": removePoll,
-		"Comps":      getAllCompositions,
+		"deletePoll": removePoll,
+		"comps":      getAllCompositions,
 	}
 
 	platforms = []string{PlatformPC, PlatformPS, PlatformXbox}

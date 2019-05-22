@@ -195,7 +195,7 @@ func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild 
 			}
 
 			command := strings.TrimPrefix(strings.Split(s.cachedMessagePayload.Content, " ")[0], prefix)
-			cmd, ok := commandMap[command]
+			cmd, ok := commandMap[strings.ToLower(command)]
 			if !ok {
 				break
 			}
