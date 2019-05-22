@@ -37,7 +37,7 @@ e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim,
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollDeleted.JPG)
   </br>**When all poll slots are ready a message is created and the initiator of the poll is tagged.**
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollFinished.JPG)
-
+* !Comps: Returns a list of all well known meta Comps of Overwatch during the years.
 # OverwatchDiscordBot
 Websocket based discord bot in GO with [Overwatch stats API](https://ow-api.com/) integration.<br/>
 You can also copy an piece of code written for this project, and use it in your own project without any restrictions.<br/>
