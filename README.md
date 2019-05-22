@@ -12,15 +12,16 @@ Join our discord for support, news, or feature requests! [OverwatchTeamBotDevelo
 # Commands
 
 Currently supported commands:</br>
-* !Training: Zeigt aktuelle Trainigszeiten/Show current training days<br/>
-* !Training \<value\>: Aktualisiert Trainingszeiten/Update training days Bold or italic style? Check out Discord Markup https://gist.github.com/Almeeida/41a664d8d5f3a8855591c2f1e0e07b19<br/>
+* !Help: Displays a list of all supported commands.
+* !Training: Show current training days<br/>
+* !Training \<value\>: Update training days Bold or italic style? Check out Discord Markup https://gist.github.com/Almeeida/41a664d8d5f3a8855591c2f1e0e07b19<br/>
 e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim, Review)\r\n:calendar_spiral:Dienstag: ab 19:30 (Scrim, Review)\r\n:medal:Donnerstag ab 19:30 (Ranked)"  Example uses discord markups and emotes like \: muscle\: for :muscle: and \r\n for a new line.</br>
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/setTeams.JPG)
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/GetTeams.JPG)
-* !Stats \<battletag\>: Spieler Statistiken/Display player stats (z.B. !Stats Krusher-9911)<br/>
+* !Stats \<battletag\>: Display player stats (z.B. !Stats Krusher-9911)<br/>
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Stats.JPG)
-* !Register \<battletag\>: Registriert neuen Spieler/ Register new player, the player stats are then stored in the backend and updated on a daily basis (e.g. !Register Krusher-9911)<br/>
-* !Update <battletag>: Aktualisiert Statistik für angegebenen Spieler/Update stored player stats (e.g. !Update Krusher-9911)<br/>
+* !Register \<battletag\>: Register new player, the player stats are then stored in the backend and updated on a daily basis (e.g. !Register Krusher-9911)<br/>
+* !Update <battletag>: Update stored player stats (e.g. !Update Krusher-9911)<br/>
   ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Update.JPG)
 * !Config platform=<pc|xbl|psn> region=<eu|us|asia> prefix=<...>: Default platform is pc and region is eu. If you are playing on Playstation or Xbox call !Config platform=xbl for Xbox and !Config platform=psn for PlayStation. Note you need region only for platform=pc (!Config platform=pc region=eu/us/asia). You can also change the Default prefix from ! To some custom prefix e.g. !Config prefix=&
 * !Poll \<n\>: Starts a ready check poll for n players in the channel the command got posted in.
