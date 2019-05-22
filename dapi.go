@@ -52,6 +52,11 @@ type discordIdentityPayload struct {
 	D  discordIdentity `json:"d"`
 }
 
+type discordGuildObject struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type discordUserObject struct {
 	/*id	snowflake	the user'thisSession id	identify
 		username	string	the user'thisSession username, not unique across the platform	identify
@@ -71,8 +76,8 @@ type discordUserObject struct {
 }
 
 type discordReadyEventObject struct {
-	V    int               `json:"v"`   //gateway protocol version
-	User discordUserObject `json:"user` //object	information about the user including email
+	V    int               `json:"v"`    //gateway protocol version
+	User discordUserObject `json:"user"` //object	information about the user including email
 }
 
 type discordMessageResponse struct {
@@ -117,7 +122,7 @@ type discordEmbedObject struct {
 
 type discordEmbedFooterObject struct {
 	Text    string `json:"text"`
-	IconUrl string `json:"icon_url`
+	IconUrl string `json:"icon_url"`
 }
 
 type discordEmbedThumbnailObject struct {

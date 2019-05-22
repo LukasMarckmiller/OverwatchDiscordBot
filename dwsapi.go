@@ -20,6 +20,7 @@ const (
 	TokenType           = "Bot"
 	EventReady          = "READY"
 	EventMessageCreate  = "MESSAGE_CREATE"
+	EventGuildCreate    = "GUILD_CREATE"
 	DiscordBaseUrl      = "https://discordapp.com/api"
 	DiscordBaseImageUrl = "https://cdn.discordapp.com"
 	DeviceName          = "Odroid XU4Q"
@@ -35,11 +36,6 @@ type websocketSession struct {
 	HeartbeatInterval    int
 	BotUserId            string
 	cachedMessagePayload discordMessageResponse
-}
-
-type discordMessageQueueObject struct {
-	message   discordMessageRequest
-	channelId string
 }
 
 func (s *websocketSession) openCon() (*websocket.Conn, error) {
@@ -176,7 +172,7 @@ func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild 
 		if err = json.Unmarshal(data, &event); err != nil {
 			return err
 		}
-		fmt.Printf("%+v Opcode: %v\n", event.T, event.Op)
+
 		s.SequenzNumber = event.S
 
 		//Handle event
@@ -198,17 +194,17 @@ func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild 
 				break
 			}
 
-
 			command := strings.TrimPrefix(strings.Split(s.cachedMessagePayload.Content, " ")[0], prefix)
-			var message discordMessageRequest
 			cmd, ok := commandMap[command]
 			if !ok {
 				break
 			}
 
+			fmt.Printf("%+v Opcode: %v\n", event.T, event.Op)
+
 			content := strings.Trim(strings.Replace(s.cachedMessagePayload.Content, prefix+command, "", -1), " ")
 
-			re := regexp.MustCompile(`\".*?\"`)
+			re := regexp.MustCompile(`".*?"`)
 
 			loc := re.FindAllString(content, -1)
 			for _, val := range loc {
@@ -235,47 +231,53 @@ func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild 
 			}
 
 			//run cmd as own go routine to parallelize processing. Need to include sending message and message queue
-			message = cmd(params)
-
-			_, err = s.sendMessageToChannel(message, s.cachedMessagePayload.ChannelId)
-			if err != nil {
-				return err
-			}
-
-			//Send messages from queue if your bot needs to send messages without a request from a user.
-			for _, val := range messageQueue {
-				_, err = s.sendMessageToChannel(val.message, val.channelId)
+			cmd(params)
+			/*
+				_, err = s.sendMessageToChannel(message, s.cachedMessagePayload.ChannelId)
 				if err != nil {
 					return err
 				}
-			}
 
-			//free memory
-			messageQueue = nil
+				//Send messages from queue if your bot needs to send messages without a request from a user.
+				for _, val := range messageQueue {
+					_, err = s.sendMessageToChannel(val.message, val.channelId)
+					if err != nil {
+						return err
+					}
+				}
+
+				//free memory
+				messageQueue = nil
+			*/
+
+		case EventGuildCreate:
+			var guild discordGuildObject
+			if err = json.Unmarshal(event.D, &guild); err != nil {
+				return err
+			}
+			fmt.Printf("%+v Opcode: %v Guild: %s | %s  \n", event.T, event.Op, guild.Name, guild.Id)
 		}
 	}
 }
 
-var messageQueue []discordMessageQueueObject
-
-func (s *websocketSession) pushMessageToChannel(request discordMessageRequest, channelId string) {
-	messageQueue = append(messageQueue, discordMessageQueueObject{message: request, channelId: channelId})
-}
-
-func (s *websocketSession) sendMessageToChannel(content discordMessageRequest, channelId string) (*http.Response, error) {
+func (s *websocketSession) sendMessageToChannel(content discordMessageRequest, channelId string) (discordMessageResponse, error) {
 	//responseMessage := discordMessageRequest{Content: content, Tts: false}
 	//As long as not specifically important, disable global
+	var responseMessage discordMessageResponse
 	content.Tts = false
 	data, err := json.Marshal(content)
 	if err != nil {
-		return nil, err
+		return responseMessage, err
 	}
 	resp, err := s.sendHTTPDiscordRequest(http.MethodPost, fmt.Sprintf("%v/channels/%v/messages", DiscordBaseUrl, channelId), bytes.NewReader(data))
 	if err != nil {
-		return nil, err
+		return responseMessage, err
 	}
 
-	return resp, err
+	buf := new(bytes.Buffer)
+	_, _ = buf.ReadFrom(resp.Body)
+	_ = json.Unmarshal(buf.Bytes(), &responseMessage)
+	return responseMessage, err
 }
 
 func (s *websocketSession) triggerTypingInChannel(channelId string) (*http.Response, error) {

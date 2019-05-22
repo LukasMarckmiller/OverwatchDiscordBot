@@ -29,6 +29,7 @@ const (
 	TipPollCreated        = "Tip: If you already created a poll, you can check the status with another !Poll call."
 	TipPollUpdate         = "Tip: You can accept a poll with !+ or decline it with !-. Note: You have to be in the same Channel the poll started to accept or decline it!"
 	TipPollAccept         = "Tip: You can specify a reason when you decline a poll with !- \"the reason comes here\"."
+	TipCertainComp        = "Tip: If you want additional infos to a certain comp just type !Comps followed by the Name of the comp you are looking for. **NOTE: FEATURE UNDER CONSTRUCTION**"
 	InfoPollTimeout       = "Note: A poll times out after 5 min. This time cant be changed by the user."
 	InfoUnderConstruction = "Note: This bot is still under construction. Stored data can be removed, or Commands renamed any time while this bot is not official released."
 	//Error Messages
@@ -39,6 +40,42 @@ const (
 	//Help Messages
 
 	Timeout = 10 * time.Minute
+
+	//Overwatch role icon ids
+	Tank    = "<:tank:580725264435380224>"
+	Support = "<:heal:580725264422535184>"
+	Dps     = "<:dps:580725264322002954>"
+
+	//Overwatch hero icon ids
+
+	Zarya        = "<:zarya:580725388276269076>"
+	Reinhardt    = "<:reinhardt:580725264250568745>"
+	Mcree        = "<:mcree:580725264087253012>"
+	Widowmaker   = "<:widowmaker:580725264154230795>"
+	Lucio        = "<:lucio:580725263994716190>"
+	Mercy        = "<:mercy:580725264263413760>"
+	Winston      = "<:winston:580725264405889057>"
+	Dva          = "<:dva:580725264082796544>"
+	Tracer       = "<:tracer:580725264351494172>"
+	Genji        = "<:genji:580725263696920598>"
+	Zen          = "<:zen:580725264762404879>"
+	Doomfist     = "<:doomfist:580729098348003328>"
+	Bastion      = "<:bastion:580729763832922113>"
+	Roadhog      = "<:roadhog:580730509970243584>"
+	Hanzo        = "<:hanzo:580731268170514433>"
+	Ana          = "<:ana:580731268833083402>"
+	Soldier      = "<:soldier:580731909978718258>"
+	Mei          = "<:mei:580732628903264256>"
+	Reaper       = "<:reaper:580732628794212390>"
+	Pharah       = "<:pharah:580737542190792704>"
+	Wreckingball = "<:wreckingball:580737541976752138>"
+	Sombra       = "<:sombra:580737542236930058>"
+	Brigitte     = "<:brigitte:580737541716574233>"
+	Moira        = "<:moira:580737542094061571>"
+	Junkrat      = "<:junkrat:580737542186467329>"
+	Orisa        = "<:orisa:580737541821693963>"
+	Baptiste     = "<:baptiste:580738605459308544>"
+	Torbjrn      = "<:torbjrn:580738778017169421>"
 )
 
 var (
@@ -53,6 +90,7 @@ var (
 		"+":          setUserReady,
 		"-":          setUserNotReady,
 		"DeletePoll": removePoll,
+		"Comps":      getAllCompositions,
 	}
 
 	platforms = []string{PlatformPC, PlatformPS, PlatformXbox}
@@ -61,10 +99,69 @@ var (
 	pollCache = map[string]pollCacheObject{}
 )
 
-type getCommandContent func(params []string) discordMessageRequest
+type getCommandContent func(params []string)
+
+func getAllCompositions(params []string) {
+	//params currently unused
+	var firstPage discordMessageRequest
+	firstPage.Embed.Author.Name = "Overwatch All Compositions 2016-2018"
+	firstPage.Embed.Title = "Composition Dictionary 1/2"
+	firstPage.Embed.Description = "A historical overview of meta compositions in Overwatch for intermediate viewers."
+	firstPage.Embed.Color = 0x970097
+	firstPage.Embed.Thumbnail.Url = OverwatchIcon
+	firstPage.Embed.Footer.Text = TipCertainComp
+
+	//First page
+	firstPage.Embed.Fields = []discordEmbedFieldObject{
+		{Name: "Classic Death Ball", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dps, Mcree, Widowmaker, Support, Mercy, Lucio)},
+		{Name: "Classic Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Genji, Tracer, Support, Zen, Lucio)},
+		{Name: "El Presidente", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Dva, Dps, Bastion, Mcree, Support, Lucio, Mercy)},
+		{Name: "Double Sniper", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Dva, Dps, Hanzo, Widowmaker, Support, Ana, Lucio)},
+		{Name: "The 2-3-1", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Tracer, Genji, Soldier, Support, Lucio)},
+		{Name: "Classic Anti-dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Dva, Roadhog, Dps, Mcree, Support, Ana, Lucio)},
+		{Name: "The \"N.I.P\" Triple Tank", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Roadhog, Dps, Soldier, Support, Ana, Lucio)},
+		{Name: "Beyblade/Mei-Reaper", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dps, Mei, Reaper, Support, Ana, Lucio)},
+		{Name: "Triple DPS Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dps, Tracer, Genji, Soldier, Support, Zen, Lucio)},
+		{Name: "The \"EnVyUs\" Triple Tank", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Dva, Roadhog, Dps, Soldier, Support, Ana, Lucio)},
+		{Name: "Nanovisor/Nanoblade", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Genji, Soldier, Support, Ana, Lucio)},
+		{Name: "Nanovisor/Nanoblade", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dva, Roadhog, Support, Ana, Lucio)},
+		{Name: "Sombra as Support (No longer possible)", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Tracer, Soldier, Support, Lucio, Sombra)},
+		{Name: "The \"Selfless\"", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Roadhog, Dps, Tracer, Soldier, Support, Ana, Lucio)},
+		{Name: "Pharah Mercy Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Tracer, Pharah, Support, Mercy, Lucio)},
+		{Name: "New Anti-Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dps, Reaper, Junkrat, Support, Ana, Lucio)},
+	}
+	_, _ = sendMessage(firstPage)
+	//Second page
+	var secondPage discordMessageRequest
+	secondPage.Embed.Author.Name = "Overwatch All Compositions 2018-2019"
+	secondPage.Embed.Title = "Composition Dictionary 2/2"
+	secondPage.Embed.Description = "A historical overview of meta compositions in Overwatch for intermediate viewers."
+	secondPage.Embed.Color = 0x970097
+	secondPage.Embed.Thumbnail.Url = OverwatchIcon
+	secondPage.Embed.Footer.Text = TipCertainComp
+	secondPage.Embed.Fields = []discordEmbedFieldObject{
+		{Name: "Doomfist-McCree", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dps, Doomfist, Mcree, Support, Ana, Lucio)},
+		{Name: "Junkrat-Widow Defense", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Orisa, Dva, Dps, Junkrat, Widowmaker, Support, Zen, Mercy)},
+		{Name: "Orisa-Hog", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Orisa, Roadhog, Dps, Hanzo, Widowmaker, Support, Zen, Mercy)},
+		{Name: "Hog-Dva", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Roadhog, Dva, Dps, Tracer, Widowmaker, Support, Zen, Mercy)},
+		{Name: "Pirate Ship", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Orisa, Roadhog, Dps, Bastion, Hanzo, Support, Zen, Mercy)},
+		{Name: "Tracer-Sombra Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Tracer, Sombra, Support, Moira, Lucio)},
+		{Name: "GOATS 1.0", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dva, Support, Brigitte, Moira, Lucio)},
+		{Name: "Disruptive Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Wreckingball, Dva, Dps, Doomfist, Sombra, Support, Ana, Lucio)},
+		{Name: "GOATS 2.0", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dva, Support, Brigitte, Zen, Lucio)},
+		{Name: "Triple Support Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s ", Tank, Winston, Dva, Dps, Sombra, Support, Ana, Lucio, Brigitte)},
+		{Name: "The \"Chengdu Hunters\"", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s ", Tank, Wreckingball, Dva, Dps, Sombra, Pharah, Support, Zen, Mercy)},
+		{Name: "Bunker", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Orisa, Roadhog, Dps, Bastion, Hanzo, Support, Baptiste, Mercy)},
+		{Name: "Ball Dive(Anti Bunker)", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Wreckingball, Dva, Dps, Genji, Sombra, Support, Ana, Lucio)},
+		{Name: "Gold Elo Classic", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Zarya, Dps, Genji, Tracer, Torbjrn, Widowmaker, Support, Moira)},
+	}
+	_, _ = sendMessage(secondPage)
+	return
+}
 
 //params currently unused
-func removePoll(params []string) (discordMessageRequest discordMessageRequest) {
+func removePoll(params []string) {
+	var discordMessageRequest discordMessageRequest
 	guildId := thisSession.ws.cachedMessagePayload.GuildId
 	channelId := thisSession.ws.cachedMessagePayload.ChannelId
 	cachedPoll, ok := pollCache[guildId+channelId]
@@ -77,9 +174,11 @@ func removePoll(params []string) (discordMessageRequest discordMessageRequest) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollCreated
+		_, _ = sendMessage(discordMessageRequest)
 		return
 	} else {
-		return getInfoMessageRequest("No Poll was created for this chanel to delete. First create a Poll with !Poll <n>. !Help for more details.")
+		sendInfoMessageRequest("No Poll was created for this chanel to delete. First create a Poll with !Poll <n>. !Help for more details.")
+		return
 	}
 }
 
@@ -123,7 +222,7 @@ func checkIfPollIsDone(cachedPollObject pollCacheObject) {
 			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason)})
 		}
 		discordMessageRequest.Embed.Fields = cachedPollMembers
-		thisSession.ws.pushMessageToChannel(discordMessageRequest, cachedPollObject.Channel)
+		_, _ = sendMessage(discordMessageRequest)
 	}
 }
 
@@ -137,7 +236,8 @@ func existsUserInPollCache(cachedPoll pollCacheObject, user discordUserObject) (
 	return -1, false
 }
 
-func setUserNotReady(params []string) (discordMessageRequest discordMessageRequest) {
+func setUserNotReady(params []string) {
+	var discordMessageRequest discordMessageRequest
 	guildId := thisSession.ws.cachedMessagePayload.GuildId
 	channelId := thisSession.ws.cachedMessagePayload.ChannelId
 	var response string
@@ -151,7 +251,8 @@ func setUserNotReady(params []string) (discordMessageRequest discordMessageReque
 			cachedPoll.Members[userIndex] = readyCheckMember{User: cachedAuthor, Reason: response, Ready: false}
 		} else {
 			if len(cachedPoll.Members) == cachedPoll.Size {
-				return getInfoMessageRequest("Poll already full of members. Make a bigger Poll next time!")
+				sendInfoMessageRequest("Poll already full of members. Make a bigger Poll next time!")
+				return
 			}
 			cachedPoll.Members = append(cachedPoll.Members, readyCheckMember{User: cachedAuthor, Ready: false, Reason: response})
 		}
@@ -166,14 +267,17 @@ func setUserNotReady(params []string) (discordMessageRequest discordMessageReque
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollAccept
+		_, _ = sendMessage(discordMessageRequest)
 		checkIfPollIsDone(cachedPoll)
 		return
 	} else {
-		return getInfoMessageRequest("You have to create a poll first in order to accept or decline. Polls can be created with !Poll <num of members>.")
+		sendInfoMessageRequest("You have to create a poll first in order to accept or decline. Polls can be created with !Poll <num of members>.")
+		return
 	}
 }
 
-func setUserReady(params []string) (discordMessageRequest discordMessageRequest) {
+func setUserReady(params []string) {
+	var discordMessageRequest discordMessageRequest
 	guildId := thisSession.ws.cachedMessagePayload.GuildId
 	channelId := thisSession.ws.cachedMessagePayload.ChannelId
 
@@ -185,7 +289,8 @@ func setUserReady(params []string) (discordMessageRequest discordMessageRequest)
 			cachedPoll.Members[userIndex].Ready = true
 		} else {
 			if len(cachedPoll.Members) == cachedPoll.Size {
-				return getInfoMessageRequest("Poll already full of members. Make a bigger Poll next time!")
+				sendInfoMessageRequest("Poll already full of members. Make a bigger Poll next time!")
+				return
 			}
 			cachedPoll.Members = append(cachedPoll.Members, readyCheckMember{User: cachedAuthor, Ready: true})
 		}
@@ -200,10 +305,12 @@ func setUserReady(params []string) (discordMessageRequest discordMessageRequest)
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollAccept
+		_, _ = sendMessage(discordMessageRequest)
 		checkIfPollIsDone(cachedPoll)
 		return
 	} else {
-		return getInfoMessageRequest("You have to create a poll first in order to accept or decline. Polls can be created with !Poll <num of members>.")
+		sendInfoMessageRequest("You have to create a poll first in order to accept or decline. Polls can be created with !Poll <num of members>.")
+		return
 	}
 }
 
@@ -215,7 +322,8 @@ func getReadyStatValue(ready bool, reason string) string {
 	}
 }
 
-func startReadyPoll(params []string) (discordMessageRequest discordMessageRequest) {
+func startReadyPoll(params []string) {
+	var discordMessageRequest discordMessageRequest
 	guildId := thisSession.ws.cachedMessagePayload.GuildId
 	channelId := thisSession.ws.cachedMessagePayload.ChannelId
 
@@ -238,17 +346,21 @@ func startReadyPoll(params []string) (discordMessageRequest discordMessageReques
 			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason)})
 		}
 		discordMessageRequest.Embed.Fields = cachedPollMembers
+		_, _ = sendMessage(discordMessageRequest)
 		return
 
 	} else if params != nil { //new poll with param
 		n, err := strconv.Atoi(params[0])
 		if err != nil {
-			return getInfoMessageRequest("The size of the poll needs to be a valid number (e.g. !Poll 5)")
+			sendInfoMessageRequest("The size of the poll needs to be a valid number (e.g. !Poll 5)")
+			return
 		}
 		if n < 0 {
-			return getErrorMessageRequest("Dont try to break the bot!")
+			sendErrorMessageRequest("Dont try to break the bot!")
+			return
 		} else if n == 0 {
-			return getErrorMessageRequest("Dude you need at least one member for your poll.")
+			sendErrorMessageRequest("Dude you need at least one member for your poll.")
+			return
 		}
 
 		now := time.Now()
@@ -277,10 +389,12 @@ func startReadyPoll(params []string) (discordMessageRequest discordMessageReques
 				delete(pollCache, cachedPoll.Guild+cachedPoll.Channel)
 			}
 		})
+		_, _ = sendMessage(discordMessageRequest)
 		return
 
 	} else { //new poll but no param
-		return getInfoMessageRequest("You need to specify the size of the poll (e.g. !Poll 5).")
+		sendInfoMessageRequest("You need to specify the size of the poll (e.g. !Poll 5).")
+		return
 	}
 }
 
@@ -294,9 +408,11 @@ func verifyRegion(val string) bool {
 	return utils.ContainsString(regions, val)
 }
 
-func setGuildConfig(params []string) (discordMessageRequest discordMessageRequest) {
+func setGuildConfig(params []string) {
+	var discordMessageRequest discordMessageRequest
 	if params == nil {
-		return getInfoMessageRequest(ErrorGuildNoParams)
+		sendInfoMessageRequest(ErrorGuildNoParams)
+		return
 	}
 
 	var guildSettings guildSettingsPersistenceLayer
@@ -311,21 +427,25 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 			if verfiyPlatform(paramStruct[1]) {
 				platform = paramStruct[1]
 			} else {
-				return getErrorMessageRequest(ErrorGuildPlatformNotValid)
+				sendErrorMessageRequest(ErrorGuildPlatformNotValid)
+				return
 			}
 		case "region":
 			if verifyRegion(paramStruct[1]) {
 				region = paramStruct[1]
 			} else {
-				return getErrorMessageRequest(ErrorGuildRegionNotValid)
+				sendErrorMessageRequest(ErrorGuildRegionNotValid)
+				return
 			}
 		case "prefix":
 			if paramStruct[1] == "" {
-				return getErrorMessageRequest("Prefix cant be empty. Pls specify a valid prefix.")
+				sendErrorMessageRequest("Prefix cant be empty. Pls specify a valid prefix.")
+				return
 			}
 			prefix = paramStruct[1]
 		default:
-			return getErrorMessageRequest("Unknown parameter " + paramStruct[0])
+			sendErrorMessageRequest("Unknown parameter " + paramStruct[0])
+			return
 		}
 	}
 
@@ -333,18 +453,21 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 		region = ""
 	}
 	if platform == PlatformPC && region == "" {
-		return getErrorMessageRequest(ErrorGuildReqionRequired)
+		sendErrorMessageRequest(ErrorGuildReqionRequired)
+		return
 	}
 
 	//Try load settings
 	if err := thisSession.db.getGuildConfig(thisSession.ws.cachedMessagePayload.GuildId, &guildSettings); err != nil {
 		guildSettings = guildSettingsPersistenceLayer{Platform: platform, Region: region, Prefix: prefix}
 		if err := thisSession.db.setGuildConfig(thisSession.ws.cachedMessagePayload.GuildId, &guildSettings); err != nil {
-			return getErrorMessageRequest("Error while writing guild config.")
+			sendErrorMessageRequest("Error while writing guild config.")
+			return
 		}
 		discordMessageRequest.Embed.Author.Name = "Discord Server Config Created"
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+		_, _ = sendMessage(discordMessageRequest)
 		return
 	} else { //Create new if not found
 		if prefix != "" {
@@ -357,33 +480,39 @@ func setGuildConfig(params []string) (discordMessageRequest discordMessageReques
 		}
 
 		if err := thisSession.db.setGuildConfig(thisSession.ws.cachedMessagePayload.GuildId, &guildSettings); err != nil {
-			return getErrorMessageRequest("Error while writing guild config.")
+			sendErrorMessageRequest("Error while writing guild config.")
+			return
 		}
 
 		discordMessageRequest.Embed.Author.Name = "Discord Server Config Updated"
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+		_, _ = sendMessage(discordMessageRequest)
 		return
 	}
 }
 
 //noinspection GoUnusedParameter
-func getTrainingTimes(params []string) (discordMessageRequest discordMessageRequest) {
+func getTrainingTimes(params []string) {
+	var discordMessageRequest discordMessageRequest
 	//Save param as new Training Content in DB
 	if params != nil {
 		if err := thisSession.db.updateTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, trainingDatesPersistenceLayer{params[0]}); err != nil {
-			return getErrorMessageRequest(fmt.Sprintf("Error updating Training dates: **%v**\n*%v*\n", params[0], string(err.Error())))
+			sendErrorMessageRequest(fmt.Sprintf("Error updating Training dates: **%v**\n*%v*\n", params[0], string(err.Error())))
+			return
 		}
 		discordMessageRequest.Embed.Author.Name = "Updated Training days"
 		discordMessageRequest.Embed.Description = params[0]
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipMarkup
+		_, _ = sendMessage(discordMessageRequest)
 		return
 	}
 	var dates trainingDatesPersistenceLayer
 	if err := thisSession.db.getTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, &dates); err != nil {
-		return getErrorMessageRequest(fmt.Sprintf("Error while retrieving training dates:\n*%v*\n", string(err.Error())))
+		sendErrorMessageRequest(fmt.Sprintf("Error while retrieving training dates:\n*%v*\n", string(err.Error())))
+		return
 	}
 
 	discordMessageRequest.Embed.Author.Name = "Training Days"
@@ -391,12 +520,14 @@ func getTrainingTimes(params []string) (discordMessageRequest discordMessageRequ
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = TipChangeTraining
+	_, _ = sendMessage(discordMessageRequest)
 	return
 }
 
 //noinspection GoUnusedParameter
-func getCurrentlySupportedCommands(params []string) (discordMessageRequest discordMessageRequest) {
+func getCurrentlySupportedCommands(params []string) {
 	//param unused
+	var discordMessageRequest discordMessageRequest
 	config := getGuildConfigSave(thisSession.ws.cachedMessagePayload.GuildId)
 	discordMessageRequest.Embed.Author.Name = "OverwatchTeam Discord Bot - Help"
 	discordMessageRequest.Embed.Title = "All currently supported Commands with examples."
@@ -418,12 +549,14 @@ func getCurrentlySupportedCommands(params []string) (discordMessageRequest disco
 		{Name: config.Prefix + "+", Value: "Ready."},
 		{Name: config.Prefix + "- <reason>", Value: "Not ready. A reason can be passed with the command. (e.g. !- \"need water! Back in 5\"). **Note if your reason is longer then one word you need to put it in \"\"!**"},
 		{Name: config.Prefix + "DeletePoll", Value: "Deletes the current Poll."},
+		{Name: config.Prefix + "Comps", Value: "Returns all meta comps of Overwatch over the years."},
 	}
+	_, _ = sendMessage(discordMessageRequest)
 	return
 }
 
-func getOverwatchPlayerStats(params []string) (messageObject discordMessageRequest) {
-
+func getOverwatchPlayerStats(params []string) {
+	var messageObject discordMessageRequest
 	param := strings.Replace(params[0], "#", "-", 1)
 
 	config := getGuildConfigSave(thisSession.ws.cachedMessagePayload.GuildId)
@@ -435,6 +568,8 @@ func getOverwatchPlayerStats(params []string) (messageObject discordMessageReque
 		messageObject.Embed.Description = fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error()))
 		messageObject.Embed.Thumbnail.Url = ErrorIcon
 		messageObject.Embed.Footer.Text = ErrorFooter
+		_, _ = sendMessage(messageObject)
+		return
 	}
 	var owPlayerPersistenceStats owStatsPersistenceLayer
 
@@ -469,30 +604,25 @@ func getOverwatchPlayerStats(params []string) (messageObject discordMessageReque
 		{Name: "Won (today)", Value: fmt.Sprintf("%d  Winrate: %d%%",
 			owPlayerLiveStats.CompetitiveStats.Games.Won-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Won, winrateToday), Inline: true},
 	}
+	_, _ = sendMessage(messageObject)
 	return
-	/*fmt.Sprintf(":chart_with_upwards_trend:Statistik für Spieler: **%v**\nRating: **%v**\nCompetitive Games played (all): *%v* Games won (all): *%v*\nTrend: *%d*sr (started today at *%v*)\nGames played today: *%v*\nGames won today: *%v*\n**%v**",
-	owPlayerLiveStats.Name,
-	owPlayerLiveStats.Rating,
-	owPlayerLiveStats.CompetitiveStats.Games.Played,
-	owPlayerLiveStats.CompetitiveStats.Games.Won,
-	owPlayerLiveStats.Rating-owPlayerPersistenceStats.OWPlayer.Rating,
-	owPlayerPersistenceStats.OWPlayer.Rating,
-	owPlayerLiveStats.CompetitiveStats.Games.Played-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Played,
-	owPlayerLiveStats.CompetitiveStats.Games.Won-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Won,
-	info,*/
+
 }
-func setNewOverwatchPlayer(params []string) (discordMessageRequest discordMessageRequest) {
+func setNewOverwatchPlayer(params []string) {
+	var discordMessageRequest discordMessageRequest
 	param := strings.Replace(params[0], "#", "-", 1)
 
 	config := getGuildConfigSave(thisSession.ws.cachedMessagePayload.GuildId)
 
 	owPlayerLiveStats, err := getPlayerStats(param, config.Platform, config.Region)
 	if err != nil {
-		return getErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
+		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
+		return
 	}
 	owStatsPersistenceLayer := owStatsPersistenceLayer{Battletag: param, OWPlayer: *owPlayerLiveStats, Guild: thisSession.ws.cachedMessagePayload.GuildId}
 	if err = thisSession.db.writePlayer(owStatsPersistenceLayer); err != nil {
-		return getErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
+		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
+		return
 	}
 	discordMessageRequest.Embed.Author.Name = owPlayerLiveStats.Name
 	discordMessageRequest.Embed.Author.IconUrl = owPlayerLiveStats.Icon
@@ -500,7 +630,17 @@ func setNewOverwatchPlayer(params []string) (discordMessageRequest discordMessag
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = "Tip: To track your sr for each training, just type !Update " + owPlayerLiveStats.Name + " before each training. After or during the Trainig you can see your progress with !Stats " + owPlayerLiveStats.Name
+	_, _ = sendMessage(discordMessageRequest)
 	return
+}
+
+func sendMessage(message discordMessageRequest) (respMsg discordMessageResponse, err error) {
+	respMsg, err = thisSession.ws.sendMessageToChannel(message, thisSession.ws.cachedMessagePayload.ChannelId)
+	if err != nil {
+		return discordMessageResponse{}, err
+	}
+
+	return respMsg, nil
 }
 
 func getGuildConfigSave(guildId string) guildSettingsPersistenceLayer {
@@ -528,22 +668,24 @@ func loadPrefixOrDefault(guildId string) string {
 	return getGuildConfigSave(guildId).Prefix
 }
 
-func getErrorMessageRequest(message string) (request discordMessageRequest) {
+func sendErrorMessageRequest(message string) {
+	var request discordMessageRequest
 	request.Embed.Color = 0xff0000
 	request.Embed.Author.Name = "Error"
 	request.Embed.Description = message
 	request.Embed.Thumbnail.Url = ErrorIcon
 	request.Embed.Footer.Text = ErrorFooter
-	return
+	_, _ = sendMessage(request)
 }
 
-func getInfoMessageRequest(message string) (request discordMessageRequest) {
+func sendInfoMessageRequest(message string) {
+	var request discordMessageRequest
 	request.Embed.Color = 0x970097
 	request.Embed.Author.Name = "Info"
 	request.Embed.Description = message
 	request.Embed.Thumbnail.Url = OverwatchIcon
 	request.Embed.Footer.Text = InfoUnderConstruction
-	return
+	_, _ = sendMessage(request)
 }
 
 type pollCacheObject struct {

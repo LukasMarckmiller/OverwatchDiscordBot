@@ -27,8 +27,6 @@ func startAlarmClock(hour int, minute int, second int, pollingFunc func() error)
 		timer.Reset(24 * time.Hour)
 		fmt.Printf("Alarm: reset, expires again in 24h")
 	}
-
-	return nil
 }
 
 func startTimer(wait time.Duration, timerFunc func()) {
