@@ -130,7 +130,10 @@ func getAllCompositions(params []string) {
 		{Name: "Pharah Mercy Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Tracer, Pharah, Support, Mercy, Lucio)},
 		{Name: "New Anti-Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dps, Reaper, Junkrat, Support, Ana, Lucio)},
 	}
-	_, _ = sendMessage(firstPage)
+	if _, err := sendMessage(firstPage); err != nil {
+		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+		return
+	}
 	//Second page
 	var secondPage discordMessageRequest
 	secondPage.Embed.Author.Name = "Overwatch All Compositions 2018-2019"
@@ -155,7 +158,10 @@ func getAllCompositions(params []string) {
 		{Name: "Ball Dive(Anti Bunker)", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Wreckingball, Dva, Dps, Genji, Sombra, Support, Ana, Lucio)},
 		{Name: "Gold Elo Classic", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Zarya, Dps, Genji, Tracer, Torbjrn, Widowmaker, Support, Moira)},
 	}
-	_, _ = sendMessage(secondPage)
+	if _, err := sendMessage(secondPage); err != nil {
+		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+		return
+	}
 	return
 }
 
@@ -174,7 +180,10 @@ func removePoll(params []string) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollCreated
-		_, _ = sendMessage(discordMessageRequest)
+		if _, err := sendMessage(discordMessageRequest); err != nil {
+			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+			return
+		}
 		return
 	} else {
 		sendInfoMessageRequest("No Poll was created for this chanel to delete. First create a Poll with !Poll <n>. !Help for more details.")
@@ -222,7 +231,10 @@ func checkIfPollIsDone(cachedPollObject pollCacheObject) {
 			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason)})
 		}
 		discordMessageRequest.Embed.Fields = cachedPollMembers
-		_, _ = sendMessage(discordMessageRequest)
+		if _, err := sendMessage(discordMessageRequest); err != nil {
+			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+			return
+		}
 	}
 }
 
@@ -267,7 +279,10 @@ func setUserNotReady(params []string) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollAccept
-		_, _ = sendMessage(discordMessageRequest)
+		if _, err := sendMessage(discordMessageRequest); err != nil {
+			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+			return
+		}
 		checkIfPollIsDone(cachedPoll)
 		return
 	} else {
@@ -305,7 +320,10 @@ func setUserReady(params []string) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollAccept
-		_, _ = sendMessage(discordMessageRequest)
+		if _, err := sendMessage(discordMessageRequest); err != nil {
+			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+			return
+		}
 		checkIfPollIsDone(cachedPoll)
 		return
 	} else {
@@ -346,7 +364,10 @@ func startReadyPoll(params []string) {
 			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason)})
 		}
 		discordMessageRequest.Embed.Fields = cachedPollMembers
-		_, _ = sendMessage(discordMessageRequest)
+		if _, err := sendMessage(discordMessageRequest); err != nil {
+			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+			return
+		}
 		return
 
 	} else if params != nil { //new poll with param
@@ -389,7 +410,10 @@ func startReadyPoll(params []string) {
 				delete(pollCache, cachedPoll.Guild+cachedPoll.Channel)
 			}
 		})
-		_, _ = sendMessage(discordMessageRequest)
+		if _, err := sendMessage(discordMessageRequest); err != nil {
+			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+			return
+		}
 		return
 
 	} else { //new poll but no param
@@ -467,7 +491,10 @@ func setGuildConfig(params []string) {
 		discordMessageRequest.Embed.Author.Name = "Discord Server Config Created"
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		_, _ = sendMessage(discordMessageRequest)
+		if _, err := sendMessage(discordMessageRequest); err != nil {
+			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+			return
+		}
 		return
 	} else { //Create new if not found
 		if prefix != "" {
@@ -487,7 +514,10 @@ func setGuildConfig(params []string) {
 		discordMessageRequest.Embed.Author.Name = "Discord Server Config Updated"
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		_, _ = sendMessage(discordMessageRequest)
+		if _, err := sendMessage(discordMessageRequest); err != nil {
+			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+			return
+		}
 		return
 	}
 }
@@ -506,7 +536,10 @@ func getTrainingTimes(params []string) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipMarkup
-		_, _ = sendMessage(discordMessageRequest)
+		if _, err := sendMessage(discordMessageRequest); err != nil {
+			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+			return
+		}
 		return
 	}
 	var dates trainingDatesPersistenceLayer
@@ -520,7 +553,10 @@ func getTrainingTimes(params []string) {
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = TipChangeTraining
-	_, _ = sendMessage(discordMessageRequest)
+	if _, err := sendMessage(discordMessageRequest); err != nil {
+		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+		return
+	}
 	return
 }
 
@@ -551,7 +587,10 @@ func getCurrentlySupportedCommands(params []string) {
 		{Name: config.Prefix + "DeletePoll", Value: "Deletes the current Poll."},
 		{Name: config.Prefix + "Comps", Value: "Returns all meta comps of Overwatch over the years."},
 	}
-	_, _ = sendMessage(discordMessageRequest)
+	if _, err := sendMessage(discordMessageRequest); err != nil {
+		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
+		return
+	}
 	return
 }
 
@@ -568,7 +607,10 @@ func getOverwatchPlayerStats(params []string) {
 		messageObject.Embed.Description = fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error()))
 		messageObject.Embed.Thumbnail.Url = ErrorIcon
 		messageObject.Embed.Footer.Text = ErrorFooter
-		_, _ = sendMessage(messageObject)
+		if _, err = sendMessage(messageObject); err != nil {
+			sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
+			return
+		}
 		return
 	}
 	var owPlayerPersistenceStats owStatsPersistenceLayer
@@ -604,7 +646,10 @@ func getOverwatchPlayerStats(params []string) {
 		{Name: "Won (today)", Value: fmt.Sprintf("%d  Winrate: %d%%",
 			owPlayerLiveStats.CompetitiveStats.Games.Won-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Won, winrateToday), Inline: true},
 	}
-	_, _ = sendMessage(messageObject)
+	if _, err = sendMessage(messageObject); err != nil {
+		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
+		return
+	}
 	return
 
 }
@@ -630,7 +675,10 @@ func setNewOverwatchPlayer(params []string) {
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = "Tip: To track your sr for each training, just type !Update " + owPlayerLiveStats.Name + " before each training. After or during the Trainig you can see your progress with !Stats " + owPlayerLiveStats.Name
-	_, _ = sendMessage(discordMessageRequest)
+	if _, err = sendMessage(discordMessageRequest); err != nil {
+		sendErrorMessageRequest(fmt.Sprintf("Error while sending Overwatch stats to discord client: **%v**\n*%v*\n", param, string(err.Error())))
+		return
+	}
 	return
 }
 

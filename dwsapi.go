@@ -324,7 +324,7 @@ func (s *websocketSession) sendHTTPDiscordRequest(method string, URL string, bod
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != 204 {
-		return nil, errors.New(fmt.Sprintf("HTTP Ok (200) expected, but got %v", resp.StatusCode))
+		return nil, errors.New(fmt.Sprintf("HTTP Ok (200) expected, but got %v url: %v %v", resp.StatusCode, method, URL))
 	}
 
 	return resp, err
