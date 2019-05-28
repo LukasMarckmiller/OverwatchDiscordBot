@@ -669,7 +669,7 @@ func getTrendIcon(v1 float64, v2 float64) string {
 func getOverwatchPlayerStats(params []string) {
 	var messageObject discordMessageRequest
 	messageObject.Embed.Color = 0x970097
-	messageObject.Embed.Author.Name = "Loading Player stats now..."
+	messageObject.Embed.Author.Name = "Loading player stats now..."
 	messageObject.Embed.Description = "Warning: This process can take up to 10 seconds."
 	messageObject.Embed.Thumbnail.Url = OverwatchIcon
 	param := strings.Replace(params[0], "#", "-", 1)
@@ -734,7 +734,7 @@ func getOverwatchPlayerStats(params []string) {
 		{Name: "Won (today)", Value: fmt.Sprintf("%d  Winrate: %d%%",
 			owPlayerLiveStats.CompetitiveStats.Games.Won-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Won, winrateToday), Inline: true},
 	}
-
+	//Dynamic hero stats
 	counter := 1
 	for i, v := range herosLiveOrdered {
 		if v.Key == "allHeroes" {
@@ -788,9 +788,9 @@ func getOverwatchPlayerStats(params []string) {
 		kdPersistent := topHeroStatsPersistent["eliminationsPerLife"].(float64)
 		fields = append(fields, discordEmbedFieldObject{
 			Name: fmt.Sprintf("Top Hero #%d %s", counter, HeroIconMap[strings.ToLower(v.Key)]),
-			Value: fmt.Sprintf("Games played (all/today): **%v**\nGames won (all/today): **%v** %s\n Win Percentage: **%.2f%%**\nKD: **%.2f** %s\nDamagePerGame: **%.2f** %s\n%s\n%s",
-				v.Value,
-				gamesWonLive, getTrendIcon(gamesWonLive, gamesWonPersistent),
+			Value: fmt.Sprintf("Games played (all/today): **%v**/**%v**\nGames won (all/today): **%v**/**%v** %s\n Win Percentage: **%.2f%%**\nKD: **%.2f** %s\nDamagePerGame: **%.2f** %s\n%s\n%s",
+				v.Value, float64(v.Value)-gamesPlayedPersistent,
+				gamesWonLive, gamesWonLive-gamesWonPersistent, getTrendIcon(gamesWonLive, gamesWonPersistent),
 				winPercentageLive,
 				kdLive, getTrendIcon(kdLive, kdPersistent),
 				damageDoneLive, getTrendIcon(damageDoneLive, damageDonePersistent),
