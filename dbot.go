@@ -1,8 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/revel/cmd/utils"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -79,6 +81,36 @@ const (
 )
 
 var (
+	HeroIconMap = map[string]string{
+		"zenyatta":     Zen,
+		"ana":          Ana,
+		"zarya":        Zarya,
+		"reinhardt":    Reinhardt,
+		"mcree":        Mcree,
+		"widowmaker":   Widowmaker,
+		"lucio":        Lucio,
+		"mercy":        Mercy,
+		"winston":      Winston,
+		"dva":          Dva,
+		"tracer":       Tracer,
+		"genji":        Genji,
+		"doomfist":     Doomfist,
+		"bastion":      Bastion,
+		"roadhog":      Roadhog,
+		"hanzo":        Hanzo,
+		"soldier":      Soldier,
+		"mei":          Mei,
+		"reaper":       Reaper,
+		"pharah":       Pharah,
+		"wreckingball": Wreckingball,
+		"sombra":       Sombra,
+		"brigitte":     Brigitte,
+		"moira":        Moira,
+		"junkrat":      Junkrat,
+		"orisa":        Orisa,
+		"baptiste":     Baptiste,
+		"torbjorn":     Torbjrn,
+	}
 	commandMap = map[string]getCommandContent{
 		"training":   getTrainingTimes,
 		"help":       getCurrentlySupportedCommands,
@@ -167,9 +199,9 @@ func getAllCompositions(params []string) {
 
 //params currently unused
 func removePoll(params []string) {
+	channelId := thisSession.ws.events.cachedMessagePayload.ChannelId
 	var discordMessageRequest discordMessageRequest
-	guildId := thisSession.ws.cachedMessagePayload.GuildId
-	channelId := thisSession.ws.cachedMessagePayload.ChannelId
+	guildId := thisSession.ws.events.cachedMessagePayload.GuildId
 	cachedPoll, ok := pollCache[guildId+channelId]
 	if ok {
 		delete(pollCache, cachedPoll.Guild+cachedPoll.Channel)
@@ -250,15 +282,15 @@ func existsUserInPollCache(cachedPoll pollCacheObject, user discordUserObject) (
 
 func setUserNotReady(params []string) {
 	var discordMessageRequest discordMessageRequest
-	guildId := thisSession.ws.cachedMessagePayload.GuildId
-	channelId := thisSession.ws.cachedMessagePayload.ChannelId
+	guildId := thisSession.ws.events.cachedMessagePayload.GuildId
+	channelId := thisSession.ws.events.cachedMessagePayload.ChannelId
 	var response string
 	if params != nil {
 		response = params[0]
 	}
 	cachedPoll, ok := pollCache[guildId+channelId]
 	if ok {
-		cachedAuthor := thisSession.ws.cachedMessagePayload.Author
+		cachedAuthor := thisSession.ws.events.cachedMessagePayload.Author
 		if userIndex, exists := existsUserInPollCache(cachedPoll, cachedAuthor); exists {
 			cachedPoll.Members[userIndex] = readyCheckMember{User: cachedAuthor, Reason: response, Ready: false}
 		} else {
@@ -293,12 +325,12 @@ func setUserNotReady(params []string) {
 
 func setUserReady(params []string) {
 	var discordMessageRequest discordMessageRequest
-	guildId := thisSession.ws.cachedMessagePayload.GuildId
-	channelId := thisSession.ws.cachedMessagePayload.ChannelId
+	guildId := thisSession.ws.events.cachedMessagePayload.GuildId
+	channelId := thisSession.ws.events.cachedMessagePayload.ChannelId
 
 	cachedPoll, ok := pollCache[guildId+channelId]
 	if ok {
-		cachedAuthor := thisSession.ws.cachedMessagePayload.Author
+		cachedAuthor := thisSession.ws.events.cachedMessagePayload.Author
 		//get poll member if already in list
 		if userIndex, exists := existsUserInPollCache(cachedPoll, cachedAuthor); exists {
 			cachedPoll.Members[userIndex].Ready = true
@@ -342,8 +374,8 @@ func getReadyStatValue(ready bool, reason string) string {
 
 func startReadyPoll(params []string) {
 	var discordMessageRequest discordMessageRequest
-	guildId := thisSession.ws.cachedMessagePayload.GuildId
-	channelId := thisSession.ws.cachedMessagePayload.ChannelId
+	guildId := thisSession.ws.events.cachedMessagePayload.GuildId
+	channelId := thisSession.ws.events.cachedMessagePayload.ChannelId
 
 	cachedPoll, ok := pollCache[guildId+channelId]
 
@@ -386,7 +418,7 @@ func startReadyPoll(params []string) {
 
 		now := time.Now()
 		var pollCacheObject pollCacheObject
-		pollCacheObject.Creator = thisSession.ws.cachedMessagePayload.Author
+		pollCacheObject.Creator = thisSession.ws.events.cachedMessagePayload.Author
 		pollCacheObject.Guild = guildId
 		pollCacheObject.Channel = channelId
 		pollCacheObject.CreationTime = now
@@ -482,9 +514,9 @@ func setGuildConfig(params []string) {
 	}
 
 	//Try load settings
-	if err := thisSession.db.getGuildConfig(thisSession.ws.cachedMessagePayload.GuildId, &guildSettings); err != nil {
+	if err := thisSession.db.getGuildConfig(thisSession.ws.events.cachedMessagePayload.GuildId, &guildSettings); err != nil {
 		guildSettings = guildSettingsPersistenceLayer{Platform: platform, Region: region, Prefix: prefix}
-		if err := thisSession.db.setGuildConfig(thisSession.ws.cachedMessagePayload.GuildId, &guildSettings); err != nil {
+		if err := thisSession.db.setGuildConfig(thisSession.ws.events.cachedMessagePayload.GuildId, &guildSettings); err != nil {
 			sendErrorMessageRequest("Error while writing guild config.")
 			return
 		}
@@ -506,7 +538,7 @@ func setGuildConfig(params []string) {
 			guildSettings.Region = region
 		}
 
-		if err := thisSession.db.setGuildConfig(thisSession.ws.cachedMessagePayload.GuildId, &guildSettings); err != nil {
+		if err := thisSession.db.setGuildConfig(thisSession.ws.events.cachedMessagePayload.GuildId, &guildSettings); err != nil {
 			sendErrorMessageRequest("Error while writing guild config.")
 			return
 		}
@@ -527,7 +559,7 @@ func getTrainingTimes(params []string) {
 	var discordMessageRequest discordMessageRequest
 	//Save param as new Training Content in DB
 	if params != nil {
-		if err := thisSession.db.updateTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, trainingDatesPersistenceLayer{params[0]}); err != nil {
+		if err := thisSession.db.updateTrainingDates(thisSession.ws.events.cachedMessagePayload.GuildId, trainingDatesPersistenceLayer{params[0]}); err != nil {
 			sendErrorMessageRequest(fmt.Sprintf("Error updating Training dates: **%v**\n*%v*\n", params[0], string(err.Error())))
 			return
 		}
@@ -543,7 +575,7 @@ func getTrainingTimes(params []string) {
 		return
 	}
 	var dates trainingDatesPersistenceLayer
-	if err := thisSession.db.getTrainingDates(thisSession.ws.cachedMessagePayload.GuildId, &dates); err != nil {
+	if err := thisSession.db.getTrainingDates(thisSession.ws.events.cachedMessagePayload.GuildId, &dates); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error while retrieving training dates:\n*%v*\n", string(err.Error())))
 		return
 	}
@@ -564,7 +596,7 @@ func getTrainingTimes(params []string) {
 func getCurrentlySupportedCommands(params []string) {
 	//param unused
 	var discordMessageRequest discordMessageRequest
-	config := getGuildConfigSave(thisSession.ws.cachedMessagePayload.GuildId)
+	config := getGuildConfigSave(thisSession.ws.events.cachedMessagePayload.GuildId)
 	discordMessageRequest.Embed.Author.Name = "OverwatchTeam Discord Bot - Help"
 	discordMessageRequest.Embed.Title = "All currently supported Commands with examples."
 	discordMessageRequest.Embed.Description = "If your using Overwatch related commands make sure your profile is set to public"
@@ -594,31 +626,87 @@ func getCurrentlySupportedCommands(params []string) {
 	return
 }
 
+func getMostPlayedHeroesInMap(carrerStatsMap map[string]interface{}) []kv {
+	var gamesPlayedPerHero []kv
+
+	for hero, stats := range carrerStatsMap {
+		stats := stats.(map[string]interface{})
+		game := stats["game"].(map[string]interface{})
+		var gamesPlayedPart = game["gamesPlayed"]
+		var gamesPlayed int
+		if gamesPlayedPart == nil {
+			gamesPlayedPart = 0
+		} else {
+			gamesPlayed = int(game["gamesPlayed"].(float64))
+
+		}
+		gamesPlayedPerHero = append(gamesPlayedPerHero, kv{hero, gamesPlayed})
+	}
+
+	sort.Slice(gamesPlayedPerHero, func(i, j int) bool {
+		return gamesPlayedPerHero[i].Value > gamesPlayedPerHero[j].Value
+	})
+
+	return gamesPlayedPerHero
+}
+
+type kv struct {
+	Key   string
+	Value int
+}
+
+func getTrendIcon(v1 float64, v2 float64) string {
+	sum := v1 - v2
+	if sum > 0 {
+		return ":chart_with_upwards_trend:"
+	} else if sum < 0 {
+		return ":chart_with_downwards_trend:"
+	} else {
+		return ""
+	}
+}
+
 func getOverwatchPlayerStats(params []string) {
 	var messageObject discordMessageRequest
+	messageObject.Embed.Color = 0x970097
+	messageObject.Embed.Author.Name = "Loading Player stats now..."
+	messageObject.Embed.Description = "Warning: This process can take up to 10 seconds."
+	messageObject.Embed.Thumbnail.Url = OverwatchIcon
 	param := strings.Replace(params[0], "#", "-", 1)
 
-	config := getGuildConfigSave(thisSession.ws.cachedMessagePayload.GuildId)
+	msg, err := sendMessage(messageObject)
 
-	owPlayerLiveStats, err := getPlayerStats(param, config.Platform, config.Region)
 	if err != nil {
-		messageObject.Embed.Color = 0xff0000
-		messageObject.Embed.Author.Name = "Error"
-		messageObject.Embed.Description = fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error()))
-		messageObject.Embed.Thumbnail.Url = ErrorIcon
-		messageObject.Embed.Footer.Text = ErrorFooter
-		if _, err = sendMessage(messageObject); err != nil {
-			sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
-			return
-		}
+		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
 		return
 	}
+
+	config := getGuildConfigSave(thisSession.ws.events.cachedMessagePayload.GuildId)
+
+	owPlayerLiveStats, err := getPlayerStats(param, config.Platform, config.Region)
+
+	if err != nil {
+		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
+		return
+	}
+
+	var carrerStatsLive map[string]interface{}
+	var topHeroesLive map[string]interface{}
+	_ = json.Unmarshal(owPlayerLiveStats.CompetitiveStats.CareerStats, &carrerStatsLive)
+	_ = json.Unmarshal(owPlayerLiveStats.CompetitiveStats.TopHeroes, &topHeroesLive)
+	herosLiveOrdered := getMostPlayedHeroesInMap(carrerStatsLive)
+
 	var owPlayerPersistenceStats owStatsPersistenceLayer
 
 	messageObject.Embed.Footer.Text = TipUpdateProfile
 	if err = thisSession.db.readPlayer(param, &owPlayerPersistenceStats); err != nil {
 		messageObject.Embed.Footer.Text = fmt.Sprintf("The requested player is not registered therefore the statistics containing the data of the whole current season. If you want your global and daily statistics you need to call `!Register %v` first.", param)
 	}
+
+	var carrerStatsPersistent map[string]interface{}
+	var topHeroesPersistent map[string]interface{}
+	_ = json.Unmarshal(owPlayerPersistenceStats.OWPlayer.CompetitiveStats.CareerStats, &carrerStatsPersistent)
+	_ = json.Unmarshal(owPlayerPersistenceStats.OWPlayer.CompetitiveStats.TopHeroes, &topHeroesPersistent)
 
 	var winrateAll int
 	var winrateToday int
@@ -631,13 +719,13 @@ func getOverwatchPlayerStats(params []string) {
 			float32(owPlayerLiveStats.CompetitiveStats.Games.Played-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Played) * 100.0)
 	}
 
+	messageObject.Embed.Color = 0x970097
 	messageObject.Embed.Author.Name = "Overwatch Player Statistics"
+	messageObject.Embed.Description = "Competitive Game Mode"
 	messageObject.Embed.Author.IconUrl = owPlayerLiveStats.Icon
 	messageObject.Embed.Title = owPlayerLiveStats.Name
 	messageObject.Embed.Thumbnail.Url = owPlayerLiveStats.RatingIcon
-	messageObject.Embed.Color = 0x970097
-	messageObject.Embed.Description = "Competitive Game Mode"
-	messageObject.Embed.Fields = []discordEmbedFieldObject{
+	fields := []discordEmbedFieldObject{
 		{Name: "Rating", Value: strconv.Itoa(owPlayerLiveStats.Rating) + " SR", Inline: true},
 		{Name: "Trend", Value: strconv.Itoa(owPlayerLiveStats.Rating-owPlayerPersistenceStats.OWPlayer.Rating) + " SR", Inline: true},
 		{Name: "Played (all)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played), Inline: true},
@@ -646,25 +734,92 @@ func getOverwatchPlayerStats(params []string) {
 		{Name: "Won (today)", Value: fmt.Sprintf("%d  Winrate: %d%%",
 			owPlayerLiveStats.CompetitiveStats.Games.Won-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Won, winrateToday), Inline: true},
 	}
-	if _, err = sendMessage(messageObject); err != nil {
+
+	counter := 1
+	for i, v := range herosLiveOrdered {
+		if v.Key == "allHeroes" {
+			continue
+		}
+
+		if i > 6 {
+			break
+		}
+
+		//Live
+		heroStatsLive := carrerStatsLive[v.Key].(map[string]interface{})
+		topHeroStatsLive := topHeroesLive[v.Key].(map[string]interface{})
+		combatLive := heroStatsLive["combat"].(map[string]interface{})
+		assistsLive := heroStatsLive["assists"]
+
+		//Persistent
+		heroStatsPersistent := carrerStatsPersistent[v.Key].(map[string]interface{})
+		topHeroStatsPersistent := topHeroesPersistent[v.Key].(map[string]interface{})
+		combatPersistent := heroStatsPersistent["combat"].(map[string]interface{})
+		gamePersistent := heroStatsPersistent["game"].(map[string]interface{})
+		gamesPlayedPersistent := gamePersistent["gamesPlayed"].(float64)
+		roleSpecific := "-"
+
+		damageDoneLive := combatLive["damageDone"].(float64) / float64(v.Value)
+		damageDonePersistent := combatPersistent["damageDone"].(float64) / gamesPlayedPersistent
+
+		if assistsLive != nil && assistsLive.(map[string]interface{})["healingDone"] != nil {
+			healingDone := assistsLive.(map[string]interface{})["healingDone"].(float64)
+			healingDonePersistent := heroStatsPersistent["assists"].(map[string]interface{})["healingDone"].(float64)
+			roleSpecific = fmt.Sprintf("HealingPerGame: **%.2f** %s", healingDone/float64(v.Value), getTrendIcon(healingDone/float64(v.Value), healingDonePersistent/gamesPlayedPersistent))
+		}
+
+		weaponAccuracyPart := topHeroStatsLive["weaponAccuracy"].(float64)
+		weaponAccuracyLive := "-"
+
+		if weaponAccuracyPart > 0 {
+			weaponAccuracyPersistent := topHeroStatsPersistent["weaponAccuracy"].(float64)
+			weaponAccuracyLive = fmt.Sprintf("Weapon Accuracy: **%.2f%%** %s", weaponAccuracyPart, getTrendIcon(weaponAccuracyPart, weaponAccuracyPersistent))
+		}
+
+		//Game stats
+
+		gamesWonLive := topHeroStatsLive["gamesWon"].(float64)
+		gamesWonPersistent := topHeroStatsPersistent["gamesWon"].(float64)
+
+		winPercentageLive := topHeroStatsLive["winPercentage"].(float64)
+
+		//averageLive stats
+		kdLive := topHeroStatsLive["eliminationsPerLife"].(float64)
+		kdPersistent := topHeroStatsPersistent["eliminationsPerLife"].(float64)
+		fields = append(fields, discordEmbedFieldObject{
+			Name: fmt.Sprintf("Top Hero #%d %s", counter, HeroIconMap[strings.ToLower(v.Key)]),
+			Value: fmt.Sprintf("Games played (all/today): **%v**\nGames won (all/today): **%v** %s\n Win Percentage: **%.2f%%**\nKD: **%.2f** %s\nDamagePerGame: **%.2f** %s\n%s\n%s",
+				v.Value,
+				gamesWonLive, getTrendIcon(gamesWonLive, gamesWonPersistent),
+				winPercentageLive,
+				kdLive, getTrendIcon(kdLive, kdPersistent),
+				damageDoneLive, getTrendIcon(damageDoneLive, damageDonePersistent),
+				roleSpecific,
+				weaponAccuracyLive),
+			Inline: true})
+		counter++
+	}
+
+	messageObject.Embed.Fields = fields
+	if _, err = updateMessage(messageObject, msg.Id); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
 		return
 	}
 	return
-
 }
+
 func setNewOverwatchPlayer(params []string) {
 	var discordMessageRequest discordMessageRequest
 	param := strings.Replace(params[0], "#", "-", 1)
 
-	config := getGuildConfigSave(thisSession.ws.cachedMessagePayload.GuildId)
+	config := getGuildConfigSave(thisSession.ws.events.cachedMessagePayload.GuildId)
 
 	owPlayerLiveStats, err := getPlayerStats(param, config.Platform, config.Region)
 	if err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
 		return
 	}
-	owStatsPersistenceLayer := owStatsPersistenceLayer{Battletag: param, OWPlayer: *owPlayerLiveStats, Guild: thisSession.ws.cachedMessagePayload.GuildId}
+	owStatsPersistenceLayer := owStatsPersistenceLayer{Battletag: param, OWPlayer: *owPlayerLiveStats, Guild: thisSession.ws.events.cachedMessagePayload.GuildId}
 	if err = thisSession.db.writePlayer(owStatsPersistenceLayer); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
 		return
@@ -683,7 +838,16 @@ func setNewOverwatchPlayer(params []string) {
 }
 
 func sendMessage(message discordMessageRequest) (respMsg discordMessageResponse, err error) {
-	respMsg, err = thisSession.ws.sendMessageToChannel(message, thisSession.ws.cachedMessagePayload.ChannelId)
+	respMsg, err = thisSession.ws.sendMessageToChannel(message, thisSession.ws.events.cachedMessagePayload.ChannelId)
+	if err != nil {
+		return discordMessageResponse{}, err
+	}
+
+	return respMsg, nil
+}
+
+func updateMessage(message discordMessageRequest, messageId string) (respMsg discordMessageResponse, err error) {
+	err = thisSession.ws.updateMessageInChanel(message, thisSession.ws.events.cachedMessagePayload.ChannelId, messageId)
 	if err != nil {
 		return discordMessageResponse{}, err
 	}

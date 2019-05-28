@@ -9,22 +9,21 @@ import (
 	"github.com/gorilla/websocket"
 	"io"
 	"net/http"
-	"regexp"
 	"runtime"
 	"strconv"
-	"strings"
 	"time"
 )
 
 const (
-	TokenType           = "Bot"
-	EventReady          = "READY"
-	EventMessageCreate  = "MESSAGE_CREATE"
-	EventGuildCreate    = "GUILD_CREATE"
-	DiscordBaseUrl      = "https://discordapp.com/api"
-	DiscordBaseImageUrl = "https://cdn.discordapp.com"
-	DeviceName          = "Odroid XU4Q"
-	BrowserName         = "Chromium"
+	TokenType               = "Bot"
+	EventReady              = "READY"
+	EventMessageCreate      = "MESSAGE_CREATE"
+	EventGuildCreate        = "GUILD_CREATE"
+	EventMessagereactionAdd = "MESSAGE_REACTION_ADD"
+	DiscordBaseUrl          = "https://discordapp.com/api"
+	DiscordBaseImageUrl     = "https://cdn.discordapp.com"
+	DeviceName              = "Odroid XU4Q"
+	BrowserName             = "Chromium"
 )
 
 var (
@@ -32,10 +31,10 @@ var (
 )
 
 type websocketSession struct {
-	SequenzNumber        int
-	HeartbeatInterval    int
-	BotUserId            string
-	cachedMessagePayload discordMessageResponse
+	SequenzNumber     int
+	HeartbeatInterval int
+	BotUserId         string
+	events            events
 }
 
 func (s *websocketSession) openCon() (*websocket.Conn, error) {
@@ -131,11 +130,12 @@ func (s *websocketSession) openCon() (*websocket.Conn, error) {
 	return con, nil
 }
 
-func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild func(guildId string) string) (error error) {
+func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 
 	//Recover on panic
 	defer func() {
 		if r := recover(); r != nil {
+			fmt.Println(r)
 			return
 		}
 	}()
@@ -176,79 +176,12 @@ func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild 
 		s.SequenzNumber = event.S
 
 		//Handle event
+		s.events = events{}
 		switch event.T {
 		case EventMessageCreate:
-
-			if err = json.Unmarshal(event.D, &s.cachedMessagePayload); err != nil {
+			if err = s.events.handleMessageCreate(event); err != nil {
 				return err
 			}
-
-			//Get default prefix
-			prefix := getPrefixPerGuild(s.cachedMessagePayload.GuildId)
-			//Filter non command
-			if !strings.HasPrefix(s.cachedMessagePayload.Content, prefix) {
-				break
-			}
-			//Filter if requesting event triggered by this bot
-			if s.cachedMessagePayload.Author.Id == s.BotUserId {
-				break
-			}
-
-			command := strings.TrimPrefix(strings.Split(s.cachedMessagePayload.Content, " ")[0], prefix)
-			cmd, ok := commandMap[strings.ToLower(command)]
-			if !ok {
-				break
-			}
-
-			fmt.Printf("%+v Opcode: %v\n", event.T, event.Op)
-
-			content := strings.Trim(strings.Replace(s.cachedMessagePayload.Content, prefix+command, "", -1), " ")
-
-			re := regexp.MustCompile(`".*?"`)
-
-			loc := re.FindAllString(content, -1)
-			for _, val := range loc {
-				newVal := strings.Replace(val, " ", "{{@}}", -1)
-				content = strings.Replace(content, val, newVal, -1)
-			}
-			var params []string
-			if content != "" {
-				params = strings.Split(content, " ")
-			}
-
-			for index, val := range params {
-
-				//Try unquoted
-				if unquotedVal, err := strconv.Unquote(val); err == nil {
-					val = unquotedVal
-				}
-				params[index] = strings.Replace(val, "{{@}}", " ", -1)
-			}
-
-			_, err = s.triggerTypingInChannel(s.cachedMessagePayload.ChannelId)
-			if err != nil {
-				return err
-			}
-
-			//run cmd as own go routine to parallelize processing. Need to include sending message and message queue
-			cmd(params)
-			/*
-				_, err = s.sendMessageToChannel(message, s.cachedMessagePayload.ChannelId)
-				if err != nil {
-					return err
-				}
-
-				//Send messages from queue if your bot needs to send messages without a request from a user.
-				for _, val := range messageQueue {
-					_, err = s.sendMessageToChannel(val.message, val.channelId)
-					if err != nil {
-						return err
-					}
-				}
-
-				//free memory
-				messageQueue = nil
-			*/
 
 		case EventGuildCreate:
 			var guild discordGuildObject
@@ -256,6 +189,9 @@ func (s *websocketSession) startListener(con *websocket.Conn, getPrefixPerGuild 
 				return err
 			}
 			fmt.Printf("%+v Opcode: %v Guild: %s | %s  \n", event.T, event.Op, guild.Name, guild.Id)
+
+		case EventMessagereactionAdd:
+
 		}
 	}
 }
@@ -278,6 +214,19 @@ func (s *websocketSession) sendMessageToChannel(content discordMessageRequest, c
 	_, _ = buf.ReadFrom(resp.Body)
 	_ = json.Unmarshal(buf.Bytes(), &responseMessage)
 	return responseMessage, err
+}
+
+func (s *websocketSession) updateMessageInChanel(content discordMessageRequest, channelId string, messageId string) error {
+	data, err := json.Marshal(content)
+	if err != nil {
+		return err
+	}
+	_, err = s.sendHTTPDiscordRequest(http.MethodPatch, fmt.Sprintf("%v/channels/%v/messages/%v", DiscordBaseUrl, channelId, messageId), bytes.NewReader(data))
+	if err != nil {
+		return err
+	}
+
+	return err
 }
 
 func (s *websocketSession) triggerTypingInChannel(channelId string) (*http.Response, error) {

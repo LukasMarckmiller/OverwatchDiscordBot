@@ -80,6 +80,24 @@ type discordReadyEventObject struct {
 	User discordUserObject `json:"user"` //object	information about the user including email
 }
 
+type discordMessageReactionAdd struct {
+	/*user_id	snowflake	the id of the user
+	  channel_id	snowflake	the id of the channel
+	  message_id	snowflake	the id of the message
+	  guild_id?	snowflake	the id of the guild
+	  emoji	a partial emoji object	the emoji used to react - example*/
+	UserId    string             `json:"user_id"`
+	ChannelId string             `json:"channel_id"`
+	MessageId string             `json:"message_id"`
+	GuildId   string             `json:"guild_id"`
+	Emoji     discordEmojiObject `json:"emoji"`
+}
+
+type discordEmojiObject struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
 type discordMessageResponse struct {
 	/*id	snowflake	id of the message
 	channel_id	snowflake	id of the channel the message was sent in
@@ -144,14 +162,14 @@ type discordEmbedFieldObject struct {
 
 type discordMessageRequest struct {
 	/*
-		{
-	  "content": "Hello, World!",
-	  "tts": false,
-	  "embed": {
-	    "title": "Hello, Embed!",
-	    "description": "This is an embedded message."
-	  }
-	}
+			{
+		  "content": "Hello, World!",
+		  "tts": false,
+		  "embed": {
+		    "title": "Hello, Embed!",
+		    "description": "This is an embedded message."
+		  }
+		}
 	*/
 	Content string             `json:"content"`
 	Tts     bool               `json:"tts"`

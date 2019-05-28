@@ -66,9 +66,9 @@ func (d *dbSession) getGuildConfig(guild string, content *guildSettingsPersisten
 }
 
 type owStatsPersistenceLayer struct {
-	Battletag string   `json:"battletag"`
-	OWPlayer  OWPlayer `json:"ow_player"`
-	Guild     string   `json:"guild"`
+	Battletag string          `json:"battletag"`
+	OWPlayer  owCompleteStats `json:"ow_player"`
+	Guild     string          `json:"guild"`
 }
 
 type trainingDatesPersistenceLayer struct {
