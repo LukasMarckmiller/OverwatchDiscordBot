@@ -42,7 +42,6 @@ func main() {
 			break
 		}
 		thisSession.db = dbs
-
 		go startAlarmClock(6, 0, 0, pollingCustomPlayers) //Set alarm clock for polling stats to 6:00:00am (pm would be setAlarmClock(18,0,0), timezone is based on current timezone
 
 		err = thisSession.ws.startListener(con)

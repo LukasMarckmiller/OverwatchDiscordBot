@@ -52,32 +52,36 @@ const (
 
 	Zarya        = "<:zarya:580725388276269076>"
 	Reinhardt    = "<:reinhardt:580725264250568745>"
-	Mcree        = "<:mcree:580725264087253012>"
-	Widowmaker   = "<:widowmaker:580725264154230795>"
-	Lucio        = "<:lucio:580725263994716190>"
-	Mercy        = "<:mercy:580725264263413760>"
 	Winston      = "<:winston:580725264405889057>"
 	Dva          = "<:dva:580725264082796544>"
-	Tracer       = "<:tracer:580725264351494172>"
-	Genji        = "<:genji:580725263696920598>"
-	Zen          = "<:zen:580725264762404879>"
-	Doomfist     = "<:doomfist:580729098348003328>"
-	Bastion      = "<:bastion:580729763832922113>"
 	Roadhog      = "<:roadhog:580730509970243584>"
-	Hanzo        = "<:hanzo:580731268170514433>"
-	Ana          = "<:ana:580731268833083402>"
-	Soldier      = "<:soldier:580731909978718258>"
-	Mei          = "<:mei:580732628903264256>"
-	Reaper       = "<:reaper:580732628794212390>"
-	Pharah       = "<:pharah:580737542190792704>"
 	Wreckingball = "<:wreckingball:580737541976752138>"
-	Sombra       = "<:sombra:580737542236930058>"
-	Brigitte     = "<:brigitte:580737541716574233>"
-	Moira        = "<:moira:580737542094061571>"
-	Junkrat      = "<:junkrat:580737542186467329>"
 	Orisa        = "<:orisa:580737541821693963>"
-	Baptiste     = "<:baptiste:580738605459308544>"
-	Torbjrn      = "<:torbjrn:580738778017169421>"
+
+	Ana      = "<:ana:580731268833083402>"
+	Lucio    = "<:lucio:580725263994716190>"
+	Mercy    = "<:mercy:580725264263413760>"
+	Zen      = "<:zen:580725264762404879>"
+	Brigitte = "<:brigitte:580737541716574233>"
+	Moira    = "<:moira:580737542094061571>"
+	Baptiste = "<:baptiste:580738605459308544>"
+
+	Mcree      = "<:mcree:580725264087253012>"
+	Widowmaker = "<:widowmaker:580725264154230795>"
+	Tracer     = "<:tracer:580725264351494172>"
+	Genji      = "<:genji:580725263696920598>"
+	Doomfist   = "<:doomfist:580729098348003328>"
+	Bastion    = "<:bastion:580729763832922113>"
+	Hanzo      = "<:hanzo:580731268170514433>"
+	Soldier    = "<:soldier:580731909978718258>"
+	Mei        = "<:mei:580732628903264256>"
+	Reaper     = "<:reaper:580732628794212390>"
+	Pharah     = "<:pharah:580737542190792704>"
+	Sombra     = "<:sombra:580737542236930058>"
+	Junkrat    = "<:junkrat:580737542186467329>"
+	Torbjrn    = "<:torbjrn:580738778017169421>"
+	Symmetra   = "<:symmetra:583253093089542166>"
+	Ashe       = "<:ashe:583253081094094851>"
 )
 
 var (
@@ -110,6 +114,8 @@ var (
 		"orisa":        Orisa,
 		"baptiste":     Baptiste,
 		"torbjorn":     Torbjrn,
+		"ashe":         Ashe,
+		"symmetra":     Symmetra,
 	}
 	commandMap = map[string]getCommandContent{
 		"training":   getTrainingTimes,
@@ -684,9 +690,13 @@ func getOverwatchPlayerStats(params []string) {
 	config := getGuildConfigSave(thisSession.ws.events.cachedMessagePayload.GuildId)
 
 	owPlayerLiveStats, err := getPlayerStats(param, config.Platform, config.Region)
-
 	if err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
+		return
+	}
+
+	if owPlayerLiveStats.Name == "" {
+		sendErrorMessageRequest(fmt.Sprintf("Player %s not found for platform %s", param, config.Platform))
 		return
 	}
 
@@ -748,23 +758,45 @@ func getOverwatchPlayerStats(params []string) {
 		//Live
 		heroStatsLive := carrerStatsLive[v.Key].(map[string]interface{})
 		topHeroStatsLive := topHeroesLive[v.Key].(map[string]interface{})
-		combatLive := heroStatsLive["combat"].(map[string]interface{})
+		combatLive := heroStatsLive["combat"]
 		assistsLive := heroStatsLive["assists"]
 
+		damageDonePersistent := 0.0
+		healingDonePersistent := 0.0
+		weaponAccuracyPersistent := 0.0
+		gamesWonPersistent := 0.0
+		kdPersistent := 0.0
+		gamesPlayedPersistent := 0.0
 		//Persistent
-		heroStatsPersistent := carrerStatsPersistent[v.Key].(map[string]interface{})
-		topHeroStatsPersistent := topHeroesPersistent[v.Key].(map[string]interface{})
-		combatPersistent := heroStatsPersistent["combat"].(map[string]interface{})
-		gamePersistent := heroStatsPersistent["game"].(map[string]interface{})
-		gamesPlayedPersistent := gamePersistent["gamesPlayed"].(float64)
+		if carrerStatsPersistent != nil {
+			heroStatsPersistent := carrerStatsPersistent[v.Key].(map[string]interface{})
+			topHeroStatsPersistent := topHeroesPersistent[v.Key].(map[string]interface{})
+			combatPersistent := heroStatsPersistent["combat"]
+			gamePersistent := heroStatsPersistent["game"].(map[string]interface{})
+
+			gamesPlayedPersistent = gamePersistent["gamesPlayed"].(float64)
+			if combatPersistent != nil && combatPersistent.(map[string]interface{})["damageDone"] != nil {
+				damageDonePersistent = combatPersistent.(map[string]interface{})["damageDone"].(float64) / gamesPlayedPersistent
+			}
+
+			if heroStatsPersistent["assists"] != nil && heroStatsPersistent["assists"].(map[string]interface{})["healingDone"] != nil {
+				healingDonePersistent = heroStatsPersistent["assists"].(map[string]interface{})["healingDone"].(float64)
+			}
+			weaponAccuracyPersistent = topHeroStatsPersistent["weaponAccuracy"].(float64)
+			gamesWonPersistent = topHeroStatsPersistent["gamesWon"].(float64)
+			kdPersistent = topHeroStatsPersistent["eliminationsPerLife"].(float64)
+		}
+
 		roleSpecific := "-"
 
-		damageDoneLive := combatLive["damageDone"].(float64) / float64(v.Value)
-		damageDonePersistent := combatPersistent["damageDone"].(float64) / gamesPlayedPersistent
+		damageDoneLive := 0.0
+		if combatLive != nil && combatLive.(map[string]interface{})["damageDone"] != nil {
+			damageDoneLive = combatLive.(map[string]interface{})["damageDone"].(float64) / float64(v.Value)
+		}
 
 		if assistsLive != nil && assistsLive.(map[string]interface{})["healingDone"] != nil {
 			healingDone := assistsLive.(map[string]interface{})["healingDone"].(float64)
-			healingDonePersistent := heroStatsPersistent["assists"].(map[string]interface{})["healingDone"].(float64)
+
 			roleSpecific = fmt.Sprintf("HealingPerGame: **%.2f** %s", healingDone/float64(v.Value), getTrendIcon(healingDone/float64(v.Value), healingDonePersistent/gamesPlayedPersistent))
 		}
 
@@ -772,20 +804,15 @@ func getOverwatchPlayerStats(params []string) {
 		weaponAccuracyLive := "-"
 
 		if weaponAccuracyPart > 0 {
-			weaponAccuracyPersistent := topHeroStatsPersistent["weaponAccuracy"].(float64)
 			weaponAccuracyLive = fmt.Sprintf("Weapon Accuracy: **%.2f%%** %s", weaponAccuracyPart, getTrendIcon(weaponAccuracyPart, weaponAccuracyPersistent))
 		}
 
 		//Game stats
-
 		gamesWonLive := topHeroStatsLive["gamesWon"].(float64)
-		gamesWonPersistent := topHeroStatsPersistent["gamesWon"].(float64)
-
 		winPercentageLive := topHeroStatsLive["winPercentage"].(float64)
 
 		//averageLive stats
 		kdLive := topHeroStatsLive["eliminationsPerLife"].(float64)
-		kdPersistent := topHeroStatsPersistent["eliminationsPerLife"].(float64)
 		fields = append(fields, discordEmbedFieldObject{
 			Name: fmt.Sprintf("Top Hero #%d %s", counter, HeroIconMap[strings.ToLower(v.Key)]),
 			Value: fmt.Sprintf("Games played (all/today): **%v**/**%v**\nGames won (all/today): **%v**/**%v** %s\n Win Percentage: **%.2f%%**\nKD: **%.2f** %s\nDamagePerGame: **%.2f** %s\n%s\n%s",
@@ -814,11 +841,29 @@ func setNewOverwatchPlayer(params []string) {
 
 	config := getGuildConfigSave(thisSession.ws.events.cachedMessagePayload.GuildId)
 
+	discordMessageRequest.Embed.Color = 0x970097
+	discordMessageRequest.Embed.Author.Name = "Loading player stats now..."
+	discordMessageRequest.Embed.Description = "Warning: This process can take up to 10 seconds."
+	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+
+	msg, err := sendMessage(discordMessageRequest)
+
+	if err != nil {
+		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
+		return
+	}
+
 	owPlayerLiveStats, err := getPlayerStats(param, config.Platform, config.Region)
 	if err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
 		return
 	}
+
+	if owPlayerLiveStats.Name == "" {
+		sendErrorMessageRequest(fmt.Sprintf("Player %s not found for platform %s", param, config.Platform))
+		return
+	}
+
 	owStatsPersistenceLayer := owStatsPersistenceLayer{Battletag: param, OWPlayer: *owPlayerLiveStats, Guild: thisSession.ws.events.cachedMessagePayload.GuildId}
 	if err = thisSession.db.writePlayer(owStatsPersistenceLayer); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
@@ -827,10 +872,12 @@ func setNewOverwatchPlayer(params []string) {
 	discordMessageRequest.Embed.Author.Name = owPlayerLiveStats.Name
 	discordMessageRequest.Embed.Author.IconUrl = owPlayerLiveStats.Icon
 	discordMessageRequest.Embed.Title = "Player added/refreshed"
+	discordMessageRequest.Embed.Description = ""
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = "Tip: To track your sr for each training, just type !Update " + owPlayerLiveStats.Name + " before each training. After or during the Trainig you can see your progress with !Stats " + owPlayerLiveStats.Name
-	if _, err = sendMessage(discordMessageRequest); err != nil {
+
+	if _, err = updateMessage(discordMessageRequest, msg.Id); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error while sending Overwatch stats to discord client: **%v**\n*%v*\n", param, string(err.Error())))
 		return
 	}
