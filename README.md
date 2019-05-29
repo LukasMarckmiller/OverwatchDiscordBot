@@ -19,7 +19,7 @@ e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim,
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/setTeams.JPG)
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/GetTeams.JPG)
 * !Stats \<battletag\>: Display player stats (z.B. !Stats Krusher-9911)<br/>
-![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Stats.JPG)
+![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/StatsExtended2.JPG)
 * !Register \<battletag\>: Register new player, the player stats are then stored in the backend and updated on a daily basis (e.g. !Register Krusher-9911)<br/>
 * !Update <battletag>: Update stored player stats (e.g. !Update Krusher-9911)<br/>
   ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Update.JPG)
