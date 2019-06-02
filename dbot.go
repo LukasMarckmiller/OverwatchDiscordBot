@@ -23,6 +23,7 @@ const (
 	ErrorIcon     = "https://freeiconshop.com/wp-content/uploads/edd/error-flat.png"
 	ErrorFooter   = "Please try again later. If this error remains, please contact our support by creating an issue on github: https://github.com/LukasMarckmiller/OverwatchDiscordBot/issues"
 	OverwatchIcon = "http://www.stickpng.com/assets/images/586273b931349e0568ad89df.png"
+	LoadingGif    = "https://i.kym-cdn.com/photos/images/original/001/138/377/fcc.gif"
 
 	//Info Messages
 	TipMarkup             = "Tip: You can pimp your text with discord Markups like bold,italic text or you can use discord Emojis with :emoji_name:. For a newline insert \\r\\n into your text."
@@ -32,7 +33,7 @@ const (
 	TipPollUpdate         = "Tip: You can accept a poll with !+ or decline it with !-. Note: You have to be in the same Channel the poll started to accept or decline it!"
 	TipPollAccept         = "Tip: You can specify a reason when you decline a poll with !- \"the reason comes here\"."
 	TipCertainComp        = "Tip: If you want additional infos to a certain comp just type !Comps followed by the Name of the comp you are looking for. **NOTE: FEATURE UNDER CONSTRUCTION**"
-	InfoPollTimeout       = "Note: A poll times out after 5 min. This time cant be changed by the user."
+	InfoPollTimeout       = "Note: A poll times out after 10 min. This time cant be changed by the user."
 	InfoUnderConstruction = "Note: This bot is still under construction. Stored data can be removed, or Commands renamed any time while this bot is not official released."
 	//Error Messages
 	ErrorGuildNoParams         = "You need at least one of the following setting parameters. region=eu and/or platform=pc. !Help for further information."
@@ -266,7 +267,7 @@ func checkIfPollIsDone(cachedPollObject pollCacheObject) {
 		discordMessageRequest.Content = "<@" + cachedPollObject.Creator.Id + ">"
 		var cachedPollMembers []discordEmbedFieldObject
 		for _, val := range cachedPollObject.Members {
-			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason)})
+			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason), Inline: true})
 		}
 		discordMessageRequest.Embed.Fields = cachedPollMembers
 		if _, err := sendMessage(discordMessageRequest); err != nil {
@@ -399,7 +400,7 @@ func startReadyPoll(params []string) {
 
 		var cachedPollMembers []discordEmbedFieldObject
 		for _, val := range cachedPoll.Members {
-			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason)})
+			cachedPollMembers = append(cachedPollMembers, discordEmbedFieldObject{Name: val.User.Username, Value: getReadyStatValue(val.Ready, val.Reason), Inline: true})
 		}
 		discordMessageRequest.Embed.Fields = cachedPollMembers
 		if _, err := sendMessage(discordMessageRequest); err != nil {
@@ -768,8 +769,9 @@ func getOverwatchPlayerStats(params []string) {
 		kdPersistent := 0.0
 		gamesPlayedPersistent := 0.0
 		//Persistent
-		if carrerStatsPersistent != nil {
+		if carrerStatsPersistent != nil && carrerStatsPersistent[v.Key] != nil {
 			heroStatsPersistent := carrerStatsPersistent[v.Key].(map[string]interface{})
+
 			topHeroStatsPersistent := topHeroesPersistent[v.Key].(map[string]interface{})
 			combatPersistent := heroStatsPersistent["combat"]
 			gamePersistent := heroStatsPersistent["game"].(map[string]interface{})
@@ -785,6 +787,7 @@ func getOverwatchPlayerStats(params []string) {
 			weaponAccuracyPersistent = topHeroStatsPersistent["weaponAccuracy"].(float64)
 			gamesWonPersistent = topHeroStatsPersistent["gamesWon"].(float64)
 			kdPersistent = topHeroStatsPersistent["eliminationsPerLife"].(float64)
+
 		}
 
 		roleSpecific := "-"
@@ -815,7 +818,7 @@ func getOverwatchPlayerStats(params []string) {
 		kdLive := topHeroStatsLive["eliminationsPerLife"].(float64)
 		fields = append(fields, discordEmbedFieldObject{
 			Name: fmt.Sprintf("Top Hero #%d %s", counter, HeroIconMap[strings.ToLower(v.Key)]),
-			Value: fmt.Sprintf("Games played (all/today): **%v**/**%v**\nGames won (all/today): **%v**/**%v** %s\n Win Percentage: **%.2f%%**\nKD: **%.2f** %s\nDamagePerGame: **%.2f** %s\n%s\n%s",
+			Value: fmt.Sprintf("Games played (all/today): **%v**/**%v**\nGames won (all/today): **%v**/**%v** %s\nWin Percentage: **%.2f%%**\nKD: **%.2f** %s\nDamagePerGame: **%.2f** %s\n%s\n%s",
 				v.Value, float64(v.Value)-gamesPlayedPersistent,
 				gamesWonLive, gamesWonLive-gamesWonPersistent, getTrendIcon(gamesWonLive, gamesWonPersistent),
 				winPercentageLive,
