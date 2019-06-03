@@ -128,7 +128,7 @@ var (
 		"poll":       startReadyPoll,
 		"+":          setUserReady,
 		"-":          setUserNotReady,
-		"deletePoll": removePoll,
+		"deletepoll": removePoll,
 		"comps":      getAllCompositions,
 	}
 
