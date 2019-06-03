@@ -73,6 +73,7 @@ type discordUserObject struct {
 	Username      string `json:"username"`
 	Discriminator string `json:"discriminator"`
 	Avatar        string `json:"avatar"`
+	Bot           bool   `json:"bot"`
 }
 
 type discordReadyEventObject struct {

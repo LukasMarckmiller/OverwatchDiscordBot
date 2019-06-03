@@ -27,6 +27,10 @@ func (e *events) handleMessageCreate(event discordWebsocketPayloadPresentation) 
 	if e.cachedMessagePayload.Author.Id == thisSession.ws.BotUserId {
 		return nil
 	}
+	//Filter if author is a bot to avoid getting triggered by other bots and avoid message flooding
+	if e.cachedMessagePayload.Author.Bot {
+		return nil
+	}
 
 	command := strings.TrimPrefix(strings.Split(e.cachedMessagePayload.Content, " ")[0], prefix)
 	cmd, ok := commandMap[strings.ToLower(command)]
