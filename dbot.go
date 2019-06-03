@@ -738,7 +738,7 @@ func getOverwatchPlayerStats(params []string) {
 	messageObject.Embed.Thumbnail.Url = owPlayerLiveStats.RatingIcon
 	fields := []discordEmbedFieldObject{
 		{Name: "Rating", Value: strconv.Itoa(owPlayerLiveStats.Rating) + " SR", Inline: true},
-		{Name: "Trend", Value: strconv.Itoa(owPlayerLiveStats.Rating-owPlayerPersistenceStats.OWPlayer.Rating) + " SR", Inline: true},
+		{Name: "Trend", Value: fmt.Sprintf("%+d SR", owPlayerLiveStats.Rating-owPlayerPersistenceStats.OWPlayer.Rating), Inline: true},
 		{Name: "Played (all)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played), Inline: true},
 		{Name: "Won (all)", Value: fmt.Sprintf("%d  Winrate: %d%%", owPlayerLiveStats.CompetitiveStats.Games.Won, winrateAll), Inline: true},
 		{Name: "Played (today)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played - owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Played), Inline: true},
