@@ -50,10 +50,9 @@ Just write an [Issue](https://github.com/LukasMarckmiller/OverwatchDiscordBot/is
 
 # Contribute
 If you want to contribute in this project, feel free to do so.
-First you need a Discord Bot API Token in order to send requests to the discord api endpoint. Feel free to contact me and i will send you the bot token. It should also be possible using other valid bot tokens to authenticate the websocket session (not tested).
+If you want to create your own bot based in this Code you need a Discord Bot API Token in order to send requests to the discord api endpoint. 
 
-MIT License
-
+# License MIT
 Copyright (c) 2019 Lukas Marckmiller
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
