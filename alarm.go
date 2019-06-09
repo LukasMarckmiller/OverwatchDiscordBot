@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func startAlarmClock(hour int, minute int, second int, pollingFunc func() error, errorChan chan int) {
+func startAlarmClock(hour int, minute int, second int, pollingFunc func() error, errorChan chan bool) {
 	now := time.Now()
 	year, month, day := time.Now().Date()
 	alarmTime := time.Date(year, month, day, hour, minute, second, 0, now.Location())

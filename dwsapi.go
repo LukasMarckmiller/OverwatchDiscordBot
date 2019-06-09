@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"runtime"
+	"runtime/debug"
 	"strconv"
 	"time"
 )
@@ -131,11 +132,13 @@ func (s *websocketSession) openCon() (*websocket.Conn, error) {
 }
 
 func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
-
 	//Recover on panic
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println(r)
+			//fmt.Println(r)
+			debug.PrintStack()
+			_, fn, line, _ := runtime.Caller(1)
+			fmt.Printf("[error] %s:%d %v", fn, line, r)
 			return
 		}
 	}()

@@ -23,7 +23,7 @@ var thisSession session
 
 func main() {
 	thisSession = session{}
-
+	onError := make(chan bool)
 	for {
 		thisSession.ws = &websocketSession{SequenzNumber: 0}
 
@@ -42,7 +42,6 @@ func main() {
 			break
 		}
 		thisSession.db = dbs
-		onError := make(chan int)
 		startAlarmClock(8, 0, 0, pollingCustomPlayers, onError) //Set alarm clock for polling stats to 6:00:00am (pm would be setAlarmClock(18,0,0), timezone is based on current timezone
 
 		err = thisSession.ws.startListener(con)
@@ -51,7 +50,7 @@ func main() {
 			fmt.Printf("Failed to listen to discord websocket connection. Fallback mechanism is trying to connect again in 5 seconds\n")
 			fmt.Printf("Error:\n%v\n", err)
 			_ = con.Close()
-			close(onError)
+			onError <- true
 			time.Sleep(5 * time.Second)
 			continue
 		}

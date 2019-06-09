@@ -740,9 +740,9 @@ func getOverwatchPlayerStats(params []string) {
 		{Name: "Rating", Value: strconv.Itoa(owPlayerLiveStats.Rating) + " SR", Inline: true},
 		{Name: "Trend", Value: fmt.Sprintf("%+d SR", owPlayerLiveStats.Rating-owPlayerPersistenceStats.OWPlayer.Rating), Inline: true},
 		{Name: "Played (all)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played), Inline: true},
-		{Name: "Won (all)", Value: fmt.Sprintf("%d  Winrate: %d%%", owPlayerLiveStats.CompetitiveStats.Games.Won, winrateAll), Inline: true},
+		{Name: "Won (all)", Value: fmt.Sprintf("%d  *Win Percentage: %d%%*", owPlayerLiveStats.CompetitiveStats.Games.Won, winrateAll), Inline: true},
 		{Name: "Played (today)", Value: strconv.Itoa(owPlayerLiveStats.CompetitiveStats.Games.Played - owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Played), Inline: true},
-		{Name: "Won (today)", Value: fmt.Sprintf("%d  Winrate: %d%%",
+		{Name: "Won (today)", Value: fmt.Sprintf("%d  *Win Percentage: %d%%*",
 			owPlayerLiveStats.CompetitiveStats.Games.Won-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Won, winrateToday), Inline: true},
 	}
 	//Dynamic hero stats
@@ -768,10 +768,10 @@ func getOverwatchPlayerStats(params []string) {
 		gamesWonPersistent := 0.0
 		kdPersistent := 0.0
 		gamesPlayedPersistent := 0.0
+		winPercentagePersistent := 0.0
 		//Persistent
 		if carrerStatsPersistent != nil && carrerStatsPersistent[v.Key] != nil {
 			heroStatsPersistent := carrerStatsPersistent[v.Key].(map[string]interface{})
-
 			topHeroStatsPersistent := topHeroesPersistent[v.Key].(map[string]interface{})
 			combatPersistent := heroStatsPersistent["combat"]
 			gamePersistent := heroStatsPersistent["game"].(map[string]interface{})
@@ -787,6 +787,7 @@ func getOverwatchPlayerStats(params []string) {
 			weaponAccuracyPersistent = topHeroStatsPersistent["weaponAccuracy"].(float64)
 			gamesWonPersistent = topHeroStatsPersistent["gamesWon"].(float64)
 			kdPersistent = topHeroStatsPersistent["eliminationsPerLife"].(float64)
+			winPercentagePersistent = topHeroStatsPersistent["winPercentage"].(float64)
 
 		}
 
@@ -818,10 +819,10 @@ func getOverwatchPlayerStats(params []string) {
 		kdLive := topHeroStatsLive["eliminationsPerLife"].(float64)
 		fields = append(fields, discordEmbedFieldObject{
 			Name: fmt.Sprintf("Top Hero #%d %s", counter, HeroIconMap[strings.ToLower(v.Key)]),
-			Value: fmt.Sprintf("Games played (all/today): **%v**/**%v**\nGames won (all/today): **%v**/**%v** %s\nWin Percentage: **%.2f%%**\nKD: **%.2f** %s\nDamagePerGame: **%.2f** %s\n%s\n%s",
+			Value: fmt.Sprintf("Games played (all/today): **%v**/**%v**\nGames won (all/today): **%v**/**%v** %s\nWin Percentage: **%.2f%%** %s\nKD: **%.2f** %s\nDamagePerGame: **%.2f** %s\n%s\n%s",
 				v.Value, float64(v.Value)-gamesPlayedPersistent,
 				gamesWonLive, gamesWonLive-gamesWonPersistent, getTrendIcon(gamesWonLive, gamesWonPersistent),
-				winPercentageLive,
+				winPercentageLive, getTrendIcon(winPercentageLive, winPercentagePersistent),
 				kdLive, getTrendIcon(kdLive, kdPersistent),
 				damageDoneLive, getTrendIcon(damageDoneLive, damageDonePersistent),
 				roleSpecific,
