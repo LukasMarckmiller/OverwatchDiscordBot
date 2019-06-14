@@ -38,11 +38,14 @@ e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim,
   </br>**When all poll slots are ready a message is created and the initiator of the poll is tagged.**
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollFinished.JPG)
 * !Comps: Returns a list of all well known meta Comps of Overwatch during the years.
+  
 # OverwatchDiscordBot
 Websocket based discord bot in GO with [Overwatch stats API](https://ow-api.com/) integration.<br/>
 You can also copy an piece of code written for this project, and use it in your own project without any restrictions.<br/>
 Im aware that there is [this](https://github.com/bwmarrin/discordgo) pretty good discord bindings api out, which also supports websocket connections. But i wanted to write my own small layer.<br/>
+OverwatchDiscordBot is now listed on the discordbotlist. [Vote here](https://discordbots.org/bot/565229640646393895/vote)
 ... More Infos coming soon...<br/>
+
 **Caution!** This is a spare time project to dive deeper into Golang. This is not a professional, high scalable discord bot. 
 
 # More Features? A Bug?
