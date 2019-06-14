@@ -5,7 +5,7 @@
 powered by Google Golang </br>
 
 # Install 
-Just invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=565229640646393895&permissions=0&scope=bot). **The profile visibility by default is set to private, it must be set to PUBLIC in order to retriev data form the Overwatch Web Scraper API!!**.</br>*You should check out the !Config Command first*.</br> The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
+Just invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=565229640646393895&permissions=0&scope=bot). **The profile visibility by default is set to private, it must be set to PUBLIC in order to retriev data form the Overwatch Web Scraper API!!**.</br>*You should check out the !Config Command first*.
 Type !Help to see a list of currently supported commands.</br>
 This list changes frequently as many new features coming out. </br>
 Join our discord for support, news, or feature requests! [OverwatchTeamBotDeveloper Discord](https://discord.gg/x6RJhg)
@@ -43,7 +43,8 @@ e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim,
 Websocket based discord bot in GO with [Overwatch stats API](https://ow-api.com/) integration.<br/>
 You can also copy an piece of code written for this project, and use it in your own project without any restrictions.<br/>
 Im aware that there is [this](https://github.com/bwmarrin/discordgo) pretty good discord bindings api out, which also supports websocket connections. But i wanted to write my own small layer.<br/>
-OverwatchDiscordBot is now listed on the discordbotlist. [Vote here](https://discordbots.org/bot/565229640646393895/vote)
+OverwatchDiscordBot is now listed on the discordbotlist. [Vote here](https://discordbots.org/bot/565229640646393895/vote)</br> 
+The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
 ... More Infos coming soon...<br/>
 
 **Caution!** This is a spare time project to dive deeper into Golang. This is not a professional, high scalable discord bot. 
