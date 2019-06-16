@@ -149,6 +149,7 @@ func getAllCompositions(params []string) {
 	firstPage.Embed.Color = 0x970097
 	firstPage.Embed.Thumbnail.Url = OverwatchIcon
 	firstPage.Embed.Footer.Text = TipCertainComp
+	firstPage.Embed.Footer.IconUrl = OverwatchIcon
 
 	//First page
 	firstPage.Embed.Fields = []discordEmbedFieldObject{
@@ -181,6 +182,7 @@ func getAllCompositions(params []string) {
 	secondPage.Embed.Color = 0x970097
 	secondPage.Embed.Thumbnail.Url = OverwatchIcon
 	secondPage.Embed.Footer.Text = TipCertainComp
+	secondPage.Embed.Footer.IconUrl = OverwatchIcon
 	secondPage.Embed.Fields = []discordEmbedFieldObject{
 		{Name: "Doomfist-McCree", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dps, Doomfist, Mcree, Support, Ana, Lucio)},
 		{Name: "Junkrat-Widow Defense", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Orisa, Dva, Dps, Junkrat, Widowmaker, Support, Zen, Mercy)},
@@ -219,6 +221,7 @@ func removePoll(params []string) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollCreated
+		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 		if _, err := sendMessage(discordMessageRequest); err != nil {
 			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 			return
@@ -264,6 +267,7 @@ func checkIfPollIsDone(cachedPollObject pollCacheObject) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = InfoPollTimeout
+		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 		discordMessageRequest.Content = "<@" + cachedPollObject.Creator.Id + ">"
 		var cachedPollMembers []discordEmbedFieldObject
 		for _, val := range cachedPollObject.Members {
@@ -318,6 +322,7 @@ func setUserNotReady(params []string) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollAccept
+		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 		if _, err := sendMessage(discordMessageRequest); err != nil {
 			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 			return
@@ -359,6 +364,7 @@ func setUserReady(params []string) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollAccept
+		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 		if _, err := sendMessage(discordMessageRequest); err != nil {
 			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 			return
@@ -397,6 +403,7 @@ func startReadyPoll(params []string) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollUpdate
+		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 
 		var cachedPollMembers []discordEmbedFieldObject
 		for _, val := range cachedPoll.Members {
@@ -441,6 +448,7 @@ func startReadyPoll(params []string) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipPollCreated
+		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 		startTimer(Timeout, func() {
 
 			cachedPoll, ok := pollCache[guildId+channelId]
@@ -575,6 +583,7 @@ func getTrainingTimes(params []string) {
 		discordMessageRequest.Embed.Color = 0x970097
 		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 		discordMessageRequest.Embed.Footer.Text = TipMarkup
+		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 		if _, err := sendMessage(discordMessageRequest); err != nil {
 			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 			return
@@ -592,6 +601,7 @@ func getTrainingTimes(params []string) {
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = TipChangeTraining
+	discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 	if _, err := sendMessage(discordMessageRequest); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 		return
@@ -710,10 +720,12 @@ func getOverwatchPlayerStats(params []string) {
 	var owPlayerPersistenceStats owStatsPersistenceLayer
 
 	messageObject.Embed.Footer.Text = TipUpdateProfile
+	messageObject.Embed.Footer.IconUrl = OverwatchIcon
 	if err = thisSession.db.readPlayer(param, &owPlayerPersistenceStats); err != nil {
 		//If player is not registered warn and use live stats as persistence stats to avoid weird compared stats
 		owPlayerPersistenceStats.OWPlayer = *owPlayerLiveStats
 		messageObject.Embed.Footer.Text = fmt.Sprintf("WARNING: The requested player is not registered therefore the statistics containing the data of the whole current season. If you want your daily updated statistics you need to call `!Register %v` once.", param)
+		messageObject.Embed.Footer.IconUrl = ErrorIcon
 	}
 
 	//Warning if about to compare account on different platforms
@@ -886,6 +898,7 @@ func setNewOverwatchPlayer(params []string) {
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
 	discordMessageRequest.Embed.Footer.Text = "Tip: To track your sr for each training, just type !Update " + owPlayerLiveStats.Name + " before each training. After or during the Trainig you can see your progress with !Stats " + owPlayerLiveStats.Name
+	discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 
 	if _, err = updateMessage(discordMessageRequest, msg.Id); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error while sending Overwatch stats to discord client: **%v**\n*%v*\n", param, string(err.Error())))
@@ -944,6 +957,7 @@ func sendErrorMessageRequest(message string) {
 	request.Embed.Description = message
 	request.Embed.Thumbnail.Url = ErrorIcon
 	request.Embed.Footer.Text = ErrorFooter
+	request.Embed.Footer.IconUrl = OverwatchIcon
 	_, _ = sendMessage(request)
 }
 
@@ -954,6 +968,7 @@ func sendInfoMessageRequest(message string) {
 	request.Embed.Description = message
 	request.Embed.Thumbnail.Url = OverwatchIcon
 	request.Embed.Footer.Text = InfoUnderConstruction
+	request.Embed.Footer.IconUrl = OverwatchIcon
 	_, _ = sendMessage(request)
 }
 
