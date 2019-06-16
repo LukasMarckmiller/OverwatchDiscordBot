@@ -38,7 +38,7 @@ func (e *events) handleMessageCreate(event discordWebsocketPayloadPresentation) 
 		return nil
 	}
 
-	fmt.Printf("%+v Opcode: %v\n", event.T, event.Op)
+	fmt.Printf("%+v Opcode: %v in Guild %s\n", event.T, event.Op, e.cachedMessagePayload.GuildId)
 
 	content := strings.Trim(strings.Replace(e.cachedMessagePayload.Content, prefix+command, "", -1), " ")
 
@@ -47,6 +47,7 @@ func (e *events) handleMessageCreate(event discordWebsocketPayloadPresentation) 
 	loc := re.FindAllString(content, -1)
 	for _, val := range loc {
 		newVal := strings.Replace(val, " ", "{{@}}", -1)
+		newVal, _ = strconv.Unquote(newVal)
 		content = strings.Replace(content, val, newVal, -1)
 	}
 	var params []string
@@ -55,11 +56,6 @@ func (e *events) handleMessageCreate(event discordWebsocketPayloadPresentation) 
 	}
 
 	for index, val := range params {
-
-		//Try unquoted
-		if unquotedVal, err := strconv.Unquote(val); err == nil {
-			val = unquotedVal
-		}
 		params[index] = strings.Replace(val, "{{@}}", " ", -1)
 	}
 

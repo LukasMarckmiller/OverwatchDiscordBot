@@ -103,7 +103,7 @@ var (
 		"bastion":      Bastion,
 		"roadhog":      Roadhog,
 		"hanzo":        Hanzo,
-		"soldier":      Soldier,
+		"soldier76":    Soldier,
 		"mei":          Mei,
 		"reaper":       Reaper,
 		"pharah":       Pharah,
@@ -788,7 +788,6 @@ func getOverwatchPlayerStats(params []string) {
 			gamesWonPersistent = topHeroStatsPersistent["gamesWon"].(float64)
 			kdPersistent = topHeroStatsPersistent["eliminationsPerLife"].(float64)
 			winPercentagePersistent = topHeroStatsPersistent["winPercentage"].(float64)
-
 		}
 
 		roleSpecific := "-"

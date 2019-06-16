@@ -10,7 +10,6 @@ import (
 	"io"
 	"net/http"
 	"runtime"
-	"runtime/debug"
 	"strconv"
 	"time"
 )
@@ -136,7 +135,7 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 	defer func() {
 		if r := recover(); r != nil {
 			//fmt.Println(r)
-			debug.PrintStack()
+			//debug.PrintStack()
 			_, fn, line, _ := runtime.Caller(1)
 			fmt.Printf("[error] %s:%d %v", fn, line, r)
 			return
@@ -175,7 +174,6 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 		if err = json.Unmarshal(data, &event); err != nil {
 			return err
 		}
-
 		s.SequenzNumber = event.S
 
 		//Handle event
@@ -192,9 +190,6 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 				return err
 			}
 			fmt.Printf("%+v Opcode: %v Guild: %s | %s  \n", event.T, event.Op, guild.Name, guild.Id)
-
-		case EventMessagereactionAdd:
-
 		}
 	}
 }
