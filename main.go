@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -74,22 +73,15 @@ func pollingCustomPlayers() error {
 	}
 
 	for _, player := range playerStats {
-		var guildSettings guildSettingsPersistenceLayer
-		if err = thisSession.db.getGuildConfig(player.Guild, &guildSettings); err != nil && !strings.HasSuffix(err.Error(), "no such file or directory") {
-			return err
-		}
-		//Set defaults if no guild config exists
-		if guildSettings.Platform == "" {
-			guildSettings.Platform = "pc"
-			guildSettings.Region = "eu"
-		}
+		platform := player.Platform
+		region := player.Region
 
-		owPlayerStats, err := getPlayerStats(player.Battletag, guildSettings.Platform, guildSettings.Region)
+		owPlayerStats, err := getPlayerStats(player.Battletag, platform, region)
 		if err != nil {
 			return err
 		}
 
-		var owPersLayerObj = owStatsPersistenceLayer{OWPlayer: *owPlayerStats, Battletag: player.Battletag, Guild: player.Guild}
+		var owPersLayerObj = owStatsPersistenceLayer{OWPlayer: *owPlayerStats, Battletag: player.Battletag, Guild: player.Guild, Platform: platform, Region: region}
 		if err = thisSession.db.writePlayer(owPersLayerObj); err != nil {
 			return err
 		}

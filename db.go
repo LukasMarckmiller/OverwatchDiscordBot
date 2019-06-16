@@ -69,6 +69,8 @@ type owStatsPersistenceLayer struct {
 	Battletag string          `json:"battletag"`
 	OWPlayer  owCompleteStats `json:"ow_player"`
 	Guild     string          `json:"guild"`
+	Platform  string          `json:"platform"`
+	Region    string          `json:"region"`
 }
 
 type trainingDatesPersistenceLayer struct {

@@ -39,7 +39,7 @@ const (
 	ErrorGuildNoParams         = "You need at least one of the following setting parameters. region=eu and/or platform=pc. !Help for further information."
 	ErrorGuildPlatformNotValid = "Your defined platform is not valid. It must be pc,psn (PlayStation) or xbl(Xbox). !Help for further information."
 	ErrorGuildRegionNotValid   = "Your defined region is not valid. It must be eu, us or asia. !Help for further information."
-	ErrorGuildReqionRequired   = "If you define pc as platform you need also define your region (eu,us,asia). !Help for further information."
+	ErrorGuildReqionRequired   = "If you define pc as platform you need also define your region (eu,us,asia) e.g *region=eu*. !Help for further information."
 	//Help Messages
 
 	Timeout = 10 * time.Minute
@@ -711,7 +711,14 @@ func getOverwatchPlayerStats(params []string) {
 
 	messageObject.Embed.Footer.Text = TipUpdateProfile
 	if err = thisSession.db.readPlayer(param, &owPlayerPersistenceStats); err != nil {
-		messageObject.Embed.Footer.Text = fmt.Sprintf("The requested player is not registered therefore the statistics containing the data of the whole current season. If you want your global and daily statistics you need to call `!Register %v` first.", param)
+		//If player is not registered warn and use live stats as persistence stats to avoid weird compared stats
+		owPlayerPersistenceStats.OWPlayer = *owPlayerLiveStats
+		messageObject.Embed.Footer.Text = fmt.Sprintf("WARNING: The requested player is not registered therefore the statistics containing the data of the whole current season. If you want your daily updated statistics you need to call `!Register %v` once.", param)
+	}
+
+	//Warning if about to compare account on different platforms
+	if owPlayerPersistenceStats.Platform != "" && owPlayerPersistenceStats.Platform != config.Platform {
+		sendInfoMessageRequest(fmt.Sprintf("**WARNING:** Platform in saved stats differs from current platform. That means you are about to compare different Accounts.\nIf the Account you are looking for is on platform *__%v__* you need to change the current platform, with the config command.\nIf the Account you are looking for is on platform *__%v__* you need to call the Update Command.", owPlayerPersistenceStats.Platform, config.Platform))
 	}
 
 	var carrerStatsPersistent map[string]interface{}
@@ -867,7 +874,7 @@ func setNewOverwatchPlayer(params []string) {
 		return
 	}
 
-	owStatsPersistenceLayer := owStatsPersistenceLayer{Battletag: param, OWPlayer: *owPlayerLiveStats, Guild: thisSession.ws.events.cachedMessagePayload.GuildId}
+	owStatsPersistenceLayer := owStatsPersistenceLayer{Battletag: param, OWPlayer: *owPlayerLiveStats, Guild: thisSession.ws.events.cachedMessagePayload.GuildId, Platform: config.Platform, Region: config.Region}
 	if err = thisSession.db.writePlayer(owStatsPersistenceLayer); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
 		return
