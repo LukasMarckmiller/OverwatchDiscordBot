@@ -5,8 +5,10 @@
 powered by Google Golang </br>
 
 # Install 
-Just invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=565229640646393895&permissions=0&scope=bot). **The profile visibility by default is set to private, it must be set to PUBLIC in order to retriev data form the Overwatch Web Scraper API!!**.</br>*You should check out the !Config Command first*.</br> The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
-Type !Help to see a list of currently supported commands.</br>
+Just invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=565229640646393895&permissions=0&scope=bot).</br> 
+**The profile visibility by default is set to private, it must be set to PUBLIC in order to retriev data form the Overwatch Web Scraper API!!**.
+</br>*You should check out the !Config Command first*.
+Type !Help to see a list of currently supported commands.</br></br> 
 This list changes frequently as many new features coming out. </br>
 Join our discord for support, news, or feature requests! [OverwatchTeamBotDeveloper Discord](https://discord.gg/x6RJhg)
 # Commands
@@ -18,10 +20,10 @@ Currently supported commands:</br>
 e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim, Review)\r\n:calendar_spiral:Dienstag: ab 19:30 (Scrim, Review)\r\n:medal:Donnerstag ab 19:30 (Ranked)"  Example uses discord markups and emotes like \: muscle\: for :muscle: and \r\n for a new line.</br>
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/setTeams.JPG)
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/GetTeams.JPG)
-* !Stats \<battletag\>: Display player stats (z.B. !Stats Krusher-9911)<br/>
+* !Stats \<battletag\>: Display player live stats and compares them to stored stats(z.B. !Stats Krusher-9911)<br/>
 ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/StatsExtended2.JPG)
 * !Register \<battletag\>: Register new player, the player stats are then stored in the backend and updated on a daily basis (e.g. !Register Krusher-9911)<br/>
-* !Update <battletag>: Update stored player stats (e.g. !Update Krusher-9911)<br/>
+* !Update <battletag>: Update stored player stats manually. (e.g. !Update Krusher-9911)<br/>
   ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/Update.JPG)
 * !Config platform=<pc|xbl|psn> region=<eu|us|asia> prefix=<...>: Default platform is pc and region is eu. If you are playing on Playstation or Xbox call !Config platform=xbl for Xbox and !Config platform=psn for PlayStation. Note you need region only for platform=pc (!Config platform=pc region=eu/us/asia). You can also change the Default prefix from ! To some custom prefix e.g. !Config prefix=&
 * !Poll \<n\>: Starts a ready check poll for n players in the channel the command got posted in.
@@ -38,11 +40,15 @@ e.g. !Training "Trainings: :muscle:\r\n:calendar_spiral:Montag: ab 19:30 (Scrim,
   </br>**When all poll slots are ready a message is created and the initiator of the poll is tagged.**
     ![Example](https://github.com/LukasMarckmiller/OverwatchDiscordBot/blob/master/img/PollFinished.JPG)
 * !Comps: Returns a list of all well known meta Comps of Overwatch during the years.
+  
 # OverwatchDiscordBot
 Websocket based discord bot in GO with [Overwatch stats API](https://ow-api.com/) integration.<br/>
 You can also copy an piece of code written for this project, and use it in your own project without any restrictions.<br/>
 Im aware that there is [this](https://github.com/bwmarrin/discordgo) pretty good discord bindings api out, which also supports websocket connections. But i wanted to write my own small layer.<br/>
+OverwatchDiscordBot is now listed on the discordbotlist. [Vote here](https://discordbots.org/bot/565229640646393895/vote)</br> 
+The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
 ... More Infos coming soon...<br/>
+
 **Caution!** This is a spare time project to dive deeper into Golang. This is not a professional, high scalable discord bot. 
 
 # More Features? A Bug?
