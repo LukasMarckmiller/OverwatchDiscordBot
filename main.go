@@ -57,7 +57,7 @@ func main() {
 }
 
 func pollingCustomPlayers() error {
-	records, err := thisSession.db.driver.ReadAll(CollectionPlayer)
+	records, err := thisSession.db.driver.ReadAll(collectionPlayer)
 	if err != nil {
 		return err
 	}

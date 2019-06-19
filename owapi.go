@@ -48,7 +48,7 @@ import (
 	Rating     int    `json:"rating"`
 	RatingIcon string `json:"ratingIcon"`
 } */
-type heroCombatStats struct {
+type heroCareerStats struct {
 	Assists struct {
 		DefensiveAssists            int     `json:"defensiveAssists"`
 		DefensiveAssistsAvgPer10Min float64 `json:"defensiveAssistsAvgPer10Min"`
@@ -124,7 +124,7 @@ type heroCombatStats struct {
 	} `json:"miscellaneous"`
 }
 
-type heroGameStats struct {
+type topHeroStats struct {
 	TimePlayed          string  `json:"timePlayed"`
 	TimePlayedInSeconds int     `json:"timePlayedInSeconds"`
 	GamesWon            int     `json:"gamesWon"`
@@ -174,12 +174,12 @@ func getPlayerStats(battletag string, platform string, region string) (*owComple
 	url := fmt.Sprintf("https://ow-api.com/v1/stats/%v%v/%v/complete", platform, region, battletag)
 	requ, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
-		return nil, errors.New("An error while retrieving data from the Overwatch stats api occured.\n" + err.Error())
+		return nil, errors.New("An error while retrieving data from the Overwatch stats api occurred\n" + err.Error())
 	}
 
-	resp, err := Client.Do(requ)
+	resp, err := client.Do(requ)
 	if err != nil {
-		return nil, errors.New("An error while retrieving data from the Overwatch stats api occured.\n" + err.Error())
+		return nil, errors.New("An error while retrieving data from the Overwatch stats api occurred\n" + err.Error())
 	}
 
 	bytes, err := ioutil.ReadAll(resp.Body)

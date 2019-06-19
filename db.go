@@ -7,9 +7,9 @@ type dbSession struct {
 }
 
 const (
-	CollectionPlayer   = "player"
-	CollectionTraining = "training"
-	CollectionGuilds   = "guilds"
+	collectionPlayer   = "player"
+	collectionTraining = "training"
+	collectionGuilds   = "guilds"
 )
 
 func createDB(path string) (*dbSession, error) {
@@ -22,7 +22,7 @@ func createDB(path string) (*dbSession, error) {
 }
 
 func (d *dbSession) writePlayer(playerStats owStatsPersistenceLayer) (err error) {
-	if err = d.driver.Write(CollectionPlayer, playerStats.Battletag, playerStats); err != nil {
+	if err = d.driver.Write(collectionPlayer, playerStats.Battletag, playerStats); err != nil {
 		return
 	}
 	return
@@ -30,7 +30,7 @@ func (d *dbSession) writePlayer(playerStats owStatsPersistenceLayer) (err error)
 
 func (d *dbSession) readPlayer(battletag string, playerStats *owStatsPersistenceLayer) (err error) {
 
-	if err = d.driver.Read(CollectionPlayer, battletag, playerStats); err != nil {
+	if err = d.driver.Read(collectionPlayer, battletag, playerStats); err != nil {
 		return
 	}
 
@@ -38,28 +38,28 @@ func (d *dbSession) readPlayer(battletag string, playerStats *owStatsPersistence
 }
 
 func (d *dbSession) updateTrainingDates(guild string, content trainingDatesPersistenceLayer) (err error) {
-	if err = d.driver.Write(CollectionTraining, guild, content); err != nil {
+	if err = d.driver.Write(collectionTraining, guild, content); err != nil {
 		return
 	}
 	return
 }
 
 func (d *dbSession) getTrainingDates(guild string, content *trainingDatesPersistenceLayer) (err error) {
-	if err = d.driver.Read(CollectionTraining, guild, content); err != nil {
+	if err = d.driver.Read(collectionTraining, guild, content); err != nil {
 		return
 	}
 	return
 }
 
 func (d *dbSession) setGuildConfig(guild string, content *guildSettingsPersistenceLayer) (err error) {
-	if err = d.driver.Write(CollectionGuilds, guild, content); err != nil {
+	if err = d.driver.Write(collectionGuilds, guild, content); err != nil {
 		return
 	}
 	return
 }
 
 func (d *dbSession) getGuildConfig(guild string, content *guildSettingsPersistenceLayer) (err error) {
-	if err = d.driver.Read(CollectionGuilds, guild, content); err != nil {
+	if err = d.driver.Read(collectionGuilds, guild, content); err != nil {
 		return
 	}
 	return

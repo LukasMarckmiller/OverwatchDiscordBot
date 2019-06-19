@@ -15,11 +15,11 @@ import (
 )
 
 const (
+	//TokenType specifies the authentication user
 	TokenType               = "Bot"
 	EventReady              = "READY"
 	EventMessageCreate      = "MESSAGE_CREATE"
 	EventGuildCreate        = "GUILD_CREATE"
-	EventMessagereactionAdd = "MESSAGE_REACTION_ADD"
 	DiscordBaseUrl          = "https://discordapp.com/api"
 	DiscordBaseImageUrl     = "https://cdn.discordapp.com"
 	DeviceName              = "Odroid XU4Q"
@@ -27,7 +27,7 @@ const (
 )
 
 var (
-	Client http.Client
+	client http.Client
 )
 
 type websocketSession struct {
@@ -80,7 +80,7 @@ func (s *websocketSession) openCon() (*websocket.Conn, error) {
 	s.SequenzNumber = payload.S
 
 	if payload.Op != 11 {
-		return nil, errors.New(fmt.Sprintf("Expected Opcode 11 as answer to first heartbeat but got %v\n", payload.Op))
+		return nil, fmt.Errorf("Expected Opcode 11 as answer to first heartbeat but got %v\n", payload.Op)
 	}
 
 	//Identity
@@ -104,7 +104,7 @@ func (s *websocketSession) openCon() (*websocket.Conn, error) {
 		return nil, err
 	}
 	if event.T != EventReady {
-		return nil, errors.New(fmt.Sprintf("Failed to idenitfy at discord websocket server. Expected READY but got %v\n", event.T))
+		return nil, fmt.Errorf("Failed to identify at discord websocket server. Expected READY but got %v\n", event.T)
 	}
 	var eventPayload discordReadyEventObject
 	if err = json.Unmarshal(event.D, &eventPayload); err != nil {
@@ -243,7 +243,7 @@ func (s *websocketSession) getUserAvatarOrDefaultUrl(userId string, avatarHash s
 		return
 	}
 	req.Header.Add("Content-Type", "image/webp")
-	resp, err := Client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return
 	}
@@ -266,12 +266,12 @@ func (s *websocketSession) sendHTTPDiscordRequest(method string, URL string, bod
 	}
 	req.Header.Add("Authorization", TokenType+" "+TOKEN)
 	req.Header.Add("Content-type", "application/json")
-	resp, err := Client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != 204 {
-		return nil, errors.New(fmt.Sprintf("HTTP Ok (200) expected, but got %v url: %v %v", resp.StatusCode, method, URL))
+		return nil, fmt.Errorf("HTTP Ok (200) expected, but got %v url: %v %v", resp.StatusCode, method, URL)
 	}
 
 	return resp, err

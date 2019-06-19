@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	//Link to Discord Markup helper document
 	DiscordMarkupHelpURL = "https://gist.github.com/Almeeida/41a664d8d5f3a8855591c2f1e0e07b19"
 	PlatformPC           = "pc"
 	PlatformPS           = "psn"
@@ -23,11 +24,10 @@ const (
 	ErrorIcon     = "https://freeiconshop.com/wp-content/uploads/edd/error-flat.png"
 	ErrorFooter   = "Please try again later. If this error remains, please contact our support by creating an issue on github: https://github.com/LukasMarckmiller/OverwatchDiscordBot/issues"
 	OverwatchIcon = "http://www.stickpng.com/assets/images/586273b931349e0568ad89df.png"
-	LoadingGif    = "https://i.kym-cdn.com/photos/images/original/001/138/377/fcc.gif"
 
-	//Info Messages
-	TipMarkup             = "Tip: You can pimp your text with discord Markups like bold,italic text or you can use discord Emojis with :emoji_name:. For a newline insert \\r\\n into your text."
-	TipChangeTraining     = "Tip: If you want to change the training days just type !Training followed by some text (e.g. !Training \"our new dates\\r\\n\"). You can also use discords Markup for bold, italic or some other styles or emotes with :emote:. Use \\r\\n for a newline."
+	//TipMarkup Info Messages
+	TipMarkup             = "Tip: You can pimp your text with discord Markups like bold,italic text or you can use discord Emojis with :emoji_name:. For a newline insert \\n into your text."
+	TipChangeTraining     = "Tip: If you want to change the training days just type !Training followed by some text (e.g. !Training \"our new dates \\n\"). You can also use discords Markup for bold, italic or some other styles or emotes with :emote:. Use \\n for a newline."
 	TipUpdateProfile      = "Tip: You probably need to close and start Overwatch in order to get the newest stats. If you want the stats for your training session instead of the whole day you need to call !Update before your training."
 	TipPollCreated        = "Tip: If you already created a poll, you can check the status with another !Poll call."
 	TipPollUpdate         = "Tip: You can accept a poll with !+ or decline it with !-. Note: You have to be in the same Channel the poll started to accept or decline it!"
@@ -227,10 +227,10 @@ func removePoll(params []string) {
 			return
 		}
 		return
-	} else {
-		sendInfoMessageRequest("No Poll was created for this chanel to delete. First create a Poll with !Poll <n>. !Help for more details.")
-		return
 	}
+
+	sendInfoMessageRequest("No Poll was created for this chanel to delete. First create a Poll with !Poll <n>. !Help for more details.")
+	return
 }
 
 func countReadyMembers(cachedObject pollCacheObject) (count int) {
@@ -247,7 +247,7 @@ func checkIfPollIsDone(cachedPollObject pollCacheObject) {
 
 	//Everybody is ready
 	if len(cachedPollObject.Members) == cachedPollObject.Size {
-		//Check if everybody responed with ready
+		//Check if everybody responded with ready
 		for _, member := range cachedPollObject.Members {
 			if !member.Ready {
 				//If someone is not ready wait for everybody to be ready
@@ -329,10 +329,9 @@ func setUserNotReady(params []string) {
 		}
 		checkIfPollIsDone(cachedPoll)
 		return
-	} else {
-		sendInfoMessageRequest("You have to create a poll first in order to accept or decline. Polls can be created with !Poll <num of members>.")
-		return
 	}
+	sendInfoMessageRequest("You have to create a poll first in order to accept or decline. Polls can be created with !Poll <num of members>.")
+	return
 }
 
 func setUserReady(params []string) {
@@ -371,18 +370,17 @@ func setUserReady(params []string) {
 		}
 		checkIfPollIsDone(cachedPoll)
 		return
-	} else {
-		sendInfoMessageRequest("You have to create a poll first in order to accept or decline. Polls can be created with !Poll <num of members>.")
-		return
 	}
+	sendInfoMessageRequest("You have to create a poll first in order to accept or decline. Polls can be created with !Poll <num of members>.")
+	return
 }
 
 func getReadyStatValue(ready bool, reason string) string {
 	if ready {
 		return ":white_check_mark: Ready"
-	} else {
-		return ":x: Not Ready " + reason
 	}
+
+	return ":x: Not Ready " + reason
 }
 
 func startReadyPoll(params []string) {
@@ -530,20 +528,13 @@ func setGuildConfig(params []string) {
 
 	//Try load settings
 	if err := thisSession.db.getGuildConfig(thisSession.ws.events.cachedMessagePayload.GuildId, &guildSettings); err != nil {
+		//Create new
 		guildSettings = guildSettingsPersistenceLayer{Platform: platform, Region: region, Prefix: prefix}
-		if err := thisSession.db.setGuildConfig(thisSession.ws.events.cachedMessagePayload.GuildId, &guildSettings); err != nil {
-			sendErrorMessageRequest("Error while writing guild config.")
-			return
-		}
+
 		discordMessageRequest.Embed.Author.Name = "Discord Server Config Created"
-		discordMessageRequest.Embed.Color = 0x970097
-		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		if _, err := sendMessage(discordMessageRequest); err != nil {
-			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
-			return
-		}
-		return
-	} else { //Create new if not found
+
+	} else {
+		//Update Existing
 		if prefix != "" {
 			guildSettings.Prefix = prefix
 		}
@@ -553,18 +544,18 @@ func setGuildConfig(params []string) {
 			guildSettings.Region = region
 		}
 
-		if err := thisSession.db.setGuildConfig(thisSession.ws.events.cachedMessagePayload.GuildId, &guildSettings); err != nil {
-			sendErrorMessageRequest("Error while writing guild config.")
-			return
-		}
-
 		discordMessageRequest.Embed.Author.Name = "Discord Server Config Updated"
-		discordMessageRequest.Embed.Color = 0x970097
-		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		if _, err := sendMessage(discordMessageRequest); err != nil {
-			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
-			return
-		}
+	}
+
+	if err := thisSession.db.setGuildConfig(thisSession.ws.events.cachedMessagePayload.GuildId, &guildSettings); err != nil {
+		sendErrorMessageRequest("Error while writing guild config.")
+		return
+	}
+
+	discordMessageRequest.Embed.Color = 0x970097
+	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+	if _, err := sendMessage(discordMessageRequest); err != nil {
+		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 		return
 	}
 }
@@ -647,15 +638,14 @@ func getMostPlayedHeroesInMap(carrerStatsMap map[string]interface{}) []kv {
 	var gamesPlayedPerHero []kv
 
 	for hero, stats := range carrerStatsMap {
-		stats := stats.(map[string]interface{})
-		game := stats["game"].(map[string]interface{})
+		game := stats.(map[string]interface{})["game"].(map[string]interface{})
 		var gamesPlayedPart = game["gamesPlayed"]
 		var gamesPlayed int
+
 		if gamesPlayedPart == nil {
-			gamesPlayedPart = 0
+			gamesPlayed = 0
 		} else {
 			gamesPlayed = int(game["gamesPlayed"].(float64))
-
 		}
 		gamesPlayedPerHero = append(gamesPlayedPerHero, kv{hero, gamesPlayed})
 	}
@@ -764,7 +754,20 @@ func getOverwatchPlayerStats(params []string) {
 		{Name: "Won (today)", Value: fmt.Sprintf("%d  *Win Percentage: %d%%*",
 			owPlayerLiveStats.CompetitiveStats.Games.Won-owPlayerPersistenceStats.OWPlayer.CompetitiveStats.Games.Won, winrateToday), Inline: true},
 	}
+	dynamicFields := addDynamicHeroStatsAsEmbedFields(herosLiveOrdered, carrerStatsLive, topHeroesLive, carrerStatsPersistent, topHeroesPersistent)
+	fields = append(fields, dynamicFields...)
+	messageObject.Embed.Fields = fields
+
+	if _, err = updateMessage(messageObject, msg.Id); err != nil {
+		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
+		return
+	}
+	return
+}
+
+func addDynamicHeroStatsAsEmbedFields(herosLiveOrdered []kv, carrerStatsLive map[string]interface{}, topHeroesLive map[string]interface{}, carrerStatsPersistent map[string]interface{}, topHeroesPersistent map[string]interface{}) []discordEmbedFieldObject {
 	//Dynamic hero stats
+	var fields []discordEmbedFieldObject
 	counter := 1
 	for i, v := range herosLiveOrdered {
 		if v.Key == "allHeroes" {
@@ -849,12 +852,7 @@ func getOverwatchPlayerStats(params []string) {
 		counter++
 	}
 
-	messageObject.Embed.Fields = fields
-	if _, err = updateMessage(messageObject, msg.Id); err != nil {
-		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
-		return
-	}
-	return
+	return fields
 }
 
 func setNewOverwatchPlayer(params []string) {
@@ -897,7 +895,7 @@ func setNewOverwatchPlayer(params []string) {
 	discordMessageRequest.Embed.Description = ""
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-	discordMessageRequest.Embed.Footer.Text = "Tip: To track your sr for each training, just type !Update " + owPlayerLiveStats.Name + " before each training. After or during the Trainig you can see your progress with !Stats " + owPlayerLiveStats.Name
+	discordMessageRequest.Embed.Footer.Text = "Tip: To track your sr for each training, just type !Update " + owPlayerLiveStats.Name + " before each training. After or during the Training you can see your progress with !Stats " + owPlayerLiveStats.Name
 	discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
 
 	if _, err = updateMessage(discordMessageRequest, msg.Id); err != nil {
