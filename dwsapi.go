@@ -16,14 +16,14 @@ import (
 
 const (
 	//TokenType specifies the authentication user
-	TokenType               = "Bot"
-	EventReady              = "READY"
-	EventMessageCreate      = "MESSAGE_CREATE"
-	EventGuildCreate        = "GUILD_CREATE"
-	DiscordBaseUrl          = "https://discordapp.com/api"
-	DiscordBaseImageUrl     = "https://cdn.discordapp.com"
-	DeviceName              = "Odroid XU4Q"
-	BrowserName             = "Chromium"
+	TokenType           = "Bot"
+	EventReady          = "READY"
+	EventMessageCreate  = "MESSAGE_CREATE"
+	EventGuildCreate    = "GUILD_CREATE"
+	DiscordBaseUrl      = "https://discordapp.com/api"
+	DiscordBaseImageUrl = "https://cdn.discordapp.com"
+	DeviceName          = "Odroid XU4Q"
+	BrowserName         = "Chromium"
 )
 
 var (
