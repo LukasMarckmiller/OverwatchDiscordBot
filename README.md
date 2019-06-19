@@ -1,6 +1,6 @@
 [![Go Report Card](https://goreportcard.com/badge/github.com/LukasMarckmiller/OverwatchDiscordBot)](https://goreportcard.com/report/github.com/LukasMarckmiller/OverwatchDiscordBot) 
 [![Discord Bots](https://discordbots.org/api/widget/status/565229640646393895.svg)](https://discordbots.org/bot/565229640646393895)
-[![Support](https://img.shields.io/discord/576930946276655124.svg?label=help)](https://discord.gg/rrAzmG)
+[![Support](https://img.shields.io/discord/576930946276655124.svg?label=help)](https://discord.gg/rrAzmG)</br>
 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Go_gopher_mascot_bw.png" width="250" height="250" title="GoGopher" alt="GoGopher">
 powered by Google Golang </br>
 
