@@ -12,111 +12,110 @@ import (
 
 const (
 	//Link to Discord Markup helper document
-	DiscordMarkupHelpURL = "https://gist.github.com/Almeeida/41a664d8d5f3a8855591c2f1e0e07b19"
-	PlatformPC           = "pc"
-	PlatformPS           = "psn"
-	PlatformXbox         = "xbl"
+	discordMarkupHelpURL = "https://gist.github.com/Almeeida/41a664d8d5f3a8855591c2f1e0e07b19"
+	platformPC           = "pc"
+	platformPS           = "psn"
+	platformXbox         = "xbl"
 
-	RegionEU   = "eu"
-	RegionUS   = "us"
-	RegionAsia = "asia"
+	regionEU   = "eu"
+	regionUS   = "us"
+	regionAsia = "asia"
 
-	ErrorIcon     = "https://freeiconshop.com/wp-content/uploads/edd/error-flat.png"
-	ErrorFooter   = "Please try again later. If this error remains, please contact our support by creating an issue on github: https://github.com/LukasMarckmiller/OverwatchDiscordBot/issues"
-	OverwatchIcon = "http://www.stickpng.com/assets/images/586273b931349e0568ad89df.png"
+	errorIcon     = "https://freeiconshop.com/wp-content/uploads/edd/error-flat.png"
+	errorFooter   = "Please try again later. If this error remains, please contact our support by creating an issue on github: https://github.com/LukasMarckmiller/OverwatchDiscordBot/issues"
+	overwatchIcon = "http://www.stickpng.com/assets/images/586273b931349e0568ad89df.png"
 
-	//TipMarkup Info Messages
-	TipMarkup             = "Tip: You can pimp your text with discord Markups like bold,italic text or you can use discord Emojis with :emoji_name:. For a newline insert \\n into your text."
-	TipChangeTraining     = "Tip: If you want to change the training days just type !Training followed by some text (e.g. !Training \"our new dates \\n\"). You can also use discords Markup for bold, italic or some other styles or emotes with :emote:. Use \\n for a newline."
-	TipUpdateProfile      = "Tip: You probably need to close and start Overwatch in order to get the newest stats. If you want the stats for your training session instead of the whole day you need to call !Update before your training."
-	TipPollCreated        = "Tip: If you already created a poll, you can check the status with another !Poll call."
-	TipPollUpdate         = "Tip: You can accept a poll with !+ or decline it with !-. Note: You have to be in the same Channel the poll started to accept or decline it!"
-	TipPollAccept         = "Tip: You can specify a reason when you decline a poll with !- \"the reason comes here\"."
-	TipCertainComp        = "Tip: If you want additional infos to a certain comp just type !Comps followed by the Name of the comp you are looking for. **NOTE: FEATURE UNDER CONSTRUCTION**"
-	InfoPollTimeout       = "Note: A poll times out after 10 min. This time cant be changed by the user."
-	InfoUnderConstruction = "Note: This bot is still under construction. Stored data can be removed, or Commands renamed any time while this bot is not official released."
+	tipMarkup             = "Tip: You can pimp your text with discord Markups like bold,italic text or you can use discord Emojis with :emoji_name:. For a newline insert \\n into your text."
+	tipChangeTraining     = "Tip: If you want to change the training days just type !Training followed by some text (e.g. !Training \"our new dates \\n\"). You can also use discords Markup for bold, italic or some other styles or emotes with :emote:. Use \\n for a newline."
+	tipUpdateProfile      = "Tip: You probably need to close and start Overwatch in order to get the newest stats. If you want the stats for your training session instead of the whole day you need to call !Update before your training."
+	tipPollCreated        = "Tip: If you already created a poll, you can check the status with another !Poll call."
+	tipPollUpdate         = "Tip: You can accept a poll with !+ or decline it with !-. Note: You have to be in the same Channel the poll started to accept or decline it!"
+	tipPollAccept         = "Tip: You can specify a reason when you decline a poll with !- \"the reason comes here\"."
+	tipCertainComp        = "Tip: If you want additional infos to a certain comp just type !Comps followed by the Name of the comp you are looking for. **NOTE: FEATURE UNDER CONSTRUCTION**"
+	infoPollTimeout       = "Note: A poll times out after 10 min. This time cant be changed by the user."
+	infoUnderConstruction = "Note: This bot is still under construction. Stored data can be removed, or Commands renamed any time while this bot is not official released."
 	//Error Messages
-	ErrorGuildNoParams         = "You need at least one of the following setting parameters. region=eu and/or platform=pc. !Help for further information."
-	ErrorGuildPlatformNotValid = "Your defined platform is not valid. It must be pc,psn (PlayStation) or xbl(Xbox). !Help for further information."
-	ErrorGuildRegionNotValid   = "Your defined region is not valid. It must be eu, us or asia. !Help for further information."
-	ErrorGuildReqionRequired   = "If you define pc as platform you need also define your region (eu,us,asia) e.g *region=eu*. !Help for further information."
+	errorGuildNoParams         = "You need at least one of the following setting parameters. region=eu and/or platform=pc. !Help for further information."
+	errorGuildPlatformNotValid = "Your defined platform is not valid. It must be pc,psn (PlayStation) or xbl(Xbox). !Help for further information."
+	errorGuildRegionNotValid   = "Your defined region is not valid. It must be eu, us or asia. !Help for further information."
+	errorGuildReqionRequired   = "If you define pc as platform you need also define your region (eu,us,asia) e.g *region=eu*. !Help for further information."
 	//Help Messages
 
-	Timeout = 10 * time.Minute
+	timeout = 10 * time.Minute
 
 	//Overwatch role icon ids
-	Tank    = "<:tank:580725264435380224>"
-	Support = "<:heal:580725264422535184>"
-	Dps     = "<:dps:580725264322002954>"
+	tank    = "<:tank:580725264435380224>"
+	support = "<:heal:580725264422535184>"
+	dps     = "<:dps:580725264322002954>"
 
 	//Overwatch hero icon ids
 
-	Zarya        = "<:zarya:580725388276269076>"
-	Reinhardt    = "<:reinhardt:580725264250568745>"
-	Winston      = "<:winston:580725264405889057>"
-	Dva          = "<:dva:580725264082796544>"
-	Roadhog      = "<:roadhog:580730509970243584>"
-	Wreckingball = "<:wreckingball:580737541976752138>"
-	Orisa        = "<:orisa:580737541821693963>"
+	zarya        = "<:zarya:580725388276269076>"
+	reinhardt    = "<:reinhardt:580725264250568745>"
+	winston      = "<:winston:580725264405889057>"
+	dva          = "<:dva:580725264082796544>"
+	roadhog      = "<:roadhog:580730509970243584>"
+	wreckingball = "<:wreckingball:580737541976752138>"
+	orisa        = "<:orisa:580737541821693963>"
 
-	Ana      = "<:ana:580731268833083402>"
-	Lucio    = "<:lucio:580725263994716190>"
-	Mercy    = "<:mercy:580725264263413760>"
-	Zen      = "<:zen:580725264762404879>"
-	Brigitte = "<:brigitte:580737541716574233>"
-	Moira    = "<:moira:580737542094061571>"
-	Baptiste = "<:baptiste:580738605459308544>"
+	ana      = "<:ana:580731268833083402>"
+	lucio    = "<:lucio:580725263994716190>"
+	mercy    = "<:mercy:580725264263413760>"
+	zen      = "<:zen:580725264762404879>"
+	brigitte = "<:brigitte:580737541716574233>"
+	moira    = "<:moira:580737542094061571>"
+	baptiste = "<:baptiste:580738605459308544>"
 
-	Mcree      = "<:mcree:580725264087253012>"
-	Widowmaker = "<:widowmaker:580725264154230795>"
-	Tracer     = "<:tracer:580725264351494172>"
-	Genji      = "<:genji:580725263696920598>"
-	Doomfist   = "<:doomfist:580729098348003328>"
-	Bastion    = "<:bastion:580729763832922113>"
-	Hanzo      = "<:hanzo:580731268170514433>"
-	Soldier    = "<:soldier:580731909978718258>"
-	Mei        = "<:mei:580732628903264256>"
-	Reaper     = "<:reaper:580732628794212390>"
-	Pharah     = "<:pharah:580737542190792704>"
-	Sombra     = "<:sombra:580737542236930058>"
-	Junkrat    = "<:junkrat:580737542186467329>"
-	Torbjrn    = "<:torbjrn:580738778017169421>"
-	Symmetra   = "<:symmetra:583253093089542166>"
-	Ashe       = "<:ashe:583253081094094851>"
+	mcree      = "<:mcree:580725264087253012>"
+	widowmaker = "<:widowmaker:580725264154230795>"
+	tracer     = "<:tracer:580725264351494172>"
+	genji      = "<:genji:580725263696920598>"
+	doomfist   = "<:doomfist:580729098348003328>"
+	bastion    = "<:bastion:580729763832922113>"
+	hanzo      = "<:hanzo:580731268170514433>"
+	soldier    = "<:soldier:580731909978718258>"
+	mei        = "<:mei:580732628903264256>"
+	reaper     = "<:reaper:580732628794212390>"
+	pharah     = "<:pharah:580737542190792704>"
+	sombra     = "<:sombra:580737542236930058>"
+	junkrat    = "<:junkrat:580737542186467329>"
+	torbjrn    = "<:torbjrn:580738778017169421>"
+	symmetra   = "<:symmetra:583253093089542166>"
+	ashe       = "<:ashe:583253081094094851>"
 )
 
 var (
 	HeroIconMap = map[string]string{
-		"zenyatta":     Zen,
-		"ana":          Ana,
-		"zarya":        Zarya,
-		"reinhardt":    Reinhardt,
-		"mcree":        Mcree,
-		"widowmaker":   Widowmaker,
-		"lucio":        Lucio,
-		"mercy":        Mercy,
-		"winston":      Winston,
-		"dva":          Dva,
-		"tracer":       Tracer,
-		"genji":        Genji,
-		"doomfist":     Doomfist,
-		"bastion":      Bastion,
-		"roadhog":      Roadhog,
-		"hanzo":        Hanzo,
-		"soldier76":    Soldier,
-		"mei":          Mei,
-		"reaper":       Reaper,
-		"pharah":       Pharah,
-		"wreckingball": Wreckingball,
-		"sombra":       Sombra,
-		"brigitte":     Brigitte,
-		"moira":        Moira,
-		"junkrat":      Junkrat,
-		"orisa":        Orisa,
-		"baptiste":     Baptiste,
-		"torbjorn":     Torbjrn,
-		"ashe":         Ashe,
-		"symmetra":     Symmetra,
+		"zenyatta":     zen,
+		"ana":          ana,
+		"zarya":        zarya,
+		"reinhardt":    reinhardt,
+		"mcree":        mcree,
+		"widowmaker":   widowmaker,
+		"lucio":        lucio,
+		"mercy":        mercy,
+		"winston":      winston,
+		"dva":          dva,
+		"tracer":       tracer,
+		"genji":        genji,
+		"doomfist":     doomfist,
+		"bastion":      bastion,
+		"roadhog":      roadhog,
+		"hanzo":        hanzo,
+		"soldier76":    soldier,
+		"mei":          mei,
+		"reaper":       reaper,
+		"pharah":       pharah,
+		"wreckingball": wreckingball,
+		"sombra":       sombra,
+		"brigitte":     brigitte,
+		"moira":        moira,
+		"junkrat":      junkrat,
+		"orisa":        orisa,
+		"baptiste":     baptiste,
+		"torbjorn":     torbjrn,
+		"ashe":         ashe,
+		"symmetra":     symmetra,
 	}
 	commandMap = map[string]getCommandContent{
 		"training":   getTrainingTimes,
@@ -132,8 +131,8 @@ var (
 		"comps":      getAllCompositions,
 	}
 
-	platforms = []string{PlatformPC, PlatformPS, PlatformXbox}
-	regions   = []string{RegionEU, RegionUS, RegionAsia}
+	platforms = []string{platformPC, platformPS, platformXbox}
+	regions   = []string{regionEU, regionUS, regionAsia}
 
 	pollCache = map[string]pollCacheObject{}
 )
@@ -147,28 +146,28 @@ func getAllCompositions(params []string) {
 	firstPage.Embed.Title = "Composition Dictionary 1/2"
 	firstPage.Embed.Description = "A historical overview of meta compositions in Overwatch for intermediate viewers."
 	firstPage.Embed.Color = 0x970097
-	firstPage.Embed.Thumbnail.Url = OverwatchIcon
-	firstPage.Embed.Footer.Text = TipCertainComp
-	firstPage.Embed.Footer.IconUrl = OverwatchIcon
+	firstPage.Embed.Thumbnail.Url = overwatchIcon
+	firstPage.Embed.Footer.Text = tipCertainComp
+	firstPage.Embed.Footer.IconUrl = overwatchIcon
 
 	//First page
 	firstPage.Embed.Fields = []discordEmbedFieldObject{
-		{Name: "Classic Death Ball", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dps, Mcree, Widowmaker, Support, Mercy, Lucio)},
-		{Name: "Classic Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Genji, Tracer, Support, Zen, Lucio)},
-		{Name: "El Presidente", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Dva, Dps, Bastion, Mcree, Support, Lucio, Mercy)},
-		{Name: "Double Sniper", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Dva, Dps, Hanzo, Widowmaker, Support, Ana, Lucio)},
-		{Name: "The 2-3-1", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Tracer, Genji, Soldier, Support, Lucio)},
-		{Name: "Classic Anti-dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Dva, Roadhog, Dps, Mcree, Support, Ana, Lucio)},
-		{Name: "The \"N.I.P\" Triple Tank", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Roadhog, Dps, Soldier, Support, Ana, Lucio)},
-		{Name: "Beyblade/Mei-Reaper", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dps, Mei, Reaper, Support, Ana, Lucio)},
-		{Name: "Triple DPS Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dps, Tracer, Genji, Soldier, Support, Zen, Lucio)},
-		{Name: "The \"EnVyUs\" Triple Tank", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Dva, Roadhog, Dps, Soldier, Support, Ana, Lucio)},
-		{Name: "Nanovisor/Nanoblade", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Genji, Soldier, Support, Ana, Lucio)},
-		{Name: "Nanovisor/Nanoblade", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dva, Roadhog, Support, Ana, Lucio)},
-		{Name: "Sombra as Support (No longer possible)", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Tracer, Soldier, Support, Lucio, Sombra)},
-		{Name: "The \"Selfless\"", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Roadhog, Dps, Tracer, Soldier, Support, Ana, Lucio)},
-		{Name: "Pharah Mercy Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Tracer, Pharah, Support, Mercy, Lucio)},
-		{Name: "New Anti-Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dps, Reaper, Junkrat, Support, Ana, Lucio)},
+		{Name: "Classic Death Ball", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, reinhardt, zarya, dps, mcree, widowmaker, support, mercy, lucio)},
+		{Name: "Classic Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, winston, dva, dps, genji, tracer, support, zen, lucio)},
+		{Name: "El Presidente", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, reinhardt, dva, dps, bastion, mcree, support, lucio, mercy)},
+		{Name: "Double Sniper", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, reinhardt, dva, dps, hanzo, widowmaker, support, ana, lucio)},
+		{Name: "The 2-3-1", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, winston, dva, dps, tracer, genji, soldier, support, lucio)},
+		{Name: "Classic Anti-dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, reinhardt, dva, roadhog, dps, mcree, support, ana, lucio)},
+		{Name: "The \"N.I.P\" Triple Tank", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, reinhardt, zarya, roadhog, dps, soldier, support, ana, lucio)},
+		{Name: "Beyblade/Mei-Reaper", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, reinhardt, zarya, dps, mei, reaper, support, ana, lucio)},
+		{Name: "Triple DPS Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, winston, dps, tracer, genji, soldier, support, zen, lucio)},
+		{Name: "The \"EnVyUs\" Triple Tank", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, reinhardt, dva, roadhog, dps, soldier, support, ana, lucio)},
+		{Name: "Nanovisor/Nanoblade", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, winston, dva, dps, genji, soldier, support, ana, lucio)},
+		{Name: "Nanovisor/Nanoblade", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s", tank, reinhardt, zarya, dva, roadhog, support, ana, lucio)},
+		{Name: "Sombra as Support (No longer possible)", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, winston, dva, dps, tracer, soldier, support, lucio, sombra)},
+		{Name: "The \"Selfless\"", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, reinhardt, roadhog, dps, tracer, soldier, support, ana, lucio)},
+		{Name: "Pharah Mercy Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, winston, dva, dps, tracer, pharah, support, mercy, lucio)},
+		{Name: "New Anti-Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, reinhardt, zarya, dps, reaper, junkrat, support, ana, lucio)},
 	}
 	if _, err := sendMessage(firstPage); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
@@ -180,24 +179,25 @@ func getAllCompositions(params []string) {
 	secondPage.Embed.Title = "Composition Dictionary 2/2"
 	secondPage.Embed.Description = "A historical overview of meta compositions in Overwatch for intermediate viewers."
 	secondPage.Embed.Color = 0x970097
-	secondPage.Embed.Thumbnail.Url = OverwatchIcon
-	secondPage.Embed.Footer.Text = TipCertainComp
-	secondPage.Embed.Footer.IconUrl = OverwatchIcon
+	secondPage.Embed.Thumbnail.Url = overwatchIcon
+	secondPage.Embed.Footer.Text = tipCertainComp
+	secondPage.Embed.Footer.IconUrl = overwatchIcon
 	secondPage.Embed.Fields = []discordEmbedFieldObject{
-		{Name: "Doomfist-McCree", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dps, Doomfist, Mcree, Support, Ana, Lucio)},
-		{Name: "Junkrat-Widow Defense", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Orisa, Dva, Dps, Junkrat, Widowmaker, Support, Zen, Mercy)},
-		{Name: "Orisa-Hog", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Orisa, Roadhog, Dps, Hanzo, Widowmaker, Support, Zen, Mercy)},
-		{Name: "Hog-Dva", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Roadhog, Dva, Dps, Tracer, Widowmaker, Support, Zen, Mercy)},
-		{Name: "Pirate Ship", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Orisa, Roadhog, Dps, Bastion, Hanzo, Support, Zen, Mercy)},
-		{Name: "Tracer-Sombra Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Winston, Dva, Dps, Tracer, Sombra, Support, Moira, Lucio)},
-		{Name: "GOATS 1.0", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dva, Support, Brigitte, Moira, Lucio)},
-		{Name: "Disruptive Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Wreckingball, Dva, Dps, Doomfist, Sombra, Support, Ana, Lucio)},
-		{Name: "GOATS 2.0", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s", Tank, Reinhardt, Zarya, Dva, Support, Brigitte, Zen, Lucio)},
-		{Name: "Triple Support Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s ", Tank, Winston, Dva, Dps, Sombra, Support, Ana, Lucio, Brigitte)},
-		{Name: "The \"Chengdu Hunters\"", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s ", Tank, Wreckingball, Dva, Dps, Sombra, Pharah, Support, Zen, Mercy)},
-		{Name: "Bunker", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Orisa, Roadhog, Dps, Bastion, Hanzo, Support, Baptiste, Mercy)},
-		{Name: "Ball Dive(Anti Bunker)", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Wreckingball, Dva, Dps, Genji, Sombra, Support, Ana, Lucio)},
-		{Name: "Gold Elo Classic", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", Tank, Zarya, Dps, Genji, Tracer, Torbjrn, Widowmaker, Support, Moira)},
+		{Name: "Doomfist-McCree", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, reinhardt, zarya, dps, doomfist, mcree, support, ana, lucio)},
+		{Name: "Junkrat-Widow Defense", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, orisa, dva, dps, junkrat, widowmaker, support, zen, mercy)},
+		{Name: "Orisa-Hog", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, orisa, roadhog, dps, hanzo, widowmaker, support, zen, mercy)},
+		{Name: "Hog-Dva", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, roadhog, dva, dps, tracer, widowmaker, support, zen, mercy)},
+		{Name: "Pirate Ship", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, orisa, roadhog, dps, bastion, hanzo, support, zen, mercy)},
+		{Name: "Tracer-Sombra Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, winston, dva, dps, tracer, sombra, support, moira, lucio)},
+		{Name: "GOATS 1.0", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s", tank, reinhardt, zarya, dva, support, brigitte, moira, lucio)},
+		{Name: "Disruptive Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, wreckingball, dva, dps, doomfist, sombra, support, ana, lucio)},
+		{Name: "GOATS 2.0", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s", tank, reinhardt, zarya, dva, support, brigitte, zen, lucio)},
+		{Name: "Triple Support Dive", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s ", tank, winston, dva, dps, sombra, support, ana, lucio, brigitte)},
+		{Name: "The \"Chengdu Hunters\"", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s ", tank, wreckingball, dva, dps, sombra, pharah, support, zen, mercy)},
+		{Name: "Bunker", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, orisa, roadhog, dps, bastion, hanzo, support, baptiste, mercy)},
+		{Name: "Ball Dive(Anti Bunker)", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, wreckingball, dva, dps, genji, sombra, support, ana, lucio)},
+		{Name: "3-Dps (DPS variable)", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, wreckingball, dps, widowmaker, genji, ashe, support, mercy, lucio)},
+		{Name: "Gold Elo Classic", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, zarya, dps, genji, tracer, torbjrn, widowmaker, support, moira)},
 	}
 	if _, err := sendMessage(secondPage); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
@@ -219,9 +219,9 @@ func removePoll(params []string) {
 		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
 		discordMessageRequest.Embed.Title = "Poll successfully deleted."
 		discordMessageRequest.Embed.Color = 0x970097
-		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		discordMessageRequest.Embed.Footer.Text = TipPollCreated
-		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
+		discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
+		discordMessageRequest.Embed.Footer.Text = tipPollCreated
+		discordMessageRequest.Embed.Footer.IconUrl = overwatchIcon
 		if _, err := sendMessage(discordMessageRequest); err != nil {
 			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 			return
@@ -265,9 +265,9 @@ func checkIfPollIsDone(cachedPollObject pollCacheObject) {
 		discordMessageRequest.Embed.Title = "Poll is finished everybody has responded and is ready."
 		discordMessageRequest.Embed.Description = fmt.Sprintf("%d out of %d are ready to go!", countReadyMembers(cachedPollObject), cachedPollObject.Size)
 		discordMessageRequest.Embed.Color = 0x970097
-		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		discordMessageRequest.Embed.Footer.Text = InfoPollTimeout
-		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
+		discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
+		discordMessageRequest.Embed.Footer.Text = infoPollTimeout
+		discordMessageRequest.Embed.Footer.IconUrl = overwatchIcon
 		discordMessageRequest.Content = "<@" + cachedPollObject.Creator.Id + ">"
 		var cachedPollMembers []discordEmbedFieldObject
 		for _, val := range cachedPollObject.Members {
@@ -317,12 +317,12 @@ func setUserNotReady(params []string) {
 		pollCache[guildId+channelId] = cachedPoll
 		discordMessageRequest.Embed.Author.Name = cachedAuthor.Username + " is not ready "
 		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
-		discordMessageRequest.Embed.Description = fmt.Sprintf("Poll times out in %.0fmin", cachedPoll.CreationTime.Add(Timeout).Sub(time.Now()).Minutes())
+		discordMessageRequest.Embed.Description = fmt.Sprintf("Poll times out in %.0fmin", cachedPoll.CreationTime.Add(timeout).Sub(time.Now()).Minutes())
 		discordMessageRequest.Embed.Title = response + " :expressionless:"
 		discordMessageRequest.Embed.Color = 0x970097
-		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		discordMessageRequest.Embed.Footer.Text = TipPollAccept
-		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
+		discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
+		discordMessageRequest.Embed.Footer.Text = tipPollAccept
+		discordMessageRequest.Embed.Footer.IconUrl = overwatchIcon
 		if _, err := sendMessage(discordMessageRequest); err != nil {
 			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 			return
@@ -358,12 +358,12 @@ func setUserReady(params []string) {
 		pollCache[guildId+channelId] = cachedPoll
 		discordMessageRequest.Embed.Author.Name = cachedAuthor.Username + " is ready now!"
 		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
-		discordMessageRequest.Embed.Description = fmt.Sprintf("Poll times out in %.0fmin", cachedPoll.CreationTime.Add(Timeout).Sub(time.Now()).Minutes())
+		discordMessageRequest.Embed.Description = fmt.Sprintf("Poll times out in %.0fmin", cachedPoll.CreationTime.Add(timeout).Sub(time.Now()).Minutes())
 		discordMessageRequest.Embed.Title = ":ok_hand:"
 		discordMessageRequest.Embed.Color = 0x970097
-		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		discordMessageRequest.Embed.Footer.Text = TipPollAccept
-		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
+		discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
+		discordMessageRequest.Embed.Footer.Text = tipPollAccept
+		discordMessageRequest.Embed.Footer.IconUrl = overwatchIcon
 		if _, err := sendMessage(discordMessageRequest); err != nil {
 			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 			return
@@ -396,12 +396,12 @@ func startReadyPoll(params []string) {
 		avatarUrl, _ := thisSession.ws.getUserAvatarOrDefaultUrl(cachedPoll.Creator.Id, cachedPoll.Creator.Avatar, cachedPoll.Creator.Discriminator)
 		discordMessageRequest.Embed.Author.Name = cachedPoll.Creator.Username + "#" + cachedPoll.Creator.Discriminator + "´s Poll"
 		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
-		discordMessageRequest.Embed.Title = fmt.Sprintf("Poll times out in %.0fmin", cachedPoll.CreationTime.Add(Timeout).Sub(time.Now()).Minutes())
+		discordMessageRequest.Embed.Title = fmt.Sprintf("Poll times out in %.0fmin", cachedPoll.CreationTime.Add(timeout).Sub(time.Now()).Minutes())
 		discordMessageRequest.Embed.Description = fmt.Sprintf("%d out of %d are ready to go!", countReadyMembers(cachedPoll), cachedPoll.Size)
 		discordMessageRequest.Embed.Color = 0x970097
-		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		discordMessageRequest.Embed.Footer.Text = TipPollUpdate
-		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
+		discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
+		discordMessageRequest.Embed.Footer.Text = tipPollUpdate
+		discordMessageRequest.Embed.Footer.IconUrl = overwatchIcon
 
 		var cachedPollMembers []discordEmbedFieldObject
 		for _, val := range cachedPoll.Members {
@@ -442,12 +442,12 @@ func startReadyPoll(params []string) {
 		discordMessageRequest.Embed.Author.Name = pollCacheObject.Creator.Username + "#" + pollCacheObject.Creator.Discriminator + " just started a new ready poll!"
 		discordMessageRequest.Embed.Author.IconUrl = avatarUrl
 		discordMessageRequest.Embed.Title = fmt.Sprintf("%d People involved", n)
-		discordMessageRequest.Embed.Description = fmt.Sprintf("Accept with !+ or decline with !-. Poll times out in %v", Timeout)
+		discordMessageRequest.Embed.Description = fmt.Sprintf("Accept with !+ or decline with !-. Poll times out in %v", timeout)
 		discordMessageRequest.Embed.Color = 0x970097
-		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		discordMessageRequest.Embed.Footer.Text = TipPollCreated
-		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
-		startTimer(Timeout, func() {
+		discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
+		discordMessageRequest.Embed.Footer.Text = tipPollCreated
+		discordMessageRequest.Embed.Footer.IconUrl = overwatchIcon
+		startTimer(timeout, func() {
 
 			cachedPoll, ok := pollCache[guildId+channelId]
 			//Check if it is this poll and dont delete a poll which is created after the current poll
@@ -480,7 +480,7 @@ func verifyRegion(val string) bool {
 func setGuildConfig(params []string) {
 	var discordMessageRequest discordMessageRequest
 	if params == nil {
-		sendInfoMessageRequest(ErrorGuildNoParams)
+		sendInfoMessageRequest(errorGuildNoParams)
 		return
 	}
 
@@ -496,14 +496,14 @@ func setGuildConfig(params []string) {
 			if verfiyPlatform(paramStruct[1]) {
 				platform = paramStruct[1]
 			} else {
-				sendErrorMessageRequest(ErrorGuildPlatformNotValid)
+				sendErrorMessageRequest(errorGuildPlatformNotValid)
 				return
 			}
 		case "region":
 			if verifyRegion(paramStruct[1]) {
 				region = paramStruct[1]
 			} else {
-				sendErrorMessageRequest(ErrorGuildRegionNotValid)
+				sendErrorMessageRequest(errorGuildRegionNotValid)
 				return
 			}
 		case "prefix":
@@ -518,11 +518,11 @@ func setGuildConfig(params []string) {
 		}
 	}
 
-	if platform == PlatformPS || platform == PlatformXbox {
+	if platform == platformPS || platform == platformXbox {
 		region = ""
 	}
-	if platform == PlatformPC && region == "" {
-		sendErrorMessageRequest(ErrorGuildReqionRequired)
+	if platform == platformPC && region == "" {
+		sendErrorMessageRequest(errorGuildReqionRequired)
 		return
 	}
 
@@ -553,7 +553,7 @@ func setGuildConfig(params []string) {
 	}
 
 	discordMessageRequest.Embed.Color = 0x970097
-	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+	discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
 	if _, err := sendMessage(discordMessageRequest); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 		return
@@ -572,9 +572,9 @@ func getTrainingTimes(params []string) {
 		discordMessageRequest.Embed.Author.Name = "Updated Training days"
 		discordMessageRequest.Embed.Description = params[0]
 		discordMessageRequest.Embed.Color = 0x970097
-		discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-		discordMessageRequest.Embed.Footer.Text = TipMarkup
-		discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
+		discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
+		discordMessageRequest.Embed.Footer.Text = tipMarkup
+		discordMessageRequest.Embed.Footer.IconUrl = overwatchIcon
 		if _, err := sendMessage(discordMessageRequest); err != nil {
 			sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 			return
@@ -590,9 +590,9 @@ func getTrainingTimes(params []string) {
 	discordMessageRequest.Embed.Author.Name = "Training Days"
 	discordMessageRequest.Embed.Description = dates.Value
 	discordMessageRequest.Embed.Color = 0x970097
-	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-	discordMessageRequest.Embed.Footer.Text = TipChangeTraining
-	discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
+	discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
+	discordMessageRequest.Embed.Footer.Text = tipChangeTraining
+	discordMessageRequest.Embed.Footer.IconUrl = overwatchIcon
 	if _, err := sendMessage(discordMessageRequest); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
 		return
@@ -609,18 +609,18 @@ func getCurrentlySupportedCommands(params []string) {
 	discordMessageRequest.Embed.Title = "All currently supported Commands with examples."
 	discordMessageRequest.Embed.Description = "If your using Overwatch related commands make sure your profile is set to public"
 	discordMessageRequest.Embed.Color = 0x970097
-	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
-	discordMessageRequest.Embed.Footer.Text = InfoUnderConstruction
-	discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
+	discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
+	discordMessageRequest.Embed.Footer.Text = infoUnderConstruction
+	discordMessageRequest.Embed.Footer.IconUrl = overwatchIcon
 	discordMessageRequest.Embed.Fields = []discordEmbedFieldObject{
 		{Name: config.Prefix + "Training", Value: "Displays current Training days"},
-		{Name: config.Prefix + "Training <value>", Value: "Updates Training days (e.g. *!Training \"our **new** trainings are ...\"*). Bold, Italic... Style? Check out Discord Markup:arrow_right:" + DiscordMarkupHelpURL},
+		{Name: config.Prefix + "Training <value>", Value: "Updates Training days (e.g. *!Training \"our **new** trainings are ...\"*). Bold, Italic... Style? Check out Discord Markup:arrow_right:" + discordMarkupHelpURL},
 		{Name: config.Prefix + "Stats <battletag>", Value: "Displays Player statistics. Player should be registered before *!Register* (e.g. *!Stats Krusher-9911*)"},
 		{Name: config.Prefix + "Register <battletag>", Value: "Registers new player. Registered players statistics getting updated automatically every day. (e.g. *!Register Krusher-9911*)"},
 		{Name: config.Prefix + "Update <battletag>", Value: "Updates players statistics and stores it or registers the player if not existing. (e.g. *!Update Krusher-9911*)"},
 		{Name: config.Prefix + "Config <platform=value region=value> <prefix=value>", Value: "Creates a server config with region and platform to use the Overwatch stats also for Playstation or XboxPlayers. And/or You can also specify a custom prefix for the bot with prefix=value e.g. (*!Config prefix=>*). Supported Platforms are pc, xbl (XBox) or psn (PlayStation)." +
 			"Supported Regions are eu,us and asia. Note if your overwatch team is playing on XBox or Playstation, you only need to specify the platform and not the region. (e.g. *!Config platform=psn* for PlayStation or *!Config platform=pc region=us* for PC/US "},
-		{Name: config.Prefix + "Poll <number of participants>", Value: fmt.Sprintf("Starts a ready check poll for n players. A poll times out after %d minutes.", Timeout/time.Minute)},
+		{Name: config.Prefix + "Poll <number of participants>", Value: fmt.Sprintf("Starts a ready check poll for n players. A poll times out after %d minutes.", timeout/time.Minute)},
 		{Name: config.Prefix + "Poll", Value: "Gets the status of the current poll. If everybody is ready a message is created and the creator of the poll gets tagged."},
 		{Name: config.Prefix + "+", Value: "Ready."},
 		{Name: config.Prefix + "- <reason>", Value: "Not ready. A reason can be passed with the command. (e.g. !- \"need water! Back in 5\"). **Note if your reason is longer then one word you need to put it in \"\"!**"},
@@ -678,7 +678,7 @@ func getOverwatchPlayerStats(params []string) {
 	messageObject.Embed.Color = 0x970097
 	messageObject.Embed.Author.Name = "Loading player stats now..."
 	messageObject.Embed.Description = "Warning: This process can take up to 10 seconds."
-	messageObject.Embed.Thumbnail.Url = OverwatchIcon
+	messageObject.Embed.Thumbnail.Url = overwatchIcon
 	param := strings.Replace(params[0], "#", "-", 1)
 
 	msg, err := sendMessage(messageObject)
@@ -709,13 +709,13 @@ func getOverwatchPlayerStats(params []string) {
 
 	var owPlayerPersistenceStats owStatsPersistenceLayer
 
-	messageObject.Embed.Footer.Text = TipUpdateProfile
-	messageObject.Embed.Footer.IconUrl = OverwatchIcon
+	messageObject.Embed.Footer.Text = tipUpdateProfile
+	messageObject.Embed.Footer.IconUrl = overwatchIcon
 	if err = thisSession.db.readPlayer(param, &owPlayerPersistenceStats); err != nil {
 		//If player is not registered warn and use live stats as persistence stats to avoid weird compared stats
 		owPlayerPersistenceStats.OWPlayer = *owPlayerLiveStats
 		messageObject.Embed.Footer.Text = fmt.Sprintf("WARNING: The requested player is not registered therefore the statistics containing the data of the whole current season. If you want your daily updated statistics you need to call `!Register %v` once.", param)
-		messageObject.Embed.Footer.IconUrl = ErrorIcon
+		messageObject.Embed.Footer.IconUrl = errorIcon
 	}
 
 	//Warning if about to compare account on different platforms
@@ -864,7 +864,7 @@ func setNewOverwatchPlayer(params []string) {
 	discordMessageRequest.Embed.Color = 0x970097
 	discordMessageRequest.Embed.Author.Name = "Loading player stats now..."
 	discordMessageRequest.Embed.Description = "Warning: This process can take up to 10 seconds."
-	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+	discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
 
 	msg, err := sendMessage(discordMessageRequest)
 
@@ -894,9 +894,9 @@ func setNewOverwatchPlayer(params []string) {
 	discordMessageRequest.Embed.Title = "Player added/refreshed"
 	discordMessageRequest.Embed.Description = ""
 	discordMessageRequest.Embed.Color = 0x970097
-	discordMessageRequest.Embed.Thumbnail.Url = OverwatchIcon
+	discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
 	discordMessageRequest.Embed.Footer.Text = "Tip: To track your sr for each training, just type !Update " + owPlayerLiveStats.Name + " before each training. After or during the Training you can see your progress with !Stats " + owPlayerLiveStats.Name
-	discordMessageRequest.Embed.Footer.IconUrl = OverwatchIcon
+	discordMessageRequest.Embed.Footer.IconUrl = overwatchIcon
 
 	if _, err = updateMessage(discordMessageRequest, msg.Id); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error while sending Overwatch stats to discord client: **%v**\n*%v*\n", param, string(err.Error())))
@@ -953,9 +953,9 @@ func sendErrorMessageRequest(message string) {
 	request.Embed.Color = 0xff0000
 	request.Embed.Author.Name = "Error"
 	request.Embed.Description = message
-	request.Embed.Thumbnail.Url = ErrorIcon
-	request.Embed.Footer.Text = ErrorFooter
-	request.Embed.Footer.IconUrl = OverwatchIcon
+	request.Embed.Thumbnail.Url = errorIcon
+	request.Embed.Footer.Text = errorFooter
+	request.Embed.Footer.IconUrl = overwatchIcon
 	_, _ = sendMessage(request)
 }
 
@@ -964,9 +964,9 @@ func sendInfoMessageRequest(message string) {
 	request.Embed.Color = 0x970097
 	request.Embed.Author.Name = "Info"
 	request.Embed.Description = message
-	request.Embed.Thumbnail.Url = OverwatchIcon
-	request.Embed.Footer.Text = InfoUnderConstruction
-	request.Embed.Footer.IconUrl = OverwatchIcon
+	request.Embed.Thumbnail.Url = overwatchIcon
+	request.Embed.Footer.Text = infoUnderConstruction
+	request.Embed.Footer.IconUrl = overwatchIcon
 	_, _ = sendMessage(request)
 }
 

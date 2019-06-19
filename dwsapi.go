@@ -17,12 +17,19 @@ import (
 const (
 	//TokenType specifies the authentication user
 	TokenType           = "Bot"
+	//EventReady - Event Ready
 	EventReady          = "READY"
+	//EventMessageCreate - is send when a message is posted to a channel
 	EventMessageCreate  = "MESSAGE_CREATE"
+	//EventGuildCreate - is send when connection to a guild is established
 	EventGuildCreate    = "GUILD_CREATE"
+	//DiscordBaseUrl - Base url for discord rest api
 	DiscordBaseUrl      = "https://discordapp.com/api"
+	//DiscordBaseImageUrl - Base url for discord statics
 	DiscordBaseImageUrl = "https://cdn.discordapp.com"
+	//DeviceName - Used for activity feed
 	DeviceName          = "Odroid XU4Q"
+	//BrowserName - Used for activity feed
 	BrowserName         = "Chromium"
 )
 
