@@ -21,11 +21,11 @@ type session struct {
 var thisSession session
 
 func main() {
-	thisSession = session{}
-	onError := make(chan bool)
 	for {
-		thisSession.ws = &websocketSession{SequenzNumber: 0}
+		thisSession = session{}
+		onError := make(chan bool)
 
+		thisSession.ws = &websocketSession{SequenzNumber: 0}
 		con, err := thisSession.ws.openCon()
 		if err != nil {
 			fmt.Printf("Failed to open connection to discord websocket. Fallback mechanism is trying to connect again in 5 seconds\n")
@@ -48,8 +48,10 @@ func main() {
 		if err != nil {
 			fmt.Printf("Failed to listen to discord websocket connection. Fallback mechanism is trying to connect again in 5 seconds\n")
 			fmt.Printf("Error:\n%v\n", err)
+			//Close con
 			_ = con.Close()
-			onError <- true
+			//Close alarm go routine
+			close(onError)
 			time.Sleep(5 * time.Second)
 			continue
 		}

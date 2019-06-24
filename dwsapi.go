@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"runtime"
+	"runtime/debug"
 	"strconv"
 	"time"
 )
@@ -44,7 +45,14 @@ type websocketSession struct {
 	events            events
 }
 
-func (s *websocketSession) openCon() (*websocket.Conn, error) {
+func (s *websocketSession) openCon() (con *websocket.Conn, err error) {
+
+	defer func() {
+		if r := recover(); r != nil {
+			err = errors.New(fmt.Sprintf("[panic in startListener]: %s\n[!stack]: %s \n", r, debug.Stack()))
+			return
+		}
+	}()
 
 	// WEBHOOK HANDSHAKE
 
@@ -141,10 +149,7 @@ func (s *websocketSession) startListener(con *websocket.Conn) (error error) {
 	//Recover on panic
 	defer func() {
 		if r := recover(); r != nil {
-			//fmt.Println(r)
-			//debug.PrintStack()
-			_, fn, line, _ := runtime.Caller(1)
-			fmt.Printf("[error] %s:%d %v", fn, line, r)
+			error = errors.New(fmt.Sprintf("[panic in startListener]: %s\n[!stack]: %s \n", r, debug.Stack()))
 			return
 		}
 	}()
