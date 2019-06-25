@@ -10,7 +10,7 @@ Just invite the bot to your server [here](https://discordapp.com/api/oauth2/auth
 </br>*You should check out the !Config Command first*.
 Type !Help to see a list of currently supported commands.</br></br> 
 This list changes frequently as many new features coming out. </br>
-Join our discord for support, news, or feature requests! [OverwatchTeamBotDeveloper Discord](https://discord.gg/x6RJhg)
+Join our discord for support, news, or feature requests! [OverwatchTeamBot Developer Discord](https://discord.gg/x6RJhg)
 # Commands
 
 Currently supported commands:</br>
@@ -47,6 +47,19 @@ You can also copy an piece of code written for this project, and use it in your 
 Im aware that there is [this](https://github.com/bwmarrin/discordgo) pretty good discord bindings api out, which also supports websocket connections. But i wanted to write my own small layer.<br/>
 OverwatchDiscordBot is now listed on the discordbotlist. [Vote here](https://discordbots.org/bot/565229640646393895/vote)</br> 
 The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
+
+## Update Times
+If you register an user with the Register command the complete Overwatch stats (from [ow-api.com](https://ow-api.com/)) are loaded,stored and updated every day automatically.
+
+Zone | Time
+------------- | -------
+UTC, Time Zone | 08:00         
+Berlin, Germany | 10:00 CEST    
+Moscow, Russia | 11:00 MSK     
+Seoul, South Korea | 17:00 KST     
+San Francisco, USA | 01:00 PDT     
+New York, USA | 04:00 EDT
+
 ... More Infos coming soon...<br/>
 
 **Caution!** This is a spare time project to dive deeper into Golang. This is not a professional, high scalable discord bot. 
