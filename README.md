@@ -47,6 +47,17 @@ You can also copy an piece of code written for this project, and use it in your 
 Im aware that there is [this](https://github.com/bwmarrin/discordgo) pretty good discord bindings api out, which also supports websocket connections. But i wanted to write my own small layer.<br/>
 OverwatchDiscordBot is now listed on the discordbotlist. [Vote here](https://discordbots.org/bot/565229640646393895/vote)</br> 
 The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
+If you register an user with the Register command the completev Overwatch stats (ow-api.com) are loaded,stored and updated every day automatically.
+Update Times: </br>
+Zone | Time
+------------- | -------
+UTC, Time Zone | at 08:00         
+Berlin, Germany | at 10:00 CEST    
+Moscow, Russia | at 11:00 MSK     
+Seoul, South Korea | at 17:00 KST     
+San Francisco, USA | at 01:00 PDT     
+New York, USA | 04:00 EDT
+
 ... More Infos coming soon...<br/>
 
 **Caution!** This is a spare time project to dive deeper into Golang. This is not a professional, high scalable discord bot. 
