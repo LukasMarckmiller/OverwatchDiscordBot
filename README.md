@@ -48,14 +48,16 @@ Im aware that there is [this](https://github.com/bwmarrin/discordgo) pretty good
 OverwatchDiscordBot is now listed on the discordbotlist. [Vote here](https://discordbots.org/bot/565229640646393895/vote)</br> 
 The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
 If you register an user with the Register command the completev Overwatch stats (ow-api.com) are loaded,stored and updated every day automatically.
-Update Times: </br>
+
+## Update Times:
+
 Zone | Time
 ------------- | -------
-UTC, Time Zone | at 08:00         
-Berlin, Germany | at 10:00 CEST    
-Moscow, Russia | at 11:00 MSK     
-Seoul, South Korea | at 17:00 KST     
-San Francisco, USA | at 01:00 PDT     
+UTC, Time Zone | 08:00         
+Berlin, Germany | 10:00 CEST    
+Moscow, Russia | 11:00 MSK     
+Seoul, South Korea | 17:00 KST     
+San Francisco, USA | 01:00 PDT     
 New York, USA | 04:00 EDT
 
 ... More Infos coming soon...<br/>
