@@ -47,9 +47,9 @@ You can also copy an piece of code written for this project, and use it in your 
 Im aware that there is [this](https://github.com/bwmarrin/discordgo) pretty good discord bindings api out, which also supports websocket connections. But i wanted to write my own small layer.<br/>
 OverwatchDiscordBot is now listed on the discordbotlist. [Vote here](https://discordbots.org/bot/565229640646393895/vote)</br> 
 The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
-If you register an user with the Register command the completev Overwatch stats (ow-api.com) are loaded,stored and updated every day automatically.
 
-## Update Times:
+## Update Times
+If you register an user with the Register command the complete Overwatch stats (from ow-api.com) are loaded,stored and updated every day automatically.
 
 Zone | Time
 ------------- | -------
