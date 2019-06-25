@@ -49,7 +49,7 @@ OverwatchDiscordBot is now listed on the discordbotlist. [Vote here](https://dis
 The bot is currently running on an [Odroid XU4Q](https://www.hardkernel.com/shop/odroid-xu4q-special-price/)</br>
 
 ## Update Times
-If you register an user with the Register command the complete Overwatch stats (from ow-api.com) are loaded,stored and updated every day automatically.
+If you register an user with the Register command the complete Overwatch stats (from [ow-api.com](https://ow-api.com/)) are loaded,stored and updated every day automatically.
 
 Zone | Time
 ------------- | -------
