@@ -10,7 +10,8 @@ import (
 //TODO Overwatch API integration
 const (
 	//Changeable
-	DBPATH = "/home/lab01/db" //"C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot"//
+	DBPATH  = "/home/lab01/db" //"C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot"//
+	VERSION = "1.0.1"
 )
 
 type session struct {
@@ -21,6 +22,7 @@ type session struct {
 var thisSession session
 
 func main() {
+	fmt.Println("###### OverwatchTeamBot Current Version: " + VERSION + "######")
 	for {
 		thisSession = session{}
 		onError := make(chan bool)

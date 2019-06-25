@@ -674,13 +674,19 @@ func getTrendIcon(v1 float64, v2 float64) string {
 }
 
 func getOverwatchPlayerStats(params []string) {
+	//Currently one param supported
+	if len(params) != 1 {
+		sendErrorMessageRequest("No Battletag specified! Call help for examples and further information.")
+		return
+	}
+
 	var messageObject discordMessageRequest
 	messageObject.Embed.Color = 0x970097
 	messageObject.Embed.Author.Name = "Loading player stats now..."
 	messageObject.Embed.Description = "Warning: This process can take up to 10 seconds."
 	messageObject.Embed.Thumbnail.Url = overwatchIcon
-	param := strings.Replace(params[0], "#", "-", 1)
 
+	param := strings.Replace(params[0], "#", "-", 1)
 	msg, err := sendMessage(messageObject)
 
 	if err != nil {
@@ -856,6 +862,12 @@ func addDynamicHeroStatsAsEmbedFields(herosLiveOrdered []kv, carrerStatsLive map
 }
 
 func setNewOverwatchPlayer(params []string) {
+	//Currently one param supported
+	if len(params) != 1 {
+		sendErrorMessageRequest("No Battletag specified! Call help for examples and further information.")
+		return
+	}
+
 	var discordMessageRequest discordMessageRequest
 	param := strings.Replace(params[0], "#", "-", 1)
 
@@ -867,7 +879,6 @@ func setNewOverwatchPlayer(params []string) {
 	discordMessageRequest.Embed.Thumbnail.Url = overwatchIcon
 
 	msg, err := sendMessage(discordMessageRequest)
-
 	if err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error retrieving Overwatch stats for player: **%v**\n*%v*\n", param, string(err.Error())))
 		return
