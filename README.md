@@ -10,7 +10,7 @@ Just invite the bot to your server [here](https://discordapp.com/api/oauth2/auth
 </br>*You should check out the !Config Command first*.
 Type !Help to see a list of currently supported commands.</br></br> 
 This list changes frequently as many new features coming out. </br>
-Join our discord for support, news, or feature requests! [OverwatchTeamBotDeveloper Discord](https://discord.gg/x6RJhg)
+Join our discord for support, news, or feature requests! [OverwatchTeamBot Developer Discord](https://discord.gg/x6RJhg)
 # Commands
 
 Currently supported commands:</br>
