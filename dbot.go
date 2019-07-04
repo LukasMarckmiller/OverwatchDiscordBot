@@ -789,9 +789,10 @@ func addDynamicHeroStatsAsEmbedFields(herosLiveOrdered []kv, carrerStatsLive map
 		topHeroStatsLive := topHeroesLive[v.Key].(map[string]interface{})
 		combatLive := heroStatsLive["combat"]
 		assistsLive := heroStatsLive["assists"]
+		heroSpecificLive := heroStatsLive["heroSpecific"]
 
 		damageDonePersistent := 0.0
-		healingDonePersistent := 0.0
+		roleSpecificPersistent := 0.0
 		weaponAccuracyPersistent := 0.0
 		gamesWonPersistent := 0.0
 		kdPersistent := 0.0
@@ -809,9 +810,13 @@ func addDynamicHeroStatsAsEmbedFields(herosLiveOrdered []kv, carrerStatsLive map
 				damageDonePersistent = combatPersistent.(map[string]interface{})["damageDone"].(float64) / gamesPlayedPersistent
 			}
 
+			//If is support or tank for persistent stats
 			if heroStatsPersistent["assists"] != nil && heroStatsPersistent["assists"].(map[string]interface{})["healingDone"] != nil {
-				healingDonePersistent = heroStatsPersistent["assists"].(map[string]interface{})["healingDone"].(float64)
+				roleSpecificPersistent = heroStatsPersistent["assists"].(map[string]interface{})["healingDone"].(float64)
+			} else if heroStatsPersistent["heroSpecific"] != nil && heroStatsPersistent["heroSpecific"].(map[string]interface{})["damageBlocked"] != nil {
+				roleSpecificPersistent = heroStatsPersistent["heroSpecific"].(map[string]interface{})["damageBlocked"].(float64)
 			}
+
 			weaponAccuracyPersistent = topHeroStatsPersistent["weaponAccuracy"].(float64)
 			gamesWonPersistent = topHeroStatsPersistent["gamesWon"].(float64)
 			kdPersistent = topHeroStatsPersistent["eliminationsPerLife"].(float64)
@@ -825,10 +830,13 @@ func addDynamicHeroStatsAsEmbedFields(herosLiveOrdered []kv, carrerStatsLive map
 			damageDoneLive = combatLive.(map[string]interface{})["damageDone"].(float64) / float64(v.Value)
 		}
 
+		//If is support or tank for persistent stats for live stats
 		if assistsLive != nil && assistsLive.(map[string]interface{})["healingDone"] != nil {
 			healingDone := assistsLive.(map[string]interface{})["healingDone"].(float64)
-
-			roleSpecific = fmt.Sprintf("HealingPerGame: **%.2f** %s", healingDone/float64(v.Value), getTrendIcon(healingDone/float64(v.Value), healingDonePersistent/gamesPlayedPersistent))
+			roleSpecific = fmt.Sprintf("Healing per Game: **%.2f** %s", healingDone/float64(v.Value), getTrendIcon(healingDone/float64(v.Value), roleSpecificPersistent/gamesPlayedPersistent))
+		} else if heroSpecificLive != nil && heroSpecificLive.(map[string]interface{})["damageBlocked"] != nil {
+			dmgBlocked := heroSpecificLive.(map[string]interface{})["damageBlocked"].(float64)
+			roleSpecific = fmt.Sprintf("Blocked Dmg per Game: **%.2f** %s", dmgBlocked/float64(v.Value), getTrendIcon(dmgBlocked/float64(v.Value), roleSpecificPersistent/gamesPlayedPersistent))
 		}
 
 		weaponAccuracyPart := topHeroStatsLive["weaponAccuracy"].(float64)
@@ -846,7 +854,7 @@ func addDynamicHeroStatsAsEmbedFields(herosLiveOrdered []kv, carrerStatsLive map
 		kdLive := topHeroStatsLive["eliminationsPerLife"].(float64)
 		fields = append(fields, discordEmbedFieldObject{
 			Name: fmt.Sprintf("Top Hero #%d %s", counter, HeroIconMap[strings.ToLower(v.Key)]),
-			Value: fmt.Sprintf("Games played (all/today): **%v**/**%v**\nGames won (all/today): **%v**/**%v** %s\nWin Percentage: **%.2f%%** %s\nKD: **%.2f** %s\nDamagePerGame: **%.2f** %s\n%s\n%s",
+			Value: fmt.Sprintf("Games played (all/today): **%v**/**%v**\nGames won (all/today): **%v**/**%v** %s\nWin Percentage: **%.2f%%** %s\nKD: **%.2f** %s\nDamage per Game: **%.2f** %s\n%s\n%s",
 				v.Value, float64(v.Value)-gamesPlayedPersistent,
 				gamesWonLive, gamesWonLive-gamesWonPersistent, getTrendIcon(gamesWonLive, gamesWonPersistent),
 				winPercentageLive, getTrendIcon(winPercentageLive, winPercentagePersistent),
