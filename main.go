@@ -11,7 +11,7 @@ import (
 const (
 	//Changeable
 	DBPATH  = "/home/lab01/db" //"C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot"//
-	VERSION = "1.0.1"
+	VERSION = "1.0.3"
 )
 
 type session struct {
