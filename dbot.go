@@ -467,7 +467,7 @@ func startReadyPoll(params []string) {
 	}
 }
 
-func verfiyPlatform(val string) bool {
+func verifyPlatform(val string) bool {
 
 	return utils.ContainsString(platforms, val)
 }
@@ -491,9 +491,15 @@ func setGuildConfig(params []string) {
 	var prefix string
 	for _, param := range params {
 		paramStruct := strings.Split(param, "=")
+
+		if len(paramStruct) == 1 {
+			sendErrorMessageRequest("Requires value after '=', e.g platform=pc")
+			return
+		}
+
 		switch paramStruct[0] {
 		case "platform":
-			if verfiyPlatform(paramStruct[1]) {
+			if verifyPlatform(paramStruct[1]) {
 				platform = paramStruct[1]
 			} else {
 				sendErrorMessageRequest(errorGuildPlatformNotValid)
