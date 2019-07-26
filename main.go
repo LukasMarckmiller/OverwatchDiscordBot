@@ -11,7 +11,7 @@ import (
 const (
 	//Changeable
 	DBPATH  = "/home/lab01/db" //"C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot"//
-	VERSION = "1.0.3"
+	VERSION = "1.0.5"
 )
 
 type session struct {
@@ -71,7 +71,8 @@ func pollingCustomPlayers() error {
 	for _, record := range records {
 		playerStat := owStatsPersistenceLayer{}
 		if err := json.Unmarshal([]byte(record), &playerStat); err != nil {
-			return err
+			fmt.Println("Polling: Error while parsing stored player stats.")
+			continue
 		}
 		playerStats = append(playerStats, playerStat)
 	}
@@ -82,7 +83,8 @@ func pollingCustomPlayers() error {
 
 		owPlayerStats, err := getPlayerStats(player.Battletag, platform, region)
 		if err != nil {
-			return err
+			fmt.Println("Polling: Error while updating player stats.")
+			continue
 		}
 
 		var owPersLayerObj = owStatsPersistenceLayer{OWPlayer: *owPlayerStats, Battletag: player.Battletag, Guild: player.Guild, Platform: platform, Region: region}
