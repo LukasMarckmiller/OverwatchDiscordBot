@@ -821,6 +821,8 @@ func addDynamicHeroStatsAsEmbedFields(herosLiveOrdered []kv, carrerStatsLive map
 				roleSpecificPersistent = heroStatsPersistent["assists"].(map[string]interface{})["healingDone"].(float64)
 			} else if heroStatsPersistent["heroSpecific"] != nil && heroStatsPersistent["heroSpecific"].(map[string]interface{})["damageBlocked"] != nil {
 				roleSpecificPersistent = heroStatsPersistent["heroSpecific"].(map[string]interface{})["damageBlocked"].(float64)
+			} else if combatPersistent != nil && combatPersistent.(map[string]interface{})["finalBlows"] != nil {
+				roleSpecificPersistent = combatPersistent.(map[string]interface{})["finalBlows"].(float64)
 			}
 
 			weaponAccuracyPersistent = topHeroStatsPersistent["weaponAccuracy"].(float64)
@@ -843,6 +845,9 @@ func addDynamicHeroStatsAsEmbedFields(herosLiveOrdered []kv, carrerStatsLive map
 		} else if heroSpecificLive != nil && heroSpecificLive.(map[string]interface{})["damageBlocked"] != nil {
 			dmgBlocked := heroSpecificLive.(map[string]interface{})["damageBlocked"].(float64)
 			roleSpecific = fmt.Sprintf("Blocked Dmg per Game: **%.2f** %s", dmgBlocked/float64(v.Value), getTrendIcon(dmgBlocked/float64(v.Value), roleSpecificPersistent/gamesPlayedPersistent))
+		} else if combatLive != nil && combatLive.(map[string]interface{})["finalBlows"] != nil {
+			finalBlows := combatLive.(map[string]interface{})["finalBlows"].(float64)
+			roleSpecific = fmt.Sprintf("Final blows per Game: **%.2f** %s", finalBlows/float64(v.Value), getTrendIcon(finalBlows/float64(v.Value), roleSpecificPersistent/gamesPlayedPersistent))
 		}
 
 		weaponAccuracyPart := topHeroStatsLive["weaponAccuracy"].(float64)
