@@ -3,7 +3,7 @@
 [![Support](https://img.shields.io/discord/576930946276655124.svg?label=help)](https://discord.gg/rrAzmG)</br></br>
 <img src="https://upload.wikimedia.org/wikipedia/commons/6/6f/Go_gopher_mascot_bw.png" width="250" height="250" title="GoGopher" alt="GoGopher">
 powered by Google Golang </br>
->THE BOT IS CURRENTYL OFFLINE UNTIL ROLE-LOCK CHANGES ARE IMPLEMENTED AND THE OFFICIAL SEASON HAS STARTED
+>THE BOT IS CURRENTLY DISABLED UNTIL ROLE-LOCK CHANGES ARE IMPLEMENTED AND THE OFFICIAL SEASON HAS STARTED
 # Install 
 Just invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=565229640646393895&permissions=0&scope=bot).</br> 
 **The profile visibility by default is set to private, it must be set to PUBLIC in order to retriev data form the Overwatch Web Scraper API!!**.
