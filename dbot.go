@@ -759,9 +759,9 @@ func getOverwatchPlayerStats(params []string) {
 
 	messageObject.Embed.Color = 0x970097
 	messageObject.Embed.Author.Name = owPlayerLiveStats.Name
-	messageObject.Embed.Description = fmt.Sprintf("Page 1/%d", pages)
+	messageObject.Embed.Description = fmt.Sprintf("1/%d", pages)
 	messageObject.Embed.Author.IconUrl = owPlayerLiveStats.Icon
-	messageObject.Embed.Title = "Overwatch Player Statistics"
+	messageObject.Embed.Title = "Competitive Statistics"
 	messageObject.Embed.Thumbnail.Url = owPlayerLiveStats.RatingIcon
 	fields := []discordEmbedFieldObject{
 		{Name: "Rating (Combined)", Value: strconv.Itoa(owPlayerLiveStats.Rating) + " SR", Inline: true},
@@ -799,11 +799,10 @@ func getOverwatchPlayerStats(params []string) {
 			var roleQSpecificMessage discordMessageRequest
 			roleQSpecificMessage.Embed.Color = 0x970097
 			roleQSpecificMessage.Embed.Author.Name = owPlayerLiveStats.Name
-			roleQSpecificMessage.Embed.Description = fmt.Sprintf("Page %d/%d", currentPage, pages)
 			roleQSpecificMessage.Embed.Author.IconUrl = rating.RoleIcon
-			roleQSpecificMessage.Embed.Title = "Overwatch Player Statistics"
+			roleQSpecificMessage.Embed.Title = fmt.Sprintf("%d/%d", currentPage, pages)
 			roleQSpecificMessage.Embed.Thumbnail.Url = rating.RankIcon
-			roleQSpecificMessage.Embed.Footer.Text = tipUpdateProfile
+			roleQSpecificMessage.Embed.Footer.Text = fmt.Sprintf("Statistics for role %s.", strings.Title(rating.Role))
 			roleQSpecificMessage.Embed.Footer.IconUrl = overwatchIcon
 			roleQSpecificMessage.Embed.Fields = []discordEmbedFieldObject{
 				{
@@ -813,7 +812,7 @@ func getOverwatchPlayerStats(params []string) {
 				},
 				{
 					Name:   "Trend",
-					Value:  fmt.Sprintf("%d SR", rating.Level-persistendRating.Level),
+					Value:  fmt.Sprintf("%+d SR", rating.Level-persistendRating.Level),
 					Inline: true,
 				},
 			}

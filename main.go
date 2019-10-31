@@ -10,7 +10,7 @@ import (
 //TODO Overwatch API integration
 const (
 	//Changeable
-	DBPATH  = "/home/lab01/db" //"C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot"//
+	DBPATH  = "/home/db" //"C:\\Users\\Lukas\\go\\src\\OverwatchDiscordBot"//
 	VERSION = "1.0.7"
 )
 
