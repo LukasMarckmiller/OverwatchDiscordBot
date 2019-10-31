@@ -74,7 +74,7 @@ type heroCareerStats struct {
 		TimeSpentOnFireAvgPer10Min   string  `json:"timeSpentOnFireAvgPer10Min"`
 	} `json:"average"`
 	Best struct {
-		AllDamageDoneMostInGame     int    `json:"allDamageDoneMostInGame"`
+		AllDamageDoneMostInGame     int    `json:"allinterfaceDamageDoneMostInGame"`
 		AllDamageDoneMostInLife     int    `json:"allDamageDoneMostInLife"`
 		BarrierDamageDoneMostInGame int    `json:"barrierDamageDoneMostInGame"`
 		EliminationsMostInGame      int    `json:"eliminationsMostInGame"`
@@ -123,7 +123,9 @@ type heroCareerStats struct {
 		TurretsDestroyed int `json:"turretsDestroyed"`
 	} `json:"miscellaneous"`
 }
-
+type heroSpecific struct {
+	DamageBlocked int `json:"damageBlocked"`
+}
 type topHeroStats struct {
 	TimePlayed          string  `json:"timePlayed"`
 	TimePlayedInSeconds int     `json:"timePlayedInSeconds"`
@@ -151,18 +153,26 @@ type owCompleteStats struct {
 		} `json:"games"`
 		TopHeroes json.RawMessage `json:"topHeroes"`
 	} `json:"competitiveStats"`
-	Endorsement     int    `json:"endorsement"`
-	EndorsementIcon string `json:"endorsementIcon"`
-	GamesWon        int    `json:"gamesWon"`
-	Icon            string `json:"icon"`
-	Level           int    `json:"level"`
-	LevelIcon       string `json:"levelIcon"`
-	Name            string `json:"name"`
-	Prestige        int    `json:"prestige"`
-	PrestigeIcon    string `json:"prestigeIcon"`
-	Private         bool   `json:"private"`
-	Rating          int    `json:"rating"`
-	RatingIcon      string `json:"ratingIcon"`
+	Endorsement     int      `json:"endorsement"`
+	EndorsementIcon string   `json:"endorsementIcon"`
+	GamesWon        int      `json:"gamesWon"`
+	Icon            string   `json:"icon"`
+	Level           int      `json:"level"`
+	LevelIcon       string   `json:"levelIcon"`
+	Name            string   `json:"name"`
+	Prestige        int      `json:"prestige"`
+	PrestigeIcon    string   `json:"prestigeIcon"`
+	Private         bool     `json:"private"`
+	Rating          int      `json:"rating"`
+	RatingIcon      string   `json:"ratingIcon"`
+	Ratings         []Rating `json:"ratings"`
+}
+
+type Rating struct {
+	Level    int    `json:"level"`
+	Role     string `json:"role"`
+	RoleIcon string `json:"roleIcon"`
+	RankIcon string `json:"rankIcon"`
 }
 
 func getPlayerStats(battletag string, platform string, region string) (*owCompleteStats, error) {

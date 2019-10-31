@@ -136,6 +136,7 @@ type discordEmbedObject struct {
 	Footer      discordEmbedFooterObject    `json:"footer"`
 	Thumbnail   discordEmbedThumbnailObject `json:"thumbnail"`
 	Author      discordEmbedAuthorObject    `json:"author"`
+	Image       discordEmbedImageObject     `json:"image"`
 	Fields      []discordEmbedFieldObject   `json:"fields"`
 }
 
@@ -145,6 +146,12 @@ type discordEmbedFooterObject struct {
 }
 
 type discordEmbedThumbnailObject struct {
+	Url    string `json:"url"`
+	Height int    `json:"height"`
+	Width  int    `json:"width"`
+}
+
+type discordEmbedImageObject struct {
 	Url    string `json:"url"`
 	Height int    `json:"height"`
 	Width  int    `json:"width"`
