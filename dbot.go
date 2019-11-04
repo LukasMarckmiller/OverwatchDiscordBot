@@ -50,6 +50,7 @@ const (
 
 	//Overwatch hero icon ids
 
+	sigma        = "<:sigma:640843743129239582>"
 	zarya        = "<:zarya:580725388276269076>"
 	reinhardt    = "<:reinhardt:580725264250568745>"
 	winston      = "<:winston:580725264405889057>"
@@ -116,6 +117,7 @@ var (
 		"torbjorn":     torbjrn,
 		"ashe":         ashe,
 		"symmetra":     symmetra,
+		"sigma":        sigma,
 	}
 	commandMap = map[string]getCommandContent{
 		"training":   getTrainingTimes,
@@ -197,7 +199,8 @@ func getAllCompositions(params []string) {
 		{Name: "Bunker", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, orisa, roadhog, dps, bastion, hanzo, support, baptiste, mercy)},
 		{Name: "Ball Dive(Anti Bunker)", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, wreckingball, dva, dps, genji, sombra, support, ana, lucio)},
 		{Name: "3-Dps (DPS variable)", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, wreckingball, dps, widowmaker, genji, ashe, support, mercy, lucio)},
-		{Name: "Gold Elo Classic", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, zarya, dps, genji, tracer, torbjrn, widowmaker, support, moira)},
+		{Name: "Double Shield", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, orisa, sigma, dps, reaper, doomfist, support, lucio, moira)},
+		{Name: "Double Shield Bastion Bunker", Value: fmt.Sprintf("%s %s %s %s %s %s %s %s %s", tank, orisa, sigma, dps, reaper, bastion, support, baptiste, ana)},
 	}
 	if _, err := sendMessage(secondPage); err != nil {
 		sendErrorMessageRequest(fmt.Sprintf("Error: **%v**\n", string(err.Error())))
