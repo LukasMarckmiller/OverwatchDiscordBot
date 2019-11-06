@@ -741,7 +741,7 @@ func getOverwatchPlayerStats(params []string) {
 	_ = json.Unmarshal(owPlayerPersistenceStats.OWPlayer.CompetitiveStats.CareerStats, &carrerStatsPersistent)
 
 	var topHeroesPersistent map[string]topHeroStats
-	_ = json.Unmarshal(owPlayerPersistenceStats.OWPlayer.CompetitiveStats.CareerStats, &carrerStatsPersistent)
+	_ = json.Unmarshal(owPlayerPersistenceStats.OWPlayer.CompetitiveStats.TopHeroes, &topHeroesPersistent)
 
 	var winrateAll int
 	var winrateToday int
@@ -858,21 +858,21 @@ func addDynamicHeroStatsAsEmbedFields(herosLiveOrdered []kv, carrerStatsLive map
 		if heroStatsLive.Assists.HealingDone != 0 {
 			healingPerGamePersistent := float32(heroStatsPersistent.Assists.HealingDone) / float32(heroStatsPersistent.Game.GamesPlayed)
 			healingPerGameLive := float32(heroStatsLive.Assists.HealingDone) / float32(heroStatsLive.Game.GamesPlayed)
-			roleSpecific = fmt.Sprintf("Healing per Game: **%.2f** %s", healingPerGameLive, getTrendIcon(healingPerGameLive, healingPerGamePersistent))
+			roleSpecific = fmt.Sprintf("HealingPerGame: **%.2f** %s", healingPerGameLive, getTrendIcon(healingPerGameLive, healingPerGamePersistent))
 		} else if heroSpecificLive.DamageBlocked != 0 {
 			dmgBlockedPerGamePersistent := float32(heroSpecificPersistent.DamageBlocked) / float32(heroStatsPersistent.Game.GamesPlayed)
 			dmgBlockedPerGameLive := float32(heroSpecificLive.DamageBlocked) / float32(heroStatsLive.Game.GamesPlayed)
-			roleSpecific = fmt.Sprintf("Blocked Dmg per Game: **%.2f** %s", dmgBlockedPerGameLive, getTrendIcon(dmgBlockedPerGameLive, dmgBlockedPerGamePersistent))
+			roleSpecific = fmt.Sprintf("BlockedPerGame: **%.2f** %s", dmgBlockedPerGameLive, getTrendIcon(dmgBlockedPerGameLive, dmgBlockedPerGamePersistent))
 		} else if heroStatsLive.Combat.FinalBlows != 0 {
 			finalBlowsPerGamePersistent := float32(heroStatsPersistent.Combat.FinalBlows) / float32(heroStatsPersistent.Game.GamesPlayed)
 			finalBlowsPerGameLive := float32(heroStatsLive.Combat.FinalBlows) / float32(heroStatsLive.Game.GamesPlayed)
-			roleSpecific = fmt.Sprintf("Final blows per Game: **%.2f** %s", finalBlowsPerGameLive, getTrendIcon(finalBlowsPerGameLive, finalBlowsPerGamePersistent))
+			roleSpecific = fmt.Sprintf("FinalBlowsPerGame: **%.2f** %s", finalBlowsPerGameLive, getTrendIcon(finalBlowsPerGameLive, finalBlowsPerGamePersistent))
 		}
 
 		weaponAccuracyLive := "-"
 
 		if topHeroStatsLive.WeaponAccuracy > 0 {
-			weaponAccuracyLive = fmt.Sprintf("Weapon Accuracy: **%d%%** %s", topHeroStatsLive.WeaponAccuracy, getTrendIcon(float32(topHeroStatsLive.WeaponAccuracy), float32(topHeroStatsPersistent.WeaponAccuracy)))
+			weaponAccuracyLive = fmt.Sprintf("WeaponAccuracy: **%d%%** %s", topHeroStatsLive.WeaponAccuracy, getTrendIconI(topHeroStatsLive.WeaponAccuracy, topHeroStatsPersistent.WeaponAccuracy))
 		}
 
 		//Game stats
@@ -886,7 +886,7 @@ func addDynamicHeroStatsAsEmbedFields(herosLiveOrdered []kv, carrerStatsLive map
 		//averageLive stats
 		fields = append(fields, discordEmbedFieldObject{
 			Name: fmt.Sprintf("Top Hero #%d %s", counter, HeroIconMap[strings.ToLower(v.Key)]),
-			Value: fmt.Sprintf("Games played (all/today): **%v**/**%v**\nGames won (all/today): **%v**/**%v** %s\nWin Percentage: **%d%%** %s\nKD: **%.2f** %s\nDamage per Game: **%.2f** %s\n%s\n%s",
+			Value: fmt.Sprintf("GamesPlayed(all/today): **%v**/**%v**\nGamesWon(all/today): **%v**/**%v** %s\nWinPercentage: **%d%%** %s\nKD: **%.2f** %s\nDamageperGame: **%.2f** %s\n%s\n%s",
 				heroStatsLive.Game.GamesPlayed, heroStatsLive.Game.GamesPlayed-heroStatsPersistent.Game.GamesPlayed,
 				gamesWonLive, gamesWonLive-gamesWonPersistent, getTrendIconI(gamesWonLive, gamesWonPersistent),
 				winPercentageLive, getTrendIconI(winPercentageLive, winPercentagePersistent),
